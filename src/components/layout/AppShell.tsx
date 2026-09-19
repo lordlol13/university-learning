@@ -8,11 +8,15 @@ import {
   type ReactNode,
 } from "react";
 import { MotionConfig } from "motion/react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { ProgressPanel } from "./ProgressPanel";
+import { StorkAssistant } from "@/components/mascot/StorkAssistant";
+import { worldConfig } from "@/data/world-config";
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const previousFocus = useRef<HTMLElement | null>(null);
@@ -50,6 +54,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       previousFocus.current?.focus();
     };
   }, [menuOpen, closeMenu]);
+  if (pathname === "/mascot-playground") return <>{children}</>;
   return (
     <MotionConfig reducedMotion="user">
       <div className="app-shell">
@@ -59,11 +64,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Sidebar open={menuOpen} onClose={closeMenu} />
         <div className="app-body" inert={menuOpen ? true : undefined}>
           <TopBar onMenuClick={() => setMenuOpen(true)} menuOpen={menuOpen} />
-          <div className="content-grid">
+          <div className={`content-grid ${pathname.startsWith("/lesson/") ? "lesson-content-grid" : ""}`}>
             <main id="main-content" tabIndex={-1}>
               {children}
             </main>
-            <ProgressPanel />
+            {!pathname.startsWith("/lesson/") && <ProgressPanel />}
           </div>
           <footer className="app-footer">
             <span>© {new Date().getFullYear()} Uplift</span>
@@ -73,6 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="footer-dot">·</span> Belong
             </span>
           </footer>
+          {worldConfig.mascot.enabled && <StorkAssistant mobile />}
         </div>
       </div>
     </MotionConfig>

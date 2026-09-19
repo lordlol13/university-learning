@@ -17,13 +17,17 @@ import { useProgress } from "@/stores/progress-provider";
 import { getLessonStatus } from "@/stores/progress-store";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import type { Lesson } from "@/types/curriculum";
+import { LessonRenderer } from "./LessonRenderer";
+import { getLessonContent } from "@/data/lessons";
 
 export function LessonView({
   lesson,
   directionId,
+  onReturn,
 }: {
   lesson: Lesson;
   directionId: string;
+  onReturn?: () => void;
 }) {
   const state = useProgress((s) => s);
   const status = getLessonStatus(lesson, state);
@@ -69,6 +73,15 @@ export function LessonView({
         </div>
       </div>
     );
+  const interactiveContent = getLessonContent(lesson.id);
+  if (interactiveContent)
+    return (
+      <LessonRenderer
+        lesson={interactiveContent}
+        directionId={directionId}
+        onReturn={onReturn}
+      />
+    );
   if (finished)
     return (
       <div className="standard-page">
@@ -89,19 +102,33 @@ export function LessonView({
               <Star size={23} fill="currentColor" />+{lesson.xp} XP
             </span>
           )}
-          <Link href={`/path/${directionId}`} className="button primary">
-            Back to your path
-            <ArrowRight size={17} />
-          </Link>
+          {onReturn ? (
+            <button className="button primary" onClick={onReturn}>
+              Back to your path
+              <ArrowRight size={17} />
+            </button>
+          ) : (
+            <Link href={`/path/${directionId}`} className="button primary">
+              Back to your path
+              <ArrowRight size={17} />
+            </Link>
+          )}
         </section>
       </div>
     );
   return (
     <div className="standard-page lesson-page">
-      <Link href={`/path/${directionId}`} className="back-link">
-        <ArrowLeft size={16} />
-        Back to your path
-      </Link>
+      {onReturn ? (
+        <button onClick={onReturn} className="back-link">
+          <ArrowLeft size={16} />
+          Back to your path
+        </button>
+      ) : (
+        <Link href={`/path/${directionId}`} className="back-link">
+          <ArrowLeft size={16} />
+          Back to your path
+        </Link>
+      )}
       <div className="lesson-page-heading">
         <span className="lesson-page-icon">
           <CurriculumIcon name={lesson.icon} size={35} />
@@ -141,6 +168,25 @@ export function LessonView({
         </ul>
       </section>
       <section className="panel-card quiz-card">
+        {onReturn && status === "current" && (
+          <details className="lesson-demo-controls">
+            <summary>Try the progress demo</summary>
+            <p>
+              Simulate this lesson’s completion to see XP, unlocking, and your
+              companion’s journey. This updates your local demo progress.
+            </p>
+            <button
+              className="button secondary"
+              onClick={() => {
+                if (state.startLesson(lesson.id))
+                  state.completeLesson(lesson.id);
+              }}
+            >
+              Simulate completion · +{lesson.xp} XP
+              <Check size={16} />
+            </button>
+          </details>
+        )}
         <span className="eyebrow">CHECK YOUR UNDERSTANDING</span>
         <fieldset>
           <legend>{lesson.content.question}</legend>

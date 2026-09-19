@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { ProgressProvider } from "@/stores/progress-provider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
+import "./world.css";
+import "katex/dist/katex.min.css";
+import "./lesson.css";
 
 export const metadata: Metadata = {
   title: { default: "Uplift — Your learning campus", template: "%s | Uplift" },

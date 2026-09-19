@@ -146,7 +146,9 @@ export function TopBar({
           aria-label={`${xp} XP`}
         >
           <Gem size={22} />
-          <strong>{xp}</strong>
+          <strong key={xp} className="xp-value">
+            {xp}
+          </strong>
           <span>XP</span>
         </Link>
         <Link

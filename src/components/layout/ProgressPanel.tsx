@@ -9,6 +9,7 @@ import { useProgress } from "@/stores/progress-provider";
 import { getDirectionProgress } from "@/stores/progress-store";
 import { AchievementBadge } from "@/components/ui/AchievementBadge";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import type { CSSProperties } from "react";
 
 export function ProgressPanel() {
   const pathname = usePathname();
@@ -38,9 +39,7 @@ export function ProgressPanel() {
         <div className="progress-overview">
           <div
             className="progress-ring"
-            style={{
-              background: `conic-gradient(var(--green) ${percent}%, #edf0eb 0)`,
-            }}
+            style={{ "--completion": `${percent}%` } as CSSProperties}
             role="img"
             aria-label={`${percent}% completed`}
           >
@@ -91,10 +90,19 @@ export function ProgressPanel() {
               key={achievement.id}
               className="badge-item"
             >
-              <AchievementBadge
-                achievement={achievement}
-                earned={state.achievements.includes(achievement.id)}
-              />
+              <span
+                key={`${achievement.id}-${state.achievements.includes(achievement.id)}`}
+                className={
+                  state.achievements.includes(achievement.id)
+                    ? "earned-reveal"
+                    : ""
+                }
+              >
+                <AchievementBadge
+                  achievement={achievement}
+                  earned={state.achievements.includes(achievement.id)}
+                />
+              </span>
               <span>{achievement.title}</span>
             </Link>
           ))}
@@ -110,7 +118,7 @@ export function ProgressPanel() {
             <Star size={27} fill="currentColor" strokeWidth={1.5} />
           </div>
           <div>
-            <strong>
+            <strong key={state.xp} className="xp-value">
               {state.xp} <span>XP</span>
             </strong>
             <p>{xpToNext} XP until next level</p>

@@ -15,6 +15,7 @@ import {
 import { directions, university } from "@/data/curriculum";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import { StorkAssistant } from "@/components/mascot/StorkAssistant";
+import { worldConfig } from "@/data/world-config";
 
 export function Sidebar({
   open,
@@ -119,15 +120,20 @@ export function Sidebar({
             </Link>
           ))}
         </nav>
-        <div className="assistant-card">
-          <StorkAssistant />
-          <span className="eyebrow">A LITTLE EVERY DAY</span>
-          <p>
-            Small steps.
-            <br />
-            <strong>Big futures.</strong>
-          </p>
-          <div className="assistant-line" />
+        <div className="assistant-card" style={worldConfig.mascot.enabled ? undefined : { padding: "20px 18px", minHeight: "120px" }}>
+          {worldConfig.mascot.enabled ? (
+            <StorkAssistant />
+          ) : (
+            <div className="assistant-tip-body">
+              <span className="eyebrow" style={{ color: "#699851", fontWeight: 700 }}>STUDENT FOCUS</span>
+              <p style={{ marginTop: "8px", fontSize: "19px", lineHeight: 1.3 }}>
+                Small steps. <strong style={{ color: "#36792e" }}>Big futures.</strong>
+              </p>
+              <span style={{ display: "block", marginTop: "8px", fontSize: "12px", color: "var(--muted)" }}>
+                Mastering core concepts one lesson at a time.
+              </span>
+            </div>
+          )}
         </div>
         <Link href="/profile" className="university-link" onClick={onClose}>
           <span className="university-icon">

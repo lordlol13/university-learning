@@ -104,8 +104,8 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [openLesson, setOpenLesson] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const closeLesson = useCallback(() => setOpenLesson(null), []);
-  const closeMessage = useCallback(() => setMessage(null), []);
+  const closeLesson = useCallback(() => setOpenLesson(null), [setOpenLesson]);
+  const closeMessage = useCallback(() => setMessage(null), [setMessage]);
   useEffect(
     () =>
       events.subscribe((event) => {
@@ -119,8 +119,15 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       }),
     [events],
   );
+  const currentDirectionLesson = lessons.find(
+    (l) => l.id === state.currentLessonId,
+  );
+  const fallbackLesson =
+    lessons.find((l) => getLessonStatus(l, state) === "current") ??
+    lessons.find((l) => getLessonStatus(l, state) !== "locked") ??
+    lessons[0];
   const selected = getLesson(
-    selectedId ?? state.currentLessonId ?? lessons[lessons.length - 1]?.id,
+    selectedId ?? currentDirectionLesson?.id ?? fallbackLesson?.id ?? "",
   );
   const status = selected ? getLessonStatus(selected, state) : "locked";
   const selectLesson = useCallback(
@@ -134,7 +141,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       )
         setOpenLesson(id);
     },
-    [state],
+    [state, setSelectedId, setOpenLesson],
   );
   const openSelected = () => {
     if (selected && state.startLesson(selected.id)) setOpenLesson(selected.id);
@@ -203,7 +210,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               Getting your campus ready…
             </div>
           )}
-          {ready && <WorldSwitcher currentDirectionId={direction.id} />}
+          <WorldSwitcher currentDirectionId={direction.id} />
           <div className="world-location">
             <span>UPLIFT CAMPUS</span>
             <strong>A little further, every day.</strong>

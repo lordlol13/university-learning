@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Compass } from "lucide-react";
@@ -36,6 +36,17 @@ export function WorldSwitcher({
   const prevWorld = availableWorlds[prevIndex] ?? availableWorlds[0];
   const nextWorld = availableWorlds[nextIndex] ?? availableWorlds[0];
 
+  const navigateTo = useCallback(
+    (directionId: string) => {
+      router.push(`/path/${directionId}`);
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.assign(`/path/${directionId}`);
+      }
+    },
+    [router],
+  );
+
   // Keyboard navigation: ArrowLeft and ArrowRight flip through worlds
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -53,16 +64,16 @@ export function WorldSwitcher({
 
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        router.push(`/path/${prevWorld.id}`);
+        navigateTo(prevWorld.id);
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
-        router.push(`/path/${nextWorld.id}`);
+        navigateTo(nextWorld.id);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [prevWorld.id, nextWorld.id, router]);
+  }, [prevWorld.id, nextWorld.id, navigateTo]);
 
   if (availableWorlds.length <= 1) return null;
 
@@ -72,6 +83,10 @@ export function WorldSwitcher({
       <Link
         href={`/path/${prevWorld.id}`}
         className="world-nav-card world-nav-prev"
+        onClick={(e) => {
+          e.preventDefault();
+          navigateTo(prevWorld.id);
+        }}
         aria-label={`Go to previous island: ${prevWorld.title} (Left Arrow)`}
         title={`Previous island: ${prevWorld.title} (Press ←)`}
       >
@@ -109,13 +124,17 @@ export function WorldSwitcher({
                 role="tab"
                 aria-selected={isActive}
                 className={`world-island-tab ${isActive ? "is-active" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo(world.id);
+                }}
                 title={`Go to ${world.title}`}
               >
                 <span className="world-island-tab-icon">
                   <CurriculumIcon name={world.icon} size={17} />
                 </span>
                 <span className="world-island-tab-title">{world.shortTitle}</span>
-                <span className="world-island-tab-badge">
+                <span className="world-island-tab-badge" suppressHydrationWarning>
                   {prog.completed}/{prog.total}
                 </span>
               </Link>
@@ -128,6 +147,10 @@ export function WorldSwitcher({
       <Link
         href={`/path/${nextWorld.id}`}
         className="world-nav-card world-nav-next"
+        onClick={(e) => {
+          e.preventDefault();
+          navigateTo(nextWorld.id);
+        }}
         aria-label={`Go to next island: ${nextWorld.title} (Right Arrow)`}
         title={`Next island: ${nextWorld.title} (Press →)`}
       >

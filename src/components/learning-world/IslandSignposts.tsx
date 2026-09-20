@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCursor } from "@react-three/drei";
+import type { ThreeEvent } from "@react-three/fiber";
 import { directions } from "@/data/curriculum";
 import { learningWorlds } from "@/data/learning-world";
 import type { Direction } from "@/types/curriculum";
@@ -20,9 +21,11 @@ interface IslandSignpostProps {
 function ArrowSymbol3D({
   isPrev,
   hovered,
+  onClick,
 }: {
   isPrev: boolean;
   hovered: boolean;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
 }) {
   const armLength = 0.36;
   const armThickness = 0.08;
@@ -44,7 +47,12 @@ function ArrowSymbol3D({
   return (
     <group position={[isPrev ? -0.06 : 0.06, 0, 0]}>
       {/* Top Arm of "<" or ">" */}
-      <mesh position={[dx, dy, 0]} rotation={[0, 0, rotTop]} castShadow>
+      <mesh
+        position={[dx, dy, 0]}
+        rotation={[0, 0, rotTop]}
+        castShadow
+        onClick={onClick}
+      >
         <boxGeometry args={[armLength, armThickness, armDepth]} />
         <meshStandardMaterial
           color={color}
@@ -54,7 +62,12 @@ function ArrowSymbol3D({
         />
       </mesh>
       {/* Bottom Arm of "<" or ">" */}
-      <mesh position={[dx, -dy, 0]} rotation={[0, 0, rotBottom]} castShadow>
+      <mesh
+        position={[dx, -dy, 0]}
+        rotation={[0, 0, rotBottom]}
+        castShadow
+        onClick={onClick}
+      >
         <boxGeometry args={[armLength, armThickness, armDepth]} />
         <meshStandardMaterial
           color={color}
@@ -81,6 +94,10 @@ function IslandSignpost({
 
   const handleNavigate = () => {
     router.push(`/path/${world.id}`);
+    if (typeof window !== "undefined") {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign(`/path/${world.id}`);
+    }
   };
 
   return (
@@ -105,21 +122,23 @@ function IslandSignpost({
       onPointerOut={() => setHovered(false)}
       scale={hovered ? 1.08 : 1}
     >
-      {/* Invisible Collision / Click Box for Reliable Hit-Testing */}
+      {/* Invisible Collision / Click Box with opacity: 0 for Raycasting */}
       <mesh
-        position={[0, 0.9, 0]}
-        visible={false}
+        position={[0, 1.0, 0]}
         onClick={(e) => {
           e.stopPropagation();
           handleNavigate();
+        }}
+        onPointerDown={(e) => {
+          e.stopPropagation();
         }}
         onPointerUp={(e) => {
           e.stopPropagation();
           handleNavigate();
         }}
       >
-        <boxGeometry args={[1.5, 2.0, 1.0]} />
-        <meshBasicMaterial transparent opacity={0} />
+        <boxGeometry args={[1.8, 2.4, 1.2]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
 
       {/* Stone Ground Base */}
@@ -154,7 +173,15 @@ function IslandSignpost({
       </mesh>
 
       {/* Main Wooden Board Plaque */}
-      <mesh position={[0, 1.35, 0]} castShadow receiveShadow>
+      <mesh
+        position={[0, 1.35, 0]}
+        castShadow
+        receiveShadow
+        onClick={(e) => {
+          e.stopPropagation();
+          handleNavigate();
+        }}
+      >
         <boxGeometry args={[0.85, 0.65, 0.1]} />
         <meshStandardMaterial
           color={hovered ? "#fff6de" : "#f5e8c9"}
@@ -164,12 +191,26 @@ function IslandSignpost({
 
       {/* 3D "<" or ">" Symbol on Front Face */}
       <group position={[0, 1.35, 0.055]}>
-        <ArrowSymbol3D isPrev={isPrev} hovered={hovered} />
+        <ArrowSymbol3D
+          isPrev={isPrev}
+          hovered={hovered}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNavigate();
+          }}
+        />
       </group>
 
       {/* 3D "<" or ">" Symbol on Back Face */}
       <group position={[0, 1.35, -0.055]} rotation={[0, Math.PI, 0]}>
-        <ArrowSymbol3D isPrev={!isPrev} hovered={hovered} />
+        <ArrowSymbol3D
+          isPrev={!isPrev}
+          hovered={hovered}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNavigate();
+          }}
+        />
       </group>
     </group>
   );

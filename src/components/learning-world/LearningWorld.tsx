@@ -36,10 +36,7 @@ const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
   ),
 });
 
-const WorldSwitcher = dynamic(
-  () => import("./WorldSwitcher").then((mod) => mod.WorldSwitcher),
-  { ssr: false },
-);
+import { WorldSwitcher } from "./WorldSwitcher";
 
 function LessonDialog({
   lessonId,

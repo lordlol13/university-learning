@@ -190,6 +190,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
         <div className="world-stage">
           {ready ? (
             <WorldCanvas
+              key={data.directionId}
               data={data}
               lessons={lessons}
               selectedId={selected?.id ?? null}

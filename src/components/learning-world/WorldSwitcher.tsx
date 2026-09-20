@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Compass } from "lucide-react";
 import { directions } from "@/data/curriculum";
@@ -35,15 +36,6 @@ export function WorldSwitcher({
   const prevWorld = availableWorlds[prevIndex] ?? availableWorlds[0];
   const nextWorld = availableWorlds[nextIndex] ?? availableWorlds[0];
 
-  const navigateToWorld = useCallback(
-    (directionId: string) => {
-      if (directionId !== currentDirectionId) {
-        router.push(`/path/${directionId}`);
-      }
-    },
-    [currentDirectionId, router],
-  );
-
   // Keyboard navigation: ArrowLeft and ArrowRight flip through worlds
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -61,26 +53,25 @@ export function WorldSwitcher({
 
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        navigateToWorld(prevWorld.id);
+        router.push(`/path/${prevWorld.id}`);
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
-        navigateToWorld(nextWorld.id);
+        router.push(`/path/${nextWorld.id}`);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [prevWorld.id, nextWorld.id, navigateToWorld]);
+  }, [prevWorld.id, nextWorld.id, router]);
 
   if (availableWorlds.length <= 1) return null;
 
   return (
     <div className="world-switcher-container" aria-label="3D Islands Navigation">
-      {/* Prominent Left Navigation Button: Previous Island */}
-      <button
-        type="button"
+      {/* Prominent Left Navigation Link: Previous Island */}
+      <Link
+        href={`/path/${prevWorld.id}`}
         className="world-nav-card world-nav-prev"
-        onClick={() => navigateToWorld(prevWorld.id)}
         aria-label={`Go to previous island: ${prevWorld.title} (Left Arrow)`}
         title={`Previous island: ${prevWorld.title} (Press ←)`}
       >
@@ -97,7 +88,7 @@ export function WorldSwitcher({
             <strong className="world-nav-name">{prevWorld.shortTitle}</strong>
           </div>
         </div>
-      </button>
+      </Link>
 
       {/* Top Island Bar: All 4 active 3D learning worlds */}
       <div className="world-islands-bar" role="tablist" aria-label="Campus 3D Islands">
@@ -112,13 +103,12 @@ export function WorldSwitcher({
             const isActive = world.id === currentDirectionId;
             const prog = getDirectionProgress(world.id, state);
             return (
-              <button
+              <Link
                 key={world.id}
-                type="button"
+                href={`/path/${world.id}`}
                 role="tab"
                 aria-selected={isActive}
                 className={`world-island-tab ${isActive ? "is-active" : ""}`}
-                onClick={() => navigateToWorld(world.id)}
                 title={`Go to ${world.title}`}
               >
                 <span className="world-island-tab-icon">
@@ -128,17 +118,16 @@ export function WorldSwitcher({
                 <span className="world-island-tab-badge">
                   {prog.completed}/{prog.total}
                 </span>
-              </button>
+              </Link>
             );
           })}
         </div>
       </div>
 
-      {/* Prominent Right Navigation Button: Next Island */}
-      <button
-        type="button"
+      {/* Prominent Right Navigation Link: Next Island */}
+      <Link
+        href={`/path/${nextWorld.id}`}
         className="world-nav-card world-nav-next"
-        onClick={() => navigateToWorld(nextWorld.id)}
         aria-label={`Go to next island: ${nextWorld.title} (Right Arrow)`}
         title={`Next island: ${nextWorld.title} (Press →)`}
       >
@@ -155,7 +144,7 @@ export function WorldSwitcher({
         <div className="world-nav-arrow-circle">
           <ChevronRight size={26} strokeWidth={2.4} />
         </div>
-      </button>
+      </Link>
     </div>
   );
 }

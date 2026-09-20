@@ -63,7 +63,7 @@ export function DirectionView({ direction }: { direction: Direction }) {
         </span>
       </div>
       {available ? (
-        <LearningWorld direction={direction} />
+        <LearningWorld key={direction.id} direction={direction} />
       ) : (
         <section className="empty-state panel-card">
           <span className="empty-icon">

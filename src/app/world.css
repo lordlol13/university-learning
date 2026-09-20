@@ -1002,6 +1002,8 @@
     box-shadow 0.22s ease;
   user-select: none;
   text-align: left;
+  text-decoration: none;
+  color: inherit;
 }
 
 .world-nav-prev {
@@ -1176,6 +1178,7 @@
   font-weight: 650;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
   transition: all 0.18s ease;
 }
 

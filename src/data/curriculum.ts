@@ -1,4 +1,7 @@
 import type { Direction, Lesson, University } from "../types/curriculum";
+import { CACHE_VERSION } from "./cache-bust-v2";
+
+export const CURRICULUM_VERSION = CACHE_VERSION;
 
 const aiLessons: Lesson[] = [
   {

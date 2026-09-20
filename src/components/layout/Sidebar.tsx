@@ -16,6 +16,7 @@ import { directions, university } from "@/data/curriculum";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import { StorkAssistant } from "@/components/mascot/StorkAssistant";
 import { worldConfig } from "@/data/world-config";
+import { CACHE_VERSION } from "@/data/cache-bust-v2";
 
 export function Sidebar({
   open,
@@ -39,6 +40,7 @@ export function Sidebar({
       <aside
         id="main-navigation"
         className={`sidebar ${open ? "is-open" : ""}`}
+        data-version={CACHE_VERSION}
         suppressHydrationWarning
       >
         <div className="brand-row">

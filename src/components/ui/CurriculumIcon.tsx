@@ -34,5 +34,13 @@ export function CurriculumIcon({
   size?: number;
 }) {
   const Icon = icons[name] ?? Compass;
-  return <Icon size={size} strokeWidth={1.8} aria-hidden="true" />;
+  return (
+    <span
+      className="curriculum-icon-wrap"
+      suppressHydrationWarning
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+    >
+      <Icon size={size} strokeWidth={1.8} aria-hidden="true" />
+    </span>
+  );
 }

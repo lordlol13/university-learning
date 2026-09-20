@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,6 +18,14 @@ import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import { StorkAssistant } from "@/components/mascot/StorkAssistant";
 import { worldConfig } from "@/data/world-config";
 
+const emptySubscribe = () => () => {};
+const useIsMounted = () =>
+  useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
 export function Sidebar({
   open,
   onClose,
@@ -25,6 +34,7 @@ export function Sidebar({
   onClose: () => void;
 }) {
   const pathname = usePathname();
+  const mounted = useIsMounted();
   const navClass = (href: string) =>
     `nav-item ${pathname === href ? "active" : ""}`;
   return (
@@ -39,6 +49,7 @@ export function Sidebar({
       <aside
         id="main-navigation"
         className={`sidebar ${open ? "is-open" : ""}`}
+        suppressHydrationWarning
       >
         <div className="brand-row">
           <Link
@@ -63,7 +74,7 @@ export function Sidebar({
           </button>
         </div>
         <div className="workspace-label">YOUR LEARNING CAMPUS</div>
-        <nav aria-label="Main navigation">
+        <nav aria-label="Main navigation" suppressHydrationWarning>
           <Link
             href="/dashboard"
             className={navClass("/dashboard")}
@@ -74,25 +85,27 @@ export function Sidebar({
             Home
           </Link>
           <div className="nav-label">MY DIRECTIONS</div>
-          {directions
-            .filter((d) => d.id !== "computer-engineering")
-            .map((direction) => (
-              <Link
-                key={direction.id}
-                href={`/path/${direction.id}`}
-                className={navClass(`/path/${direction.id}`)}
-                aria-current={
-                  pathname === `/path/${direction.id}` ? "page" : undefined
-                }
-                onClick={onClose}
-              >
-                <CurriculumIcon name={direction.icon} size={21} />
-                {direction.shortTitle}
-                {pathname === `/path/${direction.id}` && (
-                  <span className="active-dot" />
-                )}
-              </Link>
-            ))}
+          {mounted &&
+            directions
+              .filter((d) => d.id !== "computer-engineering")
+              .map((direction) => (
+                <Link
+                  key={direction.id}
+                  href={`/path/${direction.id}`}
+                  className={navClass(`/path/${direction.id}`)}
+                  aria-current={
+                    pathname === `/path/${direction.id}` ? "page" : undefined
+                  }
+                  onClick={onClose}
+                  suppressHydrationWarning
+                >
+                  <CurriculumIcon name={direction.icon} size={21} />
+                  {direction.shortTitle}
+                  {pathname === `/path/${direction.id}` && (
+                    <span className="active-dot" />
+                  )}
+                </Link>
+              ))}
           <Link
             href="/courses"
             className={navClass("/courses")}

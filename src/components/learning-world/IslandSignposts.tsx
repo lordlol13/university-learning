@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Html } from "@react-three/drei";
 import { directions } from "@/data/curriculum";
@@ -25,10 +24,6 @@ function IslandSignpost({
 
   const handleNavigate = () => {
     router.push(`/path/${world.id}`);
-    if (typeof window !== "undefined") {
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign(`/path/${world.id}`);
-    }
   };
 
   return (
@@ -39,12 +34,12 @@ function IslandSignpost({
         e.stopPropagation();
         handleNavigate();
       }}
-      onPointerDown={(e) => {
+      onPointerOver={(e) => {
         e.stopPropagation();
+        document.body.style.cursor = "pointer";
       }}
-      onPointerUp={(e) => {
-        e.stopPropagation();
-        handleNavigate();
+      onPointerOut={() => {
+        document.body.style.cursor = "default";
       }}
     >
       {/* Stone Ground Base */}
@@ -83,10 +78,11 @@ function IslandSignpost({
         zIndexRange={[25, 0]}
         style={{ pointerEvents: "auto" }}
       >
-        <Link
-          href={`/path/${world.id}`}
+        <button
+          type="button"
           className={`island-sign-arrow ${isPrev ? "prev" : "next"}`}
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             handleNavigate();
           }}
@@ -102,7 +98,7 @@ function IslandSignpost({
           }
         >
           {isPrev ? "<" : ">"}
-        </Link>
+        </button>
       </Html>
     </group>
   );

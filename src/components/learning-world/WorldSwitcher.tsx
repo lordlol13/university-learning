@@ -39,10 +39,6 @@ export function WorldSwitcher({
   const navigateTo = useCallback(
     (directionId: string) => {
       router.push(`/path/${directionId}`);
-      if (typeof window !== "undefined") {
-        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-        window.location.assign(`/path/${directionId}`);
-      }
     },
     [router],
   );

@@ -47,6 +47,7 @@ export const initialProgress = {
     "linear-algebra",
     "statistics",
     "machine-learning",
+    "si-base-units",
   ],
   xp: 357,
   level: 2,

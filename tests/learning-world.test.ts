@@ -10,8 +10,8 @@ import {
   createRoadGeometry,
   sampleWorldPath,
 } from "../src/lib/world-geometry";
-import { aiLearningWorld } from "../src/data/learning-world";
-import { allLessons } from "../src/data/curriculum";
+import { aiLearningWorld, physicsLearningWorld } from "../src/data/learning-world";
+import { getDirection, getDirectionLessons } from "../src/data/curriculum";
 import { createProgressStore } from "../src/stores/progress-store";
 
 // This file tests events rather than persistence; keep browser storage available in Node.
@@ -25,22 +25,27 @@ Object.defineProperty(globalThis, "localStorage", {
 });
 
 test("all curriculum platforms have unique, increasing arc-length placements", () => {
-  const placements = aiLearningWorld.lessons;
-  assert.deepEqual(
-    placements.map((p) => p.lessonId),
-    allLessons.map((l) => l.id),
-  );
-  placements.forEach((placement, i) => {
-    assert.ok(placement.t > 0 && placement.t < 1);
-    if (i) assert.ok(placement.t > placements[i - 1].t);
-  });
-  const curve = createWorldCurve(aiLearningWorld);
-  for (const placement of placements) {
-    const center = curve.getPointAt(placement.t);
-    assert.ok(sampleWorldPath(curve, placement.t).distanceTo(center) < 1e-6);
-    const side = sampleWorldPath(curve, placement.t, -1.12);
-    assert.ok(Math.abs(side.y - center.y) < 1e-6);
-    assert.ok(side.distanceTo(center) > 1.1);
+  for (const world of [aiLearningWorld, physicsLearningWorld]) {
+    const placements = world.lessons;
+    const direction = getDirection(world.directionId);
+    assert.ok(direction, `Direction ${world.directionId} must exist`);
+    const directionLessons = getDirectionLessons(direction);
+    assert.deepEqual(
+      placements.map((p) => p.lessonId),
+      directionLessons.map((l) => l.id),
+    );
+    placements.forEach((placement, i) => {
+      assert.ok(placement.t > 0 && placement.t < 1);
+      if (i) assert.ok(placement.t > placements[i - 1].t);
+    });
+    const curve = createWorldCurve(world);
+    for (const placement of placements) {
+      const center = curve.getPointAt(placement.t);
+      assert.ok(sampleWorldPath(curve, placement.t).distanceTo(center) < 1e-6);
+      const side = sampleWorldPath(curve, placement.t, -1.12);
+      assert.ok(Math.abs(side.y - center.y) < 1e-6);
+      assert.ok(side.distanceTo(center) > 1.1);
+    }
   }
 });
 test("the spline road is a closed thick mesh with finite positions and normals", () => {

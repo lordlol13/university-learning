@@ -1,8 +1,10 @@
 import {
+  Atom,
   Binary,
   BrainCircuit,
   ChartNoAxesColumnIncreasing,
   CodeXml,
+  Compass,
   Cpu,
   Database,
   Network,
@@ -19,6 +21,8 @@ const icons = {
   network: Network,
   chip: Cpu,
   math: Sigma,
+  atom: Atom,
+  compass: Compass,
 };
 export function CurriculumIcon({
   name,

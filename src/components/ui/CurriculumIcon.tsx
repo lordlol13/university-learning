@@ -33,6 +33,6 @@ export function CurriculumIcon({
   name: IconName;
   size?: number;
 }) {
-  const Icon = icons[name];
+  const Icon = icons[name] ?? Compass;
   return <Icon size={size} strokeWidth={1.8} aria-hidden="true" />;
 }

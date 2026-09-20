@@ -193,21 +193,23 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       {data && view === "world" ? (
         <div className="world-stage">
           {ready ? (
-            <WorldCanvas
-              key={data.directionId}
-              data={data}
-              lessons={lessons}
-              selectedId={selected?.id ?? null}
-              onSelect={selectLesson}
-              paused={openLesson !== null}
-            />
+            <>
+              <WorldCanvas
+                key={data.directionId}
+                data={data}
+                lessons={lessons}
+                selectedId={selected?.id ?? null}
+                onSelect={selectLesson}
+                paused={openLesson !== null}
+              />
+              <IslandNavigator currentDirectionId={direction.id} />
+            </>
           ) : (
             <div className="world-loading">
               <span className="loading-dot" />
               Getting your campus ready…
             </div>
           )}
-          <IslandNavigator currentDirectionId={direction.id} />
           <div className="world-location">
             <span>UPLIFT CAMPUS</span>
             <strong>A little further, every day.</strong>

@@ -3,12 +3,9 @@
 import { useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Compass } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { directions } from "@/data/curriculum";
 import { learningWorlds } from "@/data/learning-world";
-import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
-import { useProgress } from "@/stores/progress-provider";
-import { getDirectionProgress } from "@/stores/progress-store";
 import type { Direction } from "@/types/curriculum";
 
 export function IslandNavigator({
@@ -17,7 +14,6 @@ export function IslandNavigator({
   currentDirectionId: string;
 }) {
   const router = useRouter();
-  const state = useProgress((s) => s);
 
   // Filter to directions that have active 3D learning worlds
   const availableWorlds: Direction[] = directions.filter((d) =>
@@ -46,7 +42,6 @@ export function IslandNavigator({
   // Keyboard navigation: ArrowLeft and ArrowRight flip through worlds
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Don't intercept if student is in an input, textarea, or dialog
       const target = event.target as HTMLElement | null;
       if (
         target &&
@@ -74,95 +69,33 @@ export function IslandNavigator({
   if (availableWorlds.length <= 1) return null;
 
   return (
-    <div className="world-switcher-container" aria-label="Campus Islands Navigation Bar">
-      {/* Prominent Left Navigation Link: Previous Island */}
+    <div className="world-switcher-container" aria-label="Campus Islands Navigation">
+      {/* Pure Left Arrow Button: Zero Text */}
       <Link
         href={`/path/${prevWorld.id}`}
-        className="world-nav-card world-nav-prev"
+        className="world-nav-arrow-btn world-nav-prev"
         onClick={(e) => {
           e.preventDefault();
           navigateTo(prevWorld.id);
         }}
-        aria-label={`Go to previous island: ${prevWorld.title} (Left Arrow)`}
-        title={`Previous island: ${prevWorld.title} (Press ←)`}
+        aria-label={`Previous island: ${prevWorld.title}`}
+        title={`Previous island: ${prevWorld.title}`}
       >
-        <div className="world-nav-arrow-circle">
-          <ChevronLeft size={26} strokeWidth={2.4} />
-        </div>
-        <div className="world-nav-content">
-          <span className="world-nav-subtext">
-            <span>← PREVIOUS ISLAND</span>
-            <kbd className="world-nav-kbd">←</kbd>
-          </span>
-          <div className="world-nav-title-row">
-            <CurriculumIcon name={prevWorld.icon} size={17} />
-            <strong className="world-nav-name">{prevWorld.shortTitle}</strong>
-          </div>
-        </div>
+        <ChevronLeft size={32} strokeWidth={2.8} />
       </Link>
 
-      {/* Top Island Bar: All 4 active 3D learning worlds */}
-      <div className="world-islands-bar" role="tablist" aria-label="Campus 3D Islands">
-        <div className="world-islands-header">
-          <span className="world-islands-eyebrow">
-            <Compass size={13} />
-            CAMPUS ISLANDS ({activeIndex + 1}/{availableWorlds.length})
-          </span>
-        </div>
-        <div className="world-islands-tabs">
-          {availableWorlds.map((world) => {
-            const isActive = world.id === currentDirectionId;
-            const prog = getDirectionProgress(world.id, state);
-            return (
-              <Link
-                key={world.id}
-                href={`/path/${world.id}`}
-                role="tab"
-                aria-selected={isActive}
-                className={`world-island-tab ${isActive ? "is-active" : ""}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigateTo(world.id);
-                }}
-                title={`Go to ${world.title}`}
-              >
-                <span className="world-island-tab-icon">
-                  <CurriculumIcon name={world.icon} size={17} />
-                </span>
-                <span className="world-island-tab-title">{world.shortTitle}</span>
-                <span className="world-island-tab-badge" suppressHydrationWarning>
-                  {prog.completed}/{prog.total}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Prominent Right Navigation Link: Next Island */}
+      {/* Pure Right Arrow Button: Zero Text */}
       <Link
         href={`/path/${nextWorld.id}`}
-        className="world-nav-card world-nav-next"
+        className="world-nav-arrow-btn world-nav-next"
         onClick={(e) => {
           e.preventDefault();
           navigateTo(nextWorld.id);
         }}
-        aria-label={`Go to next island: ${nextWorld.title} (Right Arrow)`}
-        title={`Next island: ${nextWorld.title} (Press →)`}
+        aria-label={`Next island: ${nextWorld.title}`}
+        title={`Next island: ${nextWorld.title}`}
       >
-        <div className="world-nav-content world-nav-content-right">
-          <span className="world-nav-subtext">
-            <span>NEXT ISLAND →</span>
-            <kbd className="world-nav-kbd">→</kbd>
-          </span>
-          <div className="world-nav-title-row">
-            <strong className="world-nav-name">{nextWorld.shortTitle}</strong>
-            <CurriculumIcon name={nextWorld.icon} size={17} />
-          </div>
-        </div>
-        <div className="world-nav-arrow-circle">
-          <ChevronRight size={26} strokeWidth={2.4} />
-        </div>
+        <ChevronRight size={32} strokeWidth={2.8} />
       </Link>
     </div>
   );

@@ -978,58 +978,48 @@
 }
 
 /* --------------------------------------------------------------------------
-   Prominent Floating Navigation Cards (Left / Right)
+   Pure Circular Navigation Arrow Buttons (Zero Text)
    -------------------------------------------------------------------------- */
-.world-nav-card {
+.world-nav-arrow-btn {
   pointer-events: auto;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid #94c37e;
+  box-shadow: 0 6px 20px rgba(35, 52, 28, 0.16);
+  color: #276216;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 18px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1.5px solid #bad5a4;
-  border-radius: 18px;
-  box-shadow: 0 8px 28px rgba(35, 52, 28, 0.16), 0 2px 8px rgba(0, 0, 0, 0.04);
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.22s ease;
-  user-select: none;
-  text-align: left;
   text-decoration: none;
-  color: inherit;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.world-nav-prev {
+.world-nav-arrow-btn:hover {
+  background: #ffffff;
+  border-color: #3b8b1f;
+  color: #1a5c0b;
+  box-shadow: 0 8px 24px rgba(35, 52, 28, 0.24);
+}
+
+.world-nav-arrow-btn:active {
+  background: #f0f7ec;
+}
+
+.world-nav-arrow-btn.world-nav-prev {
   left: 20px;
 }
 
-.world-nav-next {
+.world-nav-arrow-btn.world-nav-next {
   right: 20px;
-}
-
-.world-nav-prev:hover {
-  transform: translateY(-50%) translateX(-4px) scale(1.03);
-  background: #ffffff;
-  border-color: #5d9e3c;
-  box-shadow: 0 12px 36px rgba(35, 52, 28, 0.22), 0 0 0 2px rgba(93, 158, 60, 0.15);
-}
-
-.world-nav-next:hover {
-  transform: translateY(-50%) translateX(4px) scale(1.03);
-  background: #ffffff;
-  border-color: #5d9e3c;
-  box-shadow: 0 12px 36px rgba(35, 52, 28, 0.22), 0 0 0 2px rgba(93, 158, 60, 0.15);
-}
-
-.world-nav-card:active {
-  transform: translateY(-50%) scale(0.97);
 }
 
 .world-nav-arrow-circle {

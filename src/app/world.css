@@ -974,43 +974,204 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 8;
+  z-index: 50;
 }
 
-.world-pills-bar {
+/* --------------------------------------------------------------------------
+   Prominent Floating Navigation Cards (Left / Right)
+   -------------------------------------------------------------------------- */
+.world-nav-card {
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid #bad5a4;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(35, 52, 28, 0.16), 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.22s ease;
+  user-select: none;
+  text-align: left;
+}
+
+.world-nav-prev {
+  left: 20px;
+}
+
+.world-nav-next {
+  right: 20px;
+}
+
+.world-nav-prev:hover {
+  transform: translateY(-50%) translateX(-4px) scale(1.03);
+  background: #ffffff;
+  border-color: #5d9e3c;
+  box-shadow: 0 12px 36px rgba(35, 52, 28, 0.22), 0 0 0 2px rgba(93, 158, 60, 0.15);
+}
+
+.world-nav-next:hover {
+  transform: translateY(-50%) translateX(4px) scale(1.03);
+  background: #ffffff;
+  border-color: #5d9e3c;
+  box-shadow: 0 12px 36px rgba(35, 52, 28, 0.22), 0 0 0 2px rgba(93, 158, 60, 0.15);
+}
+
+.world-nav-card:active {
+  transform: translateY(-50%) scale(0.97);
+}
+
+.world-nav-arrow-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #376a29, #25501b);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37, 80, 27, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.world-nav-prev:hover .world-nav-arrow-circle {
+  transform: translateX(-3px);
+  background: linear-gradient(135deg, #3f7b2f, #2d5e21);
+}
+
+.world-nav-next:hover .world-nav-arrow-circle {
+  transform: translateX(3px);
+  background: linear-gradient(135deg, #3f7b2f, #2d5e21);
+}
+
+.world-nav-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.world-nav-content-right {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.world-nav-subtext {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  color: #607954;
+  text-transform: uppercase;
+}
+
+.world-nav-content-right .world-nav-subtext {
+  justify-content: flex-end;
+}
+
+.world-nav-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #506646;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.world-nav-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.world-nav-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #213c19;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Top Campus Islands Bar (Tabs)
+   -------------------------------------------------------------------------- */
+.world-islands-bar {
   pointer-events: auto;
   position: absolute;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 5px 8px;
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  padding: 6px 10px 8px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid #bdd7a8;
   border-radius: 9999px;
-  box-shadow: 0 4px 18px rgba(35, 52, 28, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 30px rgba(35, 52, 28, 0.14), 0 2px 8px rgba(0, 0, 0, 0.04);
   max-width: calc(100% - 32px);
+  z-index: 52;
+}
+
+.world-islands-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.world-islands-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #5d7550;
+  text-transform: uppercase;
+}
+
+.world-islands-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  max-width: 100%;
 }
-.world-pills-bar::-webkit-scrollbar {
+
+.world-islands-tabs::-webkit-scrollbar {
   display: none;
 }
 
-.world-pill {
+.world-island-tab {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 12px;
+  padding: 6px 13px;
   border-radius: 9999px;
   border: 1px solid transparent;
   background: transparent;
-  color: #50644b;
+  color: #4b6045;
   font-size: 12px;
   font-weight: 650;
   cursor: pointer;
@@ -1018,124 +1179,73 @@
   transition: all 0.18s ease;
 }
 
-.world-pill:hover {
-  background: rgba(117, 185, 75, 0.15);
-  color: #24491c;
+.world-island-tab:hover {
+  background: rgba(117, 185, 75, 0.16);
+  color: #1e3f17;
 }
 
-.world-pill.is-active {
-  background: #2d5823;
+.world-island-tab.is-active {
+  background: #27521c;
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(45, 88, 35, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 3px 10px rgba(39, 82, 28, 0.32);
 }
 
-.world-pill-icon {
+.world-island-tab-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-.world-pill-badge {
+.world-island-tab-badge {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 750;
   padding: 1px 6px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.06);
-  color: #63775f;
+  color: #5c7056;
 }
 
-.world-pill.is-active .world-pill-badge {
-  background: rgba(255, 255, 255, 0.22);
+.world-island-tab.is-active .world-island-tab-badge {
+  background: rgba(255, 255, 255, 0.24);
   color: #ffffff;
 }
 
-.world-flip-edge {
-  pointer-events: auto;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 18px rgba(35, 52, 28, 0.12);
-  color: #2d5823;
-  cursor: pointer;
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 0.2s ease,
-    box-shadow 0.22s ease;
-}
-
-.world-flip-edge.prev {
-  left: 16px;
-}
-
-.world-flip-edge.next {
-  right: 16px;
-}
-
-.world-flip-edge:hover {
-  background: #ffffff;
-  transform: translateY(-50%) scale(1.06);
-  box-shadow: 0 6px 24px rgba(35, 52, 28, 0.18);
-}
-
-.world-flip-edge:active {
-  transform: translateY(-50%) scale(0.97);
-}
-
-.flip-icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flip-preview {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-size: 11px;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: max-width 0.24s ease, opacity 0.2s ease, padding 0.2s ease;
-}
-
-.world-flip-edge:hover .flip-preview,
-.world-flip-edge:focus-visible .flip-preview {
-  max-width: 140px;
-  opacity: 1;
-  padding: 0 4px;
-}
-
-.flip-preview small {
-  font-size: 8px;
-  letter-spacing: 1px;
-  font-weight: 700;
-  color: #7b8d74;
-}
-
-.flip-preview strong {
-  font-size: 11px;
-  font-weight: 650;
-  color: #24491c;
-}
-
-@media (max-width: 768px) {
-  .world-flip-edge {
-    padding: 8px;
+/* --------------------------------------------------------------------------
+   Responsive Adaptations
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .world-nav-card {
+    padding: 8px 12px;
+    gap: 8px;
   }
-  .world-flip-edge .flip-preview {
+  .world-nav-arrow-circle {
+    width: 36px;
+    height: 36px;
+  }
+  .world-nav-name {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 680px) {
+  .world-nav-content {
     display: none;
   }
-  .world-pill-title {
+  .world-nav-card {
+    padding: 8px;
+    border-radius: 50%;
+  }
+  .world-nav-prev {
+    left: 12px;
+  }
+  .world-nav-next {
+    right: 12px;
+  }
+  .world-islands-eyebrow {
+    display: none;
+  }
+  .world-island-tab-title {
     display: none;
   }
 }

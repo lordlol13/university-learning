@@ -36,7 +36,6 @@ const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
   ),
 });
 
-import { IslandNavigator } from "./IslandNavigator";
 
 function LessonDialog({
   lessonId,
@@ -193,17 +192,14 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       {data && view === "world" ? (
         <div className="world-stage">
           {ready ? (
-            <>
-              <WorldCanvas
-                key={data.directionId}
-                data={data}
-                lessons={lessons}
-                selectedId={selected?.id ?? null}
-                onSelect={selectLesson}
-                paused={openLesson !== null}
-              />
-              <IslandNavigator currentDirectionId={direction.id} />
-            </>
+            <WorldCanvas
+              key={data.directionId}
+              data={data}
+              lessons={lessons}
+              selectedId={selected?.id ?? null}
+              onSelect={selectLesson}
+              paused={openLesson !== null}
+            />
           ) : (
             <div className="world-loading">
               <span className="loading-dot" />

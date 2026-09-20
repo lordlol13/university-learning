@@ -273,20 +273,6 @@ export const Environment = memo(function Environment({
           <meshStandardMaterial color="#b6b9a6" roughness={1} />
         </mesh>
       ))}
-      <group position={[-3.25, 0.3, 4.5]} rotation={[0, 0.16, 0]}>
-        <mesh position={[0, 0.47, 0]} castShadow>
-          <cylinderGeometry args={[0.055, 0.07, 0.95, 8]} />
-          <meshStandardMaterial color="#a78a5c" />
-        </mesh>
-        <mesh position={[0.13, 0.91, 0]} castShadow>
-          <boxGeometry args={[0.92, 0.37, 0.12]} />
-          <meshStandardMaterial color="#f5e8c9" />
-        </mesh>
-        <mesh position={[0.35, 0.91, 0.072]} rotation={[0, 0, -Math.PI / 2]}>
-          <coneGeometry args={[0.13, 0.19, 3]} />
-          <meshStandardMaterial color="#5b923e" />
-        </mesh>
-      </group>
       <Cloud
         position={[-5.7, 3.7, -5.5]}
         scale={1.2}

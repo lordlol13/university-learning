@@ -15,6 +15,7 @@ import { Environment } from "./Environment";
 import { CameraController } from "./CameraController";
 import { Road } from "./Road";
 import { LessonPlatform } from "./LessonPlatform";
+import { IslandSignposts } from "./IslandSignposts";
 import type { LearningWorldData, Point3 } from "@/types/learning-world";
 import type { Lesson } from "@/types/curriculum";
 
@@ -88,6 +89,10 @@ export default function WorldCanvas({
           <Suspense fallback={null}>
             <Environment data={data} reducedMotion={reducedMotion} />
             <Road curve={curve} data={data} />
+            <IslandSignposts
+              currentDirectionId={data.directionId}
+              reducedMotion={reducedMotion}
+            />
             {data.lessons.map((placement, index) => {
               const lesson = lessons.find(
                 (item) => item.id === placement.lessonId,

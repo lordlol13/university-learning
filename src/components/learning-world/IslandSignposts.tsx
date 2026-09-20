@@ -1,7 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Html } from "@react-three/drei";
 import { directions } from "@/data/curriculum";
 import { learningWorlds } from "@/data/learning-world";
 import type { Direction } from "@/types/curriculum";
@@ -20,7 +20,14 @@ function IslandSignpost({
   rotation,
 }: IslandSignpostProps) {
   const router = useRouter();
+  const [hovered, setHovered] = useState(false);
   const isPrev = direction === "prev";
+
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = "default";
+    };
+  }, []);
 
   const handleNavigate = () => {
     router.push(`/path/${world.id}`);
@@ -40,22 +47,24 @@ function IslandSignpost({
       }}
       onPointerOver={(e) => {
         e.stopPropagation();
+        setHovered(true);
         document.body.style.cursor = "pointer";
       }}
       onPointerOut={() => {
+        setHovered(false);
         document.body.style.cursor = "default";
       }}
     >
-      {/* Invisible generous click target cylinder */}
+      {/* Invisible generous click-target cylinder for easy clicking anywhere around the sign */}
       <mesh position={[0, 0.9, 0]}>
-        <cylinderGeometry args={[0.95, 0.95, 2.0, 10]} />
+        <cylinderGeometry args={[1.1, 1.1, 2.2, 10]} />
         <meshBasicMaterial visible={false} />
       </mesh>
 
       {/* Stone Ground Base */}
       <mesh position={[0, 0.08, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.34, 0.42, 0.16, 14]} />
-        <meshStandardMaterial color="#bfbaa3" roughness={0.92} />
+        <cylinderGeometry args={[0.36, 0.44, 0.16, 12]} />
+        <meshStandardMaterial color="#c2bea8" roughness={0.92} />
       </mesh>
 
       {/* Small Decorative Base Pebbles */}
@@ -68,52 +77,68 @@ function IslandSignpost({
         <meshStandardMaterial color="#9c9783" roughness={0.9} />
       </mesh>
 
-      {/* Main Wooden Post (Solid, static, no animation) */}
-      <mesh position={[0, 0.82, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.075, 0.095, 1.45, 10]} />
-        <meshStandardMaterial color="#8c6237" roughness={0.88} />
+      {/* Main Wooden Post */}
+      <mesh position={[0, 0.85, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.08, 0.1, 1.45, 12]} />
+        <meshStandardMaterial
+          color={hovered ? "#ab7e48" : "#8c6237"}
+          roughness={0.88}
+        />
       </mesh>
 
-      {/* Decorative Wooden Frame / Board Rim */}
-      <mesh position={[0, 1.35, 0]} castShadow>
-        <boxGeometry args={[0.96, 0.76, 0.07]} />
-        <meshStandardMaterial color="#7c552d" roughness={0.85} />
-      </mesh>
+      {/* 3D Directional Wooden Signboard with Arrow Tip (Zero text overlay) */}
+      <group position={[isPrev ? -0.2 : 0.2, 1.35, 0]}>
+        {/* Main Board Plank */}
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[1.35, 0.44, 0.12]} />
+          <meshStandardMaterial
+            color={hovered ? "#fffbf0" : "#f5e8c9"}
+            roughness={0.7}
+          />
+        </mesh>
 
-      {/* 3D Signpost Plaque with pure visual "<" or ">" Link */}
-      <Html
-        position={[0, 1.35, 0.06]}
-        center
-        distanceFactor={12}
-        zIndexRange={[25, 0]}
-        style={{ pointerEvents: "auto" }}
-      >
-        <button
-          type="button"
-          className={`island-sign-arrow ${isPrev ? "prev" : "next"}`}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleNavigate();
-          }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            handleNavigate();
-          }}
-          aria-label={
-            isPrev
-              ? `Previous island: ${world.title}`
-              : `Next island: ${world.title}`
-          }
-          title={
-            isPrev
-              ? `Previous island: ${world.title}`
-              : `Next island: ${world.title}`
-          }
+        {/* Directional Pointed Arrow Tip */}
+        <mesh
+          position={[isPrev ? -0.76 : 0.76, 0, 0]}
+          rotation={[0, 0, isPrev ? Math.PI / 2 : -Math.PI / 2]}
+          castShadow
         >
-          {isPrev ? "<" : ">"}
-        </button>
-      </Html>
+          <coneGeometry args={[0.22, 0.26, 3]} />
+          <meshStandardMaterial
+            color={hovered ? "#fffbf0" : "#f5e8c9"}
+            roughness={0.7}
+          />
+        </mesh>
+
+        {/* Painted 3D Green Arrow Chevron */}
+        <mesh
+          position={[isPrev ? -0.42 : 0.42, 0, 0.068]}
+          rotation={[0, 0, isPrev ? Math.PI / 2 : -Math.PI / 2]}
+        >
+          <coneGeometry args={[0.13, 0.18, 3]} />
+          <meshStandardMaterial
+            color={hovered ? "#389e22" : "#2b7719"}
+            roughness={0.4}
+          />
+        </mesh>
+
+        {/* Wooden Roof Cap */}
+        <mesh position={[0, 0.25, 0]} castShadow>
+          <boxGeometry args={[1.48, 0.07, 0.2]} />
+          <meshStandardMaterial color="#7a552c" roughness={0.8} />
+        </mesh>
+
+        {/* Glowing Lantern / Emerald Gem on Top */}
+        <mesh position={[0, 0.36, 0]} castShadow>
+          <dodecahedronGeometry args={[0.09, 0]} />
+          <meshStandardMaterial
+            color={hovered ? "#9df069" : "#6fcf38"}
+            emissive={hovered ? "#5cb825" : "#328c0b"}
+            emissiveIntensity={hovered ? 2.2 : 0.9}
+            toneMapped={false}
+          />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -144,15 +169,15 @@ export function IslandSignposts({
 
   return (
     <group name="island-signposts">
-      {/* Previous Island Signpost on Left Side of Grass: Displays "<" */}
+      {/* Previous Island Signpost on Left Side of Grass (Arrow points left toward previous) */}
       <IslandSignpost
         world={prevWorld}
         direction="prev"
-        position={[-3.3, 0.28, 2.8]}
+        position={[-3.3, 0.28, 2.4]}
         rotation={[0, 0.25, 0]}
       />
 
-      {/* Next Island Signpost on Right Side of Grass: Displays ">" */}
+      {/* Next Island Signpost on Right Side of Grass (Arrow points right toward next) */}
       <IslandSignpost
         world={nextWorld}
         direction="next"

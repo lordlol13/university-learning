@@ -1253,38 +1253,4 @@
   }
 }
 
-/* --------------------------------------------------------------------------
-   3D Island Signpost Arrow Plaque (< and >)
-   -------------------------------------------------------------------------- */
-.island-sign-arrow {
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 68px;
-  height: 52px;
-  background: #fffdf5;
-  border: 2.5px solid #825b30;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(45, 30, 10, 0.28);
-  color: #266b18;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-size: 32px;
-  font-weight: 900;
-  line-height: 1;
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  padding: 0;
-  outline: none;
-}
 
-.island-sign-arrow:hover {
-  background: #ffffff;
-  border-color: #2e8b1d;
-  color: #175e0c;
-}
-
-.island-sign-arrow:active {
-  background: #f0f7ec;
-}

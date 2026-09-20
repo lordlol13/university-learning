@@ -3,11 +3,9 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFrame } from "@react-three/fiber";
-import { Html, useCursor } from "@react-three/drei";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCursor } from "@react-three/drei";
 import { directions } from "@/data/curriculum";
 import { learningWorlds } from "@/data/learning-world";
-import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import type { Direction } from "@/types/curriculum";
 import type { Group } from "three";
 
@@ -17,6 +15,59 @@ interface IslandSignpostProps {
   position: [number, number, number];
   rotation: [number, number, number];
   reducedMotion?: boolean;
+}
+
+/**
+ * 3D Chevron Arrow mesh (< or >)
+ */
+function Arrow3DChevron({
+  isPrev,
+  position,
+  hovered,
+}: {
+  isPrev: boolean;
+  position: [number, number, number];
+  hovered: boolean;
+}) {
+  const armLength = 0.22;
+  const armThickness = 0.055;
+  const armDepth = 0.04;
+  const angle = 0.65; // ~37 degrees
+
+  // Offset along the arms from the chevron vertex
+  const dx = Math.cos(angle) * (armLength * 0.5) * (isPrev ? 1 : -1);
+  const dy = Math.sin(angle) * (armLength * 0.5);
+
+  const rotTop = isPrev ? angle : -angle;
+  const rotBottom = isPrev ? -angle : angle;
+
+  const color = hovered ? "#39e75f" : "#2f851d";
+  const emissive = hovered ? "#1f7a14" : "#0d3b07";
+
+  return (
+    <group position={position}>
+      {/* Top Arm */}
+      <mesh position={[dx, dy, 0]} rotation={[0, 0, rotTop]} castShadow>
+        <boxGeometry args={[armLength, armThickness, armDepth]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={emissive}
+          emissiveIntensity={hovered ? 1.0 : 0.25}
+          roughness={0.4}
+        />
+      </mesh>
+      {/* Bottom Arm */}
+      <mesh position={[dx, -dy, 0]} rotation={[0, 0, rotBottom]} castShadow>
+        <boxGeometry args={[armLength, armThickness, armDepth]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={emissive}
+          emissiveIntensity={hovered ? 1.0 : 0.25}
+          roughness={0.4}
+        />
+      </mesh>
+    </group>
+  );
 }
 
 function IslandSignpost({
@@ -29,16 +80,24 @@ function IslandSignpost({
   const router = useRouter();
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<Group>(null);
+  const arrowFloatRef = useRef<Group>(null);
   const isPrev = direction === "prev";
 
   useCursor(hovered);
 
   useFrame((state) => {
-    if (!reducedMotion && groupRef.current) {
+    if (!reducedMotion) {
       const t = state.clock.getElapsedTime();
-      // Gentle bobbing animation to draw attention
-      const bob = Math.sin(t * 2 + (isPrev ? 0 : Math.PI)) * 0.04;
-      groupRef.current.position.y = position[1] + bob;
+      // Gentle bobbing animation for the whole post to attract attention
+      if (groupRef.current) {
+        const bob = Math.sin(t * 2 + (isPrev ? 0 : Math.PI)) * 0.035;
+        groupRef.current.position.y = position[1] + bob;
+      }
+      // Gentle forward/backward pulse for the floating arrow indicator on top
+      if (arrowFloatRef.current) {
+        const pulse = Math.sin(t * 3.5) * 0.05;
+        arrowFloatRef.current.position.x = isPrev ? -pulse : pulse;
+      }
     }
   });
 
@@ -60,28 +119,38 @@ function IslandSignpost({
         setHovered(true);
       }}
       onPointerOut={() => setHovered(false)}
-      scale={hovered ? 1.08 : 1}
+      scale={hovered ? 1.12 : 1}
     >
       {/* Stone Ground Base */}
       <mesh position={[0, 0.08, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.36, 0.44, 0.16, 12]} />
-        <meshStandardMaterial color="#c2bea8" roughness={0.92} />
+        <cylinderGeometry args={[0.38, 0.46, 0.16, 14]} />
+        <meshStandardMaterial color="#bfbaa3" roughness={0.92} />
+      </mesh>
+
+      {/* Decorative base pebbles */}
+      <mesh position={[0.26, 0.04, 0.18]} castShadow>
+        <cylinderGeometry args={[0.1, 0.13, 0.08, 8]} />
+        <meshStandardMaterial color="#9c9783" roughness={0.9} />
+      </mesh>
+      <mesh position={[-0.24, 0.04, -0.15]} castShadow>
+        <cylinderGeometry args={[0.08, 0.11, 0.08, 8]} />
+        <meshStandardMaterial color="#9c9783" roughness={0.9} />
       </mesh>
 
       {/* Main Wooden Post */}
-      <mesh position={[0, 0.85, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.075, 0.095, 1.45, 10]} />
+      <mesh position={[0, 0.82, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.08, 0.1, 1.45, 10]} />
         <meshStandardMaterial
-          color={hovered ? "#b88a52" : "#987242"}
+          color={hovered ? "#ba8b52" : "#916a3a"}
           roughness={0.88}
         />
       </mesh>
 
-      {/* Signboard Backing */}
-      <group position={[isPrev ? -0.2 : 0.2, 1.35, 0]}>
+      {/* Signboard Backing & Arrow Body */}
+      <group position={[isPrev ? -0.25 : 0.25, 1.35, 0]}>
         {/* Main Board */}
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[1.35, 0.44, 0.12]} />
+          <boxGeometry args={[1.3, 0.44, 0.13]} />
           <meshStandardMaterial
             color={hovered ? "#fff6de" : "#f5e8c9"}
             roughness={0.7}
@@ -94,83 +163,73 @@ function IslandSignpost({
           rotation={[0, 0, isPrev ? Math.PI / 2 : -Math.PI / 2]}
           castShadow
         >
-          <coneGeometry args={[0.22, 0.26, 3]} />
+          <coneGeometry args={[0.22, 0.28, 4]} />
           <meshStandardMaterial
             color={hovered ? "#fff6de" : "#f5e8c9"}
             roughness={0.7}
           />
         </mesh>
 
-        {/* Contrasting Painted Arrow Chevron in 3D */}
-        <mesh
-          position={[isPrev ? -0.45 : 0.45, 0, 0.068]}
-          rotation={[0, 0, isPrev ? Math.PI / 2 : -Math.PI / 2]}
-        >
-          <coneGeometry args={[0.13, 0.18, 3]} />
-          <meshStandardMaterial
-            color={hovered ? "#2b681c" : "#3b8026"}
-            roughness={0.5}
-          />
-        </mesh>
+        {/* 3D Painted Double Arrow Chevrons on Front Face */}
+        <Arrow3DChevron
+          isPrev={isPrev}
+          position={[isPrev ? -0.32 : 0.32, 0, 0.072]}
+          hovered={hovered}
+        />
+        <Arrow3DChevron
+          isPrev={isPrev}
+          position={[isPrev ? 0.12 : -0.12, 0, 0.072]}
+          hovered={hovered}
+        />
 
-        {/* Decorative Roof / Cap */}
-        <mesh position={[0, 0.25, 0]} castShadow>
-          <boxGeometry args={[1.48, 0.07, 0.2]} />
+        {/* 3D Painted Double Arrow Chevrons on Back Face */}
+        <group rotation={[0, Math.PI, 0]}>
+          <Arrow3DChevron
+            isPrev={!isPrev}
+            position={[!isPrev ? -0.32 : 0.32, 0, 0.072]}
+            hovered={hovered}
+          />
+          <Arrow3DChevron
+            isPrev={!isPrev}
+            position={[!isPrev ? 0.12 : -0.12, 0, 0.072]}
+            hovered={hovered}
+          />
+        </group>
+
+        {/* Decorative Wooden Roof / Cap */}
+        <mesh position={[0, 0.26, 0]} castShadow>
+          <boxGeometry args={[1.44, 0.07, 0.2]} />
           <meshStandardMaterial color="#7a552c" roughness={0.8} />
         </mesh>
+      </group>
 
-        {/* Small Lantern / Gem on Top */}
-        <mesh position={[0, 0.36, 0]} castShadow>
-          <dodecahedronGeometry args={[0.09, 0]} />
+      {/* Floating 3D Directional Arrow Indicator Above Post */}
+      <group
+        ref={arrowFloatRef}
+        position={[0, 1.82, 0]}
+        rotation={[0, 0, isPrev ? Math.PI : 0]}
+      >
+        {/* Floating Arrow Shaft */}
+        <mesh position={[-0.08, 0, 0]} castShadow>
+          <boxGeometry args={[0.24, 0.08, 0.08]} />
           <meshStandardMaterial
-            color={hovered ? "#ffe478" : "#89d65a"}
-            emissive={hovered ? "#e0b020" : "#45961d"}
-            emissiveIntensity={hovered ? 1.8 : 0.7}
+            color={hovered ? "#ffe77a" : "#8ee356"}
+            emissive={hovered ? "#ffbe1a" : "#45961d"}
+            emissiveIntensity={hovered ? 1.8 : 0.8}
+            toneMapped={false}
+          />
+        </mesh>
+        {/* Floating Arrow Cone Tip */}
+        <mesh position={[0.11, 0, 0]} rotation={[0, 0, -Math.PI / 2]} castShadow>
+          <coneGeometry args={[0.13, 0.22, 4]} />
+          <meshStandardMaterial
+            color={hovered ? "#ffe77a" : "#8ee356"}
+            emissive={hovered ? "#ffbe1a" : "#45961d"}
+            emissiveIntensity={hovered ? 1.8 : 0.8}
             toneMapped={false}
           />
         </mesh>
       </group>
-
-      {/* Floating Interactive 3D HTML Label */}
-      <Html
-        position={[0, 1.88, 0]}
-        center
-        distanceFactor={13}
-        zIndexRange={[25, 0]}
-        style={{ pointerEvents: "auto" }}
-      >
-        <button
-          type="button"
-          className={`world-3d-sign-btn ${isPrev ? "is-prev" : "is-next"} ${hovered ? "is-hovered" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          aria-label={`${isPrev ? "Go to previous island" : "Go to next island"}: ${world.title}`}
-        >
-          <div className="sign-eyebrow">
-            {isPrev ? (
-              <>
-                <ChevronLeft size={13} strokeWidth={3} />
-                <span>PREVIOUS ISLAND</span>
-              </>
-            ) : (
-              <>
-                <span>NEXT ISLAND</span>
-                <ChevronRight size={13} strokeWidth={3} />
-              </>
-            )}
-          </div>
-          <div className="sign-title-row">
-            {isPrev && <CurriculumIcon name={world.icon} size={15} />}
-            <strong className="sign-title">{world.shortTitle}</strong>
-            {!isPrev && <CurriculumIcon name={world.icon} size={15} />}
-          </div>
-          <span className="sign-click-hint">Click to travel ✈</span>
-        </button>
-      </Html>
     </group>
   );
 }

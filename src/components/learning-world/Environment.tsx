@@ -5,6 +5,7 @@ import { ExtrudeGeometry, Shape, type Group } from "three";
 import type { LearningWorldData, Point3 } from "@/types/learning-world";
 import { worldConfig } from "@/data/world-config";
 import { PhysicsScenery } from "./PhysicsObjects";
+import { ItalianScenery, MathScenery } from "./WorldScenery";
 
 function Tree({
   position,
@@ -232,6 +233,8 @@ export const Environment = memo(function Environment({
         <UniversityBuilding key={i} {...building} />
       ))}
       {data.directionId === "physics-engineering" && <PhysicsScenery />}
+      {data.directionId === "mathematics" && <MathScenery />}
+      {data.directionId === "italian-language" && <ItalianScenery />}
       {data.trees.flatMap((tree, i) =>
         [0, 1].map((j) => (
           <mesh

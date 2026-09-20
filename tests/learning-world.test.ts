@@ -10,7 +10,10 @@ import {
   createRoadGeometry,
   sampleWorldPath,
 } from "../src/lib/world-geometry";
-import { aiLearningWorld, physicsLearningWorld } from "../src/data/learning-world";
+import {
+  aiLearningWorld,
+  learningWorlds,
+} from "../src/data/learning-world";
 import { getDirection, getDirectionLessons } from "../src/data/curriculum";
 import { createProgressStore } from "../src/stores/progress-store";
 
@@ -25,7 +28,7 @@ Object.defineProperty(globalThis, "localStorage", {
 });
 
 test("all curriculum platforms have unique, increasing arc-length placements", () => {
-  for (const world of [aiLearningWorld, physicsLearningWorld]) {
+  for (const world of learningWorlds) {
     const placements = world.lessons;
     const direction = getDirection(world.directionId);
     assert.ok(direction, `Direction ${world.directionId} must exist`);

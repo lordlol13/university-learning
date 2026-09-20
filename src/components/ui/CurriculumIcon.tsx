@@ -7,6 +7,7 @@ import {
   Compass,
   Cpu,
   Database,
+  Languages,
   Network,
   Sigma,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const icons = {
   math: Sigma,
   atom: Atom,
   compass: Compass,
+  languages: Languages,
 };
 export function CurriculumIcon({
   name,

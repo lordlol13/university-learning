@@ -325,6 +325,184 @@ const physicsLessons: Lesson[] = [
   },
 ];
 
+const mathLessons: Lesson[] = [
+  {
+    id: "calc-derivatives",
+    title: "Calculus: Rates of Change & Derivatives",
+    description: "Geometric tangent lines, difference quotients, power rule, and physical velocity.",
+    xp: 120,
+    status: "current",
+    icon: "math",
+    prerequisites: [],
+    durationMinutes: 12,
+    content: {
+      introduction:
+        "Calculus begins with the question of instantaneous rate of change. The derivative f'(x) represents the slope of the tangent line at any point.",
+      takeaways: [
+        "Interpret the derivative as the limit of difference quotients",
+        "Apply standard differentiation rules including the power rule",
+        "Connect derivatives to physical velocity and acceleration",
+      ],
+      question: "What is the derivative of f(x) = x^3 with respect to x?",
+      options: ["3x^2", "x^2", "3x"],
+      answerIndex: 0,
+      explanation:
+        "By the power rule, d/dx(x^n) = n*x^(n-1). For x^3, n=3, so the derivative is 3x^2.",
+    },
+  },
+  {
+    id: "calc-integrals",
+    title: "Calculus: Integrals & Accumulation",
+    description: "Riemann sums, antiderivatives, and the Fundamental Theorem of Calculus.",
+    xp: 120,
+    status: "locked",
+    icon: "math",
+    prerequisites: ["calc-derivatives"],
+    durationMinutes: 12,
+    content: {
+      introduction:
+        "Integration calculates cumulative area under curves. The Fundamental Theorem of Calculus establishes that integration and differentiation are inverse operations.",
+      takeaways: [
+        "Approximate continuous accumulation via Riemann sums",
+        "Compute definite integrals using antiderivatives",
+        "Apply the Fundamental Theorem of Calculus",
+      ],
+      question: "What is the definite integral of 2x dx from x = 0 to x = 3?",
+      options: ["6", "9", "12"],
+      answerIndex: 1,
+      explanation:
+        "The antiderivative of 2x is x^2. Evaluating [x^2] from 0 to 3 gives 3^2 - 0^2 = 9.",
+    },
+  },
+  {
+    id: "discrete-logic",
+    title: "Discrete Mathematics: Boolean Logic & Sets",
+    description: "Truth tables, propositional logic, conditional implications, and De Morgan's laws.",
+    xp: 110,
+    status: "locked",
+    icon: "matrix",
+    prerequisites: ["calc-integrals"],
+    durationMinutes: 10,
+    content: {
+      introduction:
+        "Discrete mathematics powers digital computing. Boolean logic formalizes statements using AND, OR, and NOT operations.",
+      takeaways: [
+        "Construct truth tables for composite propositions",
+        "Apply De Morgan's laws to simplify boolean expressions",
+        "Analyze implications and logical equivalences",
+      ],
+      question: "According to De Morgan's laws, what is NOT (A AND B) equivalent to?",
+      options: ["(NOT A) OR (NOT B)", "(NOT A) AND (NOT B)", "NOT A AND B"],
+      answerIndex: 0,
+      explanation:
+        "De Morgan's law states that !(A && B) is logically equivalent to (!A || !B).",
+    },
+  },
+  {
+    id: "linear-systems",
+    title: "Linear Systems & Matrix Transformations",
+    description: "Systems of linear equations, Gaussian elimination, determinants, and linear transformations.",
+    xp: 130,
+    status: "locked",
+    icon: "matrix",
+    prerequisites: ["discrete-logic"],
+    durationMinutes: 14,
+    content: {
+      introduction:
+        "Matrix equations Ax = b represent simultaneous linear constraints. Gaussian elimination transforms the augmented matrix into row-echelon form to find solutions.",
+      takeaways: [
+        "Represent systems of linear equations in matrix form Ax = b",
+        "Perform elementary row operations using Gaussian elimination",
+        "Interpret invertibility via the matrix determinant",
+      ],
+      question: "If det(A) = 0 for an n x n matrix A, what does this indicate?",
+      options: [
+        "The matrix has full rank and unique solutions",
+        "The matrix is singular and does not possess an inverse",
+        "The matrix has only positive eigenvalues",
+      ],
+      answerIndex: 1,
+      explanation:
+        "A zero determinant signifies that matrix A is non-invertible (singular), meaning rows/columns are linearly dependent.",
+    },
+  },
+];
+
+const italianLessons: Lesson[] = [
+  {
+    id: "italian-greetings",
+    title: "Saluti e Presentazioni (Greetings & Introductions)",
+    description: "Pronuncia, saluti formali e informali, presentarsi e formule di cortesia.",
+    xp: 100,
+    status: "current",
+    icon: "languages",
+    prerequisites: [],
+    durationMinutes: 8,
+    content: {
+      introduction:
+        "Benvenuti nel corso d'italiano! In questa prima lezione impariamo i saluti fondamentali ('Ciao', 'Buongiorno', 'Buonasera') e come presentarsi con cortesia.",
+      takeaways: [
+        "Distinguere tra registro formale ('Lei') e informale ('tu')",
+        "Salutare appropriatamente in base all'ora della giornata",
+        "Presentarsi usando 'Mi chiamo...' e 'Piacere di conoscerti'",
+      ],
+      question: "Come si saluta formalmente un professore la mattina?",
+      options: ["Ciao!", "Buongiorno, Professore.", "Ci vediamo presto."],
+      answerIndex: 1,
+      explanation:
+        "'Buongiorno' è il saluto formale corretto da rivolgere a un docente o superiore durante la mattinata.",
+    },
+  },
+  {
+    id: "italian-numbers-time",
+    title: "Numeri, Orari e Calendario (Numbers & Time)",
+    description: "I numeri cardinali, chiedere e dire l'orario, giorni della settimana e calendario accademico.",
+    xp: 100,
+    status: "locked",
+    icon: "languages",
+    prerequisites: ["italian-greetings"],
+    durationMinutes: 10,
+    content: {
+      introduction:
+        "Per organizzare lo studio e seguire le lezioni al Politecnico è essenziale conoscere i numeri e saper chiedere e comprendere gli orari.",
+      takeaways: [
+        "Contare e utilizzare i numeri cardinali da 0 a 100",
+        "Chiedere e comunicare l'ora in italiano ('Che ora è? / Che ore sono?')",
+        "Memorizzare i giorni della settimana e i mesi per gli esami",
+      ],
+      question: "Quale risposta corrisponde correttamente alla domanda: 'A che ora comincia la lezione?'",
+      options: ["Comincia alle nove e mezza (09:30).", "Sono le nove di sera.", "Il martedì."],
+      answerIndex: 0,
+      explanation:
+        "Per indicare l'orario di inizio di un evento si usa la preposizione articolata 'alle' seguita dall'ora, ad esempio 'alle nove e mezza'.",
+    },
+  },
+  {
+    id: "italian-engineering-terms",
+    title: "Italiano per Ingegneri (Technical Vocabulary)",
+    description: "Terminologia tecnica essenziale per gli studenti del Politecnico di Torino.",
+    xp: 120,
+    status: "locked",
+    icon: "languages",
+    prerequisites: ["italian-numbers-time"],
+    durationMinutes: 12,
+    content: {
+      introduction:
+        "Al Politecnico di Torino gli studenti utilizzano vocaboli tecnici specifici per la progettazione, i laboratori e le verifiche d'esame.",
+      takeaways: [
+        "Padroneggiare i termini di laboratorio ('aula', 'progetto', 'misurazione')",
+        "Comprendere le istruzioni per gli esami orali e scritti",
+        "Leggere semplici specifiche e consegne ingegneristiche in italiano",
+      ],
+      question: "Cosa significa il termine italiano 'la verifica' in ambito accademico?",
+      options: ["L'orario delle lezioni", "La prova d'esame o controllo", "La biblioteca centrale"],
+      answerIndex: 1,
+      explanation:
+        "In ambito universitario e scolastico 'verifica' indica la prova o test di valutazione delle competenze.",
+    },
+  },
+];
+
 export const directions: Direction[] = [
   {
     id: "ai-ml",
@@ -395,6 +573,57 @@ export const directions: Direction[] = [
     ],
   },
   {
+    id: "mathematics",
+    title: "Mathematics & Logic",
+    shortTitle: "Mathematics",
+    description: "Learn the foundational language of calculus, discrete structures, and matrix transformations.",
+    icon: "math",
+    subjects: [
+      {
+        id: "calculus-foundations",
+        title: "Calculus & Analysis",
+        units: [
+          {
+            id: "calc-unit-1",
+            title: "Derivatives & Integrals",
+            lessons: [mathLessons[0], mathLessons[1]],
+          },
+        ],
+      },
+      {
+        id: "discrete-linear",
+        title: "Discrete Math & Linear Systems",
+        units: [
+          {
+            id: "discrete-unit-1",
+            title: "Logic, Sets & Systems",
+            lessons: [mathLessons[2], mathLessons[3]],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "italian-language",
+    title: "Italian Language & Culture",
+    shortTitle: "Italian Language",
+    description: "Impara la lingua e la cultura italiana per il percorso accademico al Politecnico di Torino.",
+    icon: "languages",
+    subjects: [
+      {
+        id: "italian-foundations",
+        title: "Corso d'Italiano per Ingegneri",
+        units: [
+          {
+            id: "italian-unit-1",
+            title: "Comunicazione di Base e Vita Universitaria",
+            lessons: italianLessons,
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "data-science",
     title: "Data Science",
     shortTitle: "Data Science",
@@ -416,14 +645,6 @@ export const directions: Direction[] = [
     shortTitle: "Programming",
     description: "Bring your ideas to life, one line at a time.",
     icon: "code",
-    subjects: [],
-  },
-  {
-    id: "mathematics",
-    title: "Mathematics",
-    shortTitle: "Mathematics",
-    description: "Learn the language behind every breakthrough.",
-    icon: "math",
     subjects: [],
   },
 ];

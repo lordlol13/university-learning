@@ -9,7 +9,8 @@ export type CurriculumIcon =
   | "chip"
   | "math"
   | "atom"
-  | "compass";
+  | "compass"
+  | "languages";
 
 export interface Lesson {
   id: string;

@@ -24,6 +24,7 @@ import { getLessonStatus } from "@/stores/progress-store";
 import { LessonView } from "@/components/lesson/LessonView";
 import { StorkSpeechBubble } from "@/components/mascot/StorkSpeechBubble";
 import { LearningPath } from "./LearningPath";
+import { WorldSwitcher } from "./WorldSwitcher";
 import type { Direction } from "@/types/curriculum";
 
 const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
@@ -197,6 +198,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               Getting your campus ready…
             </div>
           )}
+          <WorldSwitcher currentDirectionId={direction.id} />
           <div className="world-location">
             <span>UPLIFT CAMPUS</span>
             <strong>A little further, every day.</strong>

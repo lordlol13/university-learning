@@ -965,3 +965,178 @@
 .world-subheading {
   color: #586f48;
 }
+
+/* ==========================================================================
+   World Switcher / Flipping Carousel
+   ========================================================================== */
+
+.world-switcher-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.world-pills-bar {
+  pointer-events: auto;
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 9999px;
+  box-shadow: 0 4px 18px rgba(35, 52, 28, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
+  max-width: calc(100% - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.world-pills-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.world-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #50644b;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.world-pill:hover {
+  background: rgba(117, 185, 75, 0.15);
+  color: #24491c;
+}
+
+.world-pill.is-active {
+  background: #2d5823;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(45, 88, 35, 0.3);
+}
+
+.world-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.world-pill-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #63775f;
+}
+
+.world-pill.is-active .world-pill-badge {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.world-flip-edge {
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 18px rgba(35, 52, 28, 0.12);
+  color: #2d5823;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s ease,
+    box-shadow 0.22s ease;
+}
+
+.world-flip-edge.prev {
+  left: 16px;
+}
+
+.world-flip-edge.next {
+  right: 16px;
+}
+
+.world-flip-edge:hover {
+  background: #ffffff;
+  transform: translateY(-50%) scale(1.06);
+  box-shadow: 0 6px 24px rgba(35, 52, 28, 0.18);
+}
+
+.world-flip-edge:active {
+  transform: translateY(-50%) scale(0.97);
+}
+
+.flip-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 11px;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.24s ease, opacity 0.2s ease, padding 0.2s ease;
+}
+
+.world-flip-edge:hover .flip-preview,
+.world-flip-edge:focus-visible .flip-preview {
+  max-width: 140px;
+  opacity: 1;
+  padding: 0 4px;
+}
+
+.flip-preview small {
+  font-size: 8px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: #7b8d74;
+}
+
+.flip-preview strong {
+  font-size: 11px;
+  font-weight: 650;
+  color: #24491c;
+}
+
+@media (max-width: 768px) {
+  .world-flip-edge {
+    padding: 8px;
+  }
+  .world-flip-edge .flip-preview {
+    display: none;
+  }
+  .world-pill-title {
+    display: none;
+  }
+}
+

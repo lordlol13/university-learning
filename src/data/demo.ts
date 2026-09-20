@@ -48,6 +48,8 @@ export const initialProgress = {
     "statistics",
     "machine-learning",
     "si-base-units",
+    "calc-derivatives",
+    "italian-greetings",
   ],
   xp: 357,
   level: 2,

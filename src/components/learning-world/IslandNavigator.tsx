@@ -11,7 +11,7 @@ import { useProgress } from "@/stores/progress-provider";
 import { getDirectionProgress } from "@/stores/progress-store";
 import type { Direction } from "@/types/curriculum";
 
-export function WorldSwitcher({
+export function IslandNavigator({
   currentDirectionId,
 }: {
   currentDirectionId: string;
@@ -74,7 +74,7 @@ export function WorldSwitcher({
   if (availableWorlds.length <= 1) return null;
 
   return (
-    <div className="world-switcher-container" aria-label="3D Islands Navigation">
+    <div className="world-switcher-container" aria-label="Campus Islands Navigation Bar">
       {/* Prominent Left Navigation Link: Previous Island */}
       <Link
         href={`/path/${prevWorld.id}`}

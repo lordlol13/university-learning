@@ -34,6 +34,10 @@ function IslandSignpost({
         e.stopPropagation();
         handleNavigate();
       }}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        handleNavigate();
+      }}
       onPointerOver={(e) => {
         e.stopPropagation();
         document.body.style.cursor = "pointer";
@@ -42,6 +46,12 @@ function IslandSignpost({
         document.body.style.cursor = "default";
       }}
     >
+      {/* Invisible generous click target cylinder */}
+      <mesh position={[0, 0.9, 0]}>
+        <cylinderGeometry args={[0.95, 0.95, 2.0, 10]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+
       {/* Stone Ground Base */}
       <mesh position={[0, 0.08, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.34, 0.42, 0.16, 14]} />
@@ -83,6 +93,10 @@ function IslandSignpost({
           className={`island-sign-arrow ${isPrev ? "prev" : "next"}`}
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
+            handleNavigate();
+          }}
+          onPointerDown={(e) => {
             e.stopPropagation();
             handleNavigate();
           }}
@@ -134,16 +148,16 @@ export function IslandSignposts({
       <IslandSignpost
         world={prevWorld}
         direction="prev"
-        position={[-3.6, 0.28, 4.3]}
-        rotation={[0, 0.22, 0]}
+        position={[-3.3, 0.28, 2.8]}
+        rotation={[0, 0.25, 0]}
       />
 
       {/* Next Island Signpost on Right Side of Grass: Displays ">" */}
       <IslandSignpost
         world={nextWorld}
         direction="next"
-        position={[3.9, 0.28, -0.6]}
-        rotation={[0, -0.32, 0]}
+        position={[3.5, 0.28, 0.6]}
+        rotation={[0, -0.28, 0]}
       />
     </group>
   );

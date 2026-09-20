@@ -36,7 +36,7 @@ const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
   ),
 });
 
-import { WorldSwitcher } from "./WorldSwitcher";
+import { IslandNavigator } from "./IslandNavigator";
 
 function LessonDialog({
   lessonId,
@@ -207,7 +207,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               Getting your campus ready…
             </div>
           )}
-          <WorldSwitcher currentDirectionId={direction.id} />
+          <IslandNavigator currentDirectionId={direction.id} />
           <div className="world-location">
             <span>UPLIFT CAMPUS</span>
             <strong>A little further, every day.</strong>

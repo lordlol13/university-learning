@@ -532,7 +532,7 @@ export function LessonRenderer({
                       <PenLine size={15} strokeWidth={2.2} className="step-icon-practice" aria-hidden="true" />
                     ) : (
                       <span
-                        className={`step-icon-empty ${isActive ? "active-dot" : ""}`}
+                        className={`step-icon-empty ${isActive ? "step-active-dot" : ""}`}
                         aria-hidden="true"
                       />
                     )}

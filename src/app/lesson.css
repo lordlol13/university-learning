@@ -59,8 +59,9 @@
   width: 33px;
   height: 33px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -68,8 +69,11 @@
   outline: none;
   border: none;
   padding: 0;
+  margin: 0;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 .minimal-step-btn.done {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -100,12 +104,16 @@
 /* Individual Step Icon Styles */
 .step-icon-empty {
   display: block;
+  margin: 0;
 }
-.step-icon-empty.active-dot {
-  width: 10px;
-  height: 10px;
+.step-icon-empty.step-active-dot {
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #10b981;
+  margin: 0 auto;
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+  flex-shrink: 0;
 }
 .step-icon-question,
 .step-icon-play,
@@ -116,6 +124,7 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+  margin: 0;
 }
 .minimal-step-btn:hover .step-icon-question,
 .minimal-step-btn:hover .step-icon-play,

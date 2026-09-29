@@ -56,12 +56,12 @@
   background: #10b981;
 }
 .minimal-step-btn {
-  width: 29px;
-  height: 29px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -74,22 +74,22 @@
 .minimal-step-btn.done {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.38);
 }
 .minimal-step-btn.done:hover {
   transform: translateY(-1px) scale(1.08);
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.48);
 }
 .minimal-step-btn.active {
   background: #ffffff;
   color: #059669;
-  border: 2.2px solid #10b981;
-  box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.18);
+  border: 2.4px solid #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
 }
 .minimal-step-btn.pending {
   background: #f8fafc;
   color: #64748b;
-  border: 1.5px solid #cbd5e1;
+  border: 1.6px solid #cbd5e1;
 }
 .minimal-step-btn.pending:hover {
   background: #f1f5f9;
@@ -102,8 +102,8 @@
   display: block;
 }
 .step-icon-empty.active-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #10b981;
 }

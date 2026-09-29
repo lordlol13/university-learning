@@ -500,11 +500,11 @@ export function LessonRenderer({
                     title={`Step ${i + 1}: ${s.title} · ${stageInfo.label} (${statusLabel})`}
                   >
                     {isDone ? (
-                      <Check size={14} strokeWidth={3} className="step-icon-check" />
+                      <Check size={16} strokeWidth={3} className="step-icon-check" />
                     ) : stageInfo.kind === "quiz" ? (
                       <svg
-                        width="15"
-                        height="15"
+                        width="17"
+                        height="17"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -519,17 +519,17 @@ export function LessonRenderer({
                       </svg>
                     ) : stageInfo.kind === "video" ? (
                       <Play
-                        size={12}
+                        size={14}
                         fill="currentColor"
                         strokeWidth={0}
-                        style={{ marginLeft: 2 }}
+                        style={{ marginLeft: 2.5 }}
                         className="step-icon-play"
                         aria-hidden="true"
                       />
                     ) : stageInfo.kind === "code" ? (
-                      <Code size={14} strokeWidth={2.4} className="step-icon-code" aria-hidden="true" />
+                      <Code size={16} strokeWidth={2.4} className="step-icon-code" aria-hidden="true" />
                     ) : stageInfo.kind === "practice" ? (
-                      <PenLine size={13} strokeWidth={2.2} className="step-icon-practice" aria-hidden="true" />
+                      <PenLine size={15} strokeWidth={2.2} className="step-icon-practice" aria-hidden="true" />
                     ) : (
                       <span
                         className={`step-icon-empty ${isActive ? "active-dot" : ""}`}

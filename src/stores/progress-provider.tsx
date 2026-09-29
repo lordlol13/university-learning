@@ -27,10 +27,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     // Restore saved progress before route effects are allowed to write to storage.
-    Promise.resolve(store.persist?.rehydrate()).then(
-      () => setHydrated(true),
-      () => setHydrated(true),
-    );
+    let active = true;
+    const markHydrated = () => {
+      if (active) setHydrated(true);
+    };
+    try {
+      Promise.resolve(store.persist?.rehydrate()).then(markHydrated, markHydrated);
+    } catch {
+      markHydrated();
+    }
+    const timer = setTimeout(markHydrated, 100);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [store]);
   return (
     <ProgressContext.Provider value={store}>

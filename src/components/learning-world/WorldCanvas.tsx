@@ -62,10 +62,19 @@ export default function WorldCanvas({
           frameloop={
             active && !paused ? (reducedMotion ? "demand" : "always") : "never"
           }
+          camera={{
+            position: [
+              worldConfig.camera.x,
+              worldConfig.camera.y,
+              worldConfig.camera.z,
+            ],
+            fov: worldConfig.camera.fov,
+            near: worldConfig.camera.near,
+            far: worldConfig.camera.far,
+          }}
           gl={{
             antialias: true,
             alpha: false,
-            powerPreference: "high-performance",
           }}
           fallback={
             <div className="world-unavailable">

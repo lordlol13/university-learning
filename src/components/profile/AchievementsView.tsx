@@ -3,7 +3,7 @@
 import { Check, LockKeyhole } from "lucide-react";
 import { achievementCatalog } from "@/data/demo";
 import { useProgress } from "@/stores/progress-provider";
-import { AchievementBadge } from "@/components/ui/AchievementBadge";
+import { AchievementBadge } from "@/components/ui/ModernAchievementBadge";
 
 export function AchievementsView() {
   const earnedIds = useProgress((s) => s.achievements);
@@ -28,7 +28,11 @@ export function AchievementsView() {
               className={`panel-card achievement-detail ${earned ? "earned" : ""}`}
               key={achievement.id}
             >
-              <AchievementBadge achievement={achievement} earned={earned} />
+              <AchievementBadge
+                achievement={achievement}
+                earned={earned}
+                size="lg"
+              />
               <h2>{achievement.title}</h2>
               <p>{achievement.description}</p>
               <span

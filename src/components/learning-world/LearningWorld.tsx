@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+
 import {
   ArrowRight,
   BookOpen,
@@ -18,7 +19,6 @@ import { getLearningWorld } from "@/data/learning-world";
 import {
   useLearningEvents,
   useProgress,
-  useProgressReady,
 } from "@/stores/progress-provider";
 import { getLessonStatus } from "@/stores/progress-store";
 import { LessonView } from "@/components/lesson/LessonView";
@@ -94,14 +94,19 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   const unit = direction.subjects[0]?.units[0];
   const data = getLearningWorld(direction.id);
   const state = useProgress((s) => s);
-  const ready = useProgressReady();
   const events = useLearningEvents();
   const [view, setView] = useState<"world" | "list">("world");
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [openLesson, setOpenLesson] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const closeLesson = useCallback(() => setOpenLesson(null), [setOpenLesson]);
   const closeMessage = useCallback(() => setMessage(null), [setMessage]);
+
   useEffect(
     () =>
       events.subscribe((event) => {
@@ -191,7 +196,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       </div>
       {data && view === "world" ? (
         <div className="world-stage">
-          {ready ? (
+          {mounted ? (
             <WorldCanvas
               key={data.directionId}
               data={data}
@@ -203,7 +208,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
           ) : (
             <div className="world-loading">
               <span className="loading-dot" />
-              Getting your campus ready…
+              Bringing your campus to life…
             </div>
           )}
           <div className="world-location">

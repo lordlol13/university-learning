@@ -3,13 +3,17 @@
 import { useEffect, useState, type RefObject } from "react";
 
 export function useSceneActivity(ref: RefObject<HTMLElement | null>) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [pageVisible, setPageVisible] = useState(true);
   useEffect(() => {
     const element = ref.current;
-    if (!element) return;
+    if (!element || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
+      ([entry]) => {
+        if (entry) {
+          setVisible(entry.isIntersecting);
+        }
+      },
       { threshold: 0.01 },
     );
     observer.observe(element);

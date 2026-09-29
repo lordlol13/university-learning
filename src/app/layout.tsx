@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ProgressProvider } from "@/stores/progress-provider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
@@ -17,6 +18,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <Script
+          id="sw-cache-cleaner"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                  for (var r of regs) r.unregister();
+                });
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    for (var n of names) caches.delete(n);
+                  });
+                }
+              }
+            `,
+          }}
+        />
         <ProgressProvider>
           <AppShell>{children}</AppShell>
         </ProgressProvider>

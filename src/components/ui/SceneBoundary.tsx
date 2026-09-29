@@ -10,6 +10,9 @@ export class SceneBoundary extends Component<
   static getDerivedStateFromError() {
     return { failed: true };
   }
+  componentDidCatch(error: unknown) {
+    console.error("3D Scene Error:", error);
+  }
   render() {
     return this.state.failed ? this.props.fallback : this.props.children;
   }

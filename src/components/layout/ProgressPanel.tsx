@@ -7,7 +7,7 @@ import { achievementCatalog, levelSize } from "@/data/demo";
 import { getDirection, getLessonDirection } from "@/data/curriculum";
 import { useProgress } from "@/stores/progress-provider";
 import { getDirectionProgress } from "@/stores/progress-store";
-import { AchievementBadge } from "@/components/ui/AchievementBadge";
+import { AchievementBadge } from "@/components/ui/ModernAchievementBadge";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import type { CSSProperties } from "react";
 
@@ -101,6 +101,7 @@ export function ProgressPanel() {
                 <AchievementBadge
                   achievement={achievement}
                   earned={state.achievements.includes(achievement.id)}
+                  size="sm"
                 />
               </span>
               <span>{achievement.title}</span>

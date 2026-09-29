@@ -12,11 +12,11 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  ChevronRight,
   Clock3,
   GraduationCap,
   Sparkles,
   Star,
+  X,
 } from "lucide-react";
 import type {
   LessonActivity,
@@ -395,119 +395,116 @@ export function LessonRenderer({
     );
   return (
     <div className="lesson-engine">
-      <div className="lesson-breadcrumb">
-        {back}
-        <span>/</span>
-        <span>Interactive lesson</span>
-        <ChevronRight size={13} />
-        <strong>{lesson.title}</strong>
-      </div>
-      <header className="engine-header">
-        <div>
-          <span className="lesson-kicker">
-            <span className="live-dot" /> THE INTERACTIVE CLASSROOM
+      {/* Sleek Minimalist Sticky Top Navigation Bar */}
+      <header className="task-minimal-topbar">
+        <div className="task-topbar-left">
+          {/* Minimalist Step Tracker Bar */}
+          <div
+            className="minimal-step-nav"
+            role="tablist"
+            aria-label="Lesson step progress"
+          >
+            {lesson.sections.map((s, i) => {
+              const isDone = sectionDone(i);
+              const isActive = i === sectionIndex;
+              const statusLabel = isDone
+                ? "Completed"
+                : isActive
+                  ? "Current step"
+                  : "Upcoming step";
+              return (
+                <div key={s.id} className="minimal-step-item">
+                  {i > 0 && (
+                    <div
+                      className={`minimal-step-line ${sectionDone(i - 1) ? "done" : ""}`}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <button
+                    type="button"
+                    role="tab"
+                    data-section={s.id}
+                    aria-selected={isActive}
+                    aria-label={`Step ${i + 1}: ${s.title} (${statusLabel})`}
+                    className={`minimal-step-btn ${isDone ? "done" : isActive ? "active" : "pending"}`}
+                    onClick={() => goto(i)}
+                    title={`Step ${i + 1}: ${s.title} (${statusLabel})`}
+                  >
+                    {isDone ? (
+                      <Check size={11} strokeWidth={3} />
+                    ) : (
+                      <span>{i + 1}</span>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          <span className="minimal-step-counter">
+            Step {sectionIndex + 1}/{lesson.sections.length} · {section.stage}
           </span>
-          <h1>
-            {lesson.title}
-            <span className="title-period">.</span>
-          </h1>
-          <p>{lesson.description}</p>
-          <div className="engine-meta">
-            <span>
-              <Clock3 size={15} />
-              {lesson.estimatedMinutes} min
-            </span>
-            <span>
-              <BookOpen size={15} />
-              {lesson.difficulty}
-            </span>
-            <span className="xp-meta">
-              <Star size={15} />
-              {lesson.xp} XP{alreadyCompleted ? " · earned" : ""}
-            </span>
+
+          <div className="task-topbar-divider" aria-hidden="true" />
+
+          {/* Minimalist Lesson Info Chips */}
+          <div className="minimal-lesson-info">
+            <h1 className="minimal-lesson-title">{lesson.title}</h1>
+            <div className="minimal-meta-chips">
+              <span className="minimal-chip">
+                <Clock3 size={11} />
+                {lesson.estimatedMinutes}m
+              </span>
+              <span className="minimal-chip">
+                <BookOpen size={11} />
+                {lesson.difficulty}
+              </span>
+              <span className="minimal-chip xp">
+                <Star size={11} />
+                +{lesson.xp} XP{alreadyCompleted ? " · earned" : ""}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="lesson-header-art" aria-hidden="true">
-          <svg viewBox="0 0 190 120">
-            <path
-              d="M15 20 Q95 178 175 20"
-              fill="none"
-              stroke="#a9cce4"
-              strokeWidth="3"
-            />
-            <path
-              d="M32 51L60 88L78 101L89 106"
-              fill="none"
-              stroke="#d7ac4b"
-              strokeWidth="2"
-              strokeDasharray="4 4"
-            />
-            <circle cx="32" cy="51" r="8" fill="#348bce" />
-            <circle cx="60" cy="88" r="5" fill="#70adbd" />
-            <circle cx="78" cy="101" r="4" fill="#70adbd" />
-            <circle
-              cx="95"
-              cy="99"
-              r="8"
-              fill="#48ad36"
-              stroke="white"
-              strokeWidth="3"
-            />
-          </svg>
-          <span>A LITTLE CLOSER, EVERY STEP</span>
+
+        <div className="task-topbar-right">
+          <div className="task-progress-pill">
+            <span className="task-progress-value">{progress.percent}%</span>
+            {ready && (
+              <span className="task-save-indicator" title="Progress saved on this device">
+                <span className="live-dot" />
+                Saved
+              </span>
+            )}
+          </div>
+
+          {onReturn ? (
+            <button
+              onClick={onReturn}
+              className="task-close-btn"
+              aria-label="Exit lesson"
+              title="Exit lesson (Esc)"
+            >
+              <X size={17} />
+              <span>Exit</span>
+            </button>
+          ) : (
+            <Link
+              href={`/path/${directionId}`}
+              className="task-close-btn"
+              aria-label="Exit lesson"
+              title="Back to path"
+            >
+              <X size={17} />
+              <span>Exit</span>
+            </Link>
+          )}
         </div>
       </header>
+
       <div className="engine-layout">
-        <aside className="lesson-contents">
-          <div className="contents-heading">
-            <strong>Your lesson</strong>
-            <span>{progress.percent}%</span>
-          </div>
-          <progress
-            value={progress.done}
-            max={progress.total}
-            aria-label="Lesson completion"
-          />
-          <nav aria-label="Lesson contents">
-            {lesson.sections.map((s, i) => (
-              <button
-                key={s.id}
-                data-section={s.id}
-                className={`${i === sectionIndex ? "active" : ""} ${sectionDone(i) ? "done" : ""}`}
-                aria-current={i === sectionIndex ? "step" : undefined}
-                onClick={() => goto(i)}
-              >
-                <span className="section-number">
-                  {sectionDone(i) ? (
-                    <Check size={15} />
-                  ) : (
-                    String(i + 1).padStart(2, "0")
-                  )}
-                </span>
-                <span>
-                  <small>{s.stage}</small>
-                  {s.title}
-                </span>
-                {i === sectionIndex && <ChevronRight size={15} />}
-              </button>
-            ))}
-          </nav>
-          <div className="lesson-save-note">
-            <span className="live-dot" />
-            {ready
-              ? "Progress saved on this device"
-              : "Restoring your progress…"}
-          </div>
-          <div className="contents-note">
-            <Sparkles size={19} />
-            <p>
-              Understanding takes a little curiosity.
-              <br />
-              <strong>Go at your own pace.</strong>
-            </p>
-          </div>
-        </aside>
         <div className="lesson-main" id="lesson-section" tabIndex={-1}>
+
           <div className="section-heading">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
               <span className="lesson-kicker">

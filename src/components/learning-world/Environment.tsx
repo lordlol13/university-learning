@@ -6,6 +6,15 @@ import type { LearningWorldData, Point3 } from "@/types/learning-world";
 import { worldConfig } from "@/data/world-config";
 import { PhysicsScenery } from "./PhysicsObjects";
 import { ItalianScenery, MathScenery } from "./WorldScenery";
+import {
+  AILandmark,
+  FlowerPatches,
+  IslandClouds,
+  ItalianFountain,
+  KineticTurbine,
+  MountainMounds,
+  WaterDrops,
+} from "./IslandSceneryElements";
 
 function Tree({
   position,
@@ -152,99 +161,179 @@ export const Environment = memo(function Environment({
   reducedMotion: boolean;
 }) {
   const terrain = useMemo(() => {
+    // Enlarged, organically contoured island terrain (~28% broader surface area)
     const shape = new Shape();
-    shape.moveTo(-4, -9.6);
-    shape.bezierCurveTo(-7.7, -8.7, -6.4, -3.5, -6.4, 0);
-    shape.bezierCurveTo(-7, 4.7, -5.6, 9.7, -1.1, 10.1);
-    shape.bezierCurveTo(4, 10.8, 6.1, 8.4, 6.2, 3.5);
-    shape.bezierCurveTo(6.7, -2, 6.3, -8.9, 3.5, -9.7);
-    shape.bezierCurveTo(1, -10.6, -1.7, -10.1, -4, -9.6);
+    shape.moveTo(-5.2, -12.4);
+    shape.bezierCurveTo(-10.2, -11.4, -8.6, -4.4, -8.4, 0);
+    shape.bezierCurveTo(-9.2, 5.8, -7.6, 12.6, -1.6, 13.1);
+    shape.bezierCurveTo(5.4, 13.8, 8.8, 10.8, 9.1, 4.4);
+    shape.bezierCurveTo(9.6, -2.4, 8.8, -11.5, 4.8, -12.6);
+    shape.bezierCurveTo(1.4, -13.4, -2.4, -13.0, -5.2, -12.4);
     return new ExtrudeGeometry(shape, {
-      depth: 0.45,
+      depth: 0.52,
       bevelEnabled: true,
-      bevelSegments: 3,
+      bevelSegments: 4,
       steps: 1,
-      bevelSize: 0.24,
-      bevelThickness: 0.19,
-      curveSegments: 16,
+      bevelSize: 0.32,
+      bevelThickness: 0.22,
+      curveSegments: 22,
     });
   }, []);
+
   return (
     <group name="university-environment">
-      <ambientLight intensity={0.6} color="#fffdf5" />
-      <hemisphereLight args={["#e8f3ff", "#7cae58", 0.6]} />
+      <ambientLight intensity={0.65} color="#fffdf5" />
+      <hemisphereLight args={["#e8f3ff", "#1a6eb5", 0.65]} />
       <directionalLight
-        position={[-8, 16, 9]}
-        intensity={2.4}
+        position={[-9, 18, 10]}
+        intensity={2.5}
         color="#fff2d6"
         castShadow
         shadow-mapSize={[worldConfig.shadowSize, worldConfig.shadowSize]}
-        shadow-camera-left={-14}
-        shadow-camera-right={14}
-        shadow-camera-top={16}
-        shadow-camera-bottom={-16}
+        shadow-camera-left={-16}
+        shadow-camera-right={16}
+        shadow-camera-top={18}
+        shadow-camera-bottom={-18}
         shadow-camera-near={1}
-        shadow-camera-far={60}
+        shadow-camera-far={70}
         shadow-normalBias={0.035}
         shadow-bias={-0.0002}
         shadow-radius={3}
       />
       <directionalLight
-        position={[7, 8, -8]}
-        intensity={0.45}
+        position={[8, 9, -9]}
+        intensity={0.5}
         color="#d1e7ff"
       />
+
+      {/* Layer 1: Lush Grassy Top Island Surface */}
       <mesh
         geometry={terrain}
-        position={[0, -0.36, 0]}
+        position={[0, 0.2, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
         receiveShadow
         castShadow
       >
-        <meshStandardMaterial color="#78b94b" roughness={0.96} />
+        <meshStandardMaterial color="#6fb644" roughness={0.93} />
       </mesh>
+
+      {/* Layer 2: Earthen Subsurface Soil & Sand Shelf */}
       <mesh
         geometry={terrain}
-        position={[0, -0.95, 0]}
+        position={[0, -0.05, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        scale={[1.025, 1.017, 1.45]}
+        scale={[1.022, 1.018, 1.55]}
         castShadow
         receiveShadow
       >
-        <meshStandardMaterial color="#c6b890" roughness={1} />
+        <meshStandardMaterial color="#c2b289" roughness={1} />
       </mesh>
+
+      {/* Layer 3: Rocky Cliff Base descending into ocean */}
       <mesh
+        geometry={terrain}
+        position={[0, -0.65, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -1.19, 0]}
+        scale={[0.96, 0.94, 2.9]}
+        castShadow
         receiveShadow
       >
-        <planeGeometry args={[200, 200]} />
+        <meshStandardMaterial color="#5a6570" roughness={1} />
+      </mesh>
+
+      {/* Deep Blue Ocean Surface */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.12, 0]}
+        receiveShadow
+      >
+        <planeGeometry args={[400, 400]} />
         <meshStandardMaterial
-          color={worldConfig.background}
-          emissive={worldConfig.background}
-          emissiveIntensity={0.22}
-          roughness={1}
+          color="#1a6eb5"
+          emissive="#0d4f8a"
+          emissiveIntensity={0.18}
+          roughness={0.55}
+          metalness={0.15}
         />
       </mesh>
+
+      {/* Shallow Turquoise Shore Rim */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.08, 0]}
+      >
+        <ringGeometry args={[8.5, 11.5, 48]} />
+        <meshStandardMaterial
+          color="#38a8d0"
+          transparent
+          opacity={0.6}
+          roughness={0.3}
+        />
+      </mesh>
+
+      {/* Shoreline Foam / Wave Froth Ring */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.04, 0]}
+      >
+        <ringGeometry args={[7.8, 8.8, 48]} />
+        <meshStandardMaterial
+          color="#daf0f7"
+          transparent
+          opacity={0.45}
+          roughness={0.9}
+        />
+      </mesh>
+
+      {/* Mountain Mounds & Alpine Peaks */}
+      <MountainMounds />
+
+      {/* Clouds Clustered at Island Ends (North & South extremities) */}
+      <IslandClouds reducedMotion={reducedMotion} />
+
+      {/* Animated Cascading Waterdrops & Floating Dewdrops */}
+      <WaterDrops reducedMotion={reducedMotion} />
+
+      {/* Cheerful Wildflower Blossom Clusters */}
+      <FlowerPatches />
+
+      {/* Island Trees */}
       {data.trees.map((tree, i) => (
         <Tree key={i} {...tree} />
       ))}
+
+      {/* Campus Buildings */}
       {data.buildings.map((building, i) => (
         <UniversityBuilding key={i} {...building} />
       ))}
-      {data.directionId === "physics-engineering" && <PhysicsScenery />}
+
+      {/* Discipline-Specific Lively & Didactic Scenery */}
+      {data.directionId === "ai-ml" && <AILandmark />}
+      {data.directionId === "physics-engineering" && (
+        <>
+          <KineticTurbine />
+          <PhysicsScenery />
+        </>
+      )}
       {data.directionId === "mathematics" && <MathScenery />}
-      {data.directionId === "italian-language" && <ItalianScenery />}
+      {data.directionId === "italian-language" && (
+        <>
+          <ItalianFountain />
+          <ItalianScenery />
+        </>
+      )}
+
+      {/* Bush & Shrub Foliage Clusters */}
       {data.trees.flatMap((tree, i) =>
         [0, 1].map((j) => (
           <mesh
             key={`${i}-${j}`}
             position={[
-              tree.position[0] + (j ? 0.58 : -0.57),
+              tree.position[0] + (j ? 0.6 : -0.58),
               0.39,
               tree.position[2] + 0.55,
             ]}
-            scale={[0.38, 0.27 + j * 0.15, 0.35]}
+            scale={[0.42, 0.28 + j * 0.16, 0.38]}
             castShadow
           >
             <sphereGeometry args={[1, 10, 8]} />
@@ -255,17 +344,21 @@ export const Environment = memo(function Environment({
           </mesh>
         )),
       )}
+
+      {/* Natural Ground Stones and Boulders */}
       {[
-        [-4.9, 0.28, 4.2],
-        [3.9, 0.26, -3.4],
-        [-2.8, 0.3, -8.6],
-        [4.65, 0.24, 7.5],
+        [-5.4, 0.28, 4.4],
+        [4.8, 0.26, -3.8],
+        [-3.2, 0.3, -9.2],
+        [5.4, 0.24, 8.2],
+        [-6.5, 0.26, -2.2],
+        [6.2, 0.25, 3.4],
       ].map((p, i) => (
         <mesh
           key={i}
           position={p as Point3}
           rotation={[0.2, i, 0.1]}
-          scale={[0.46, 0.29, 0.38]}
+          scale={[0.5, 0.32, 0.42]}
           castShadow
           receiveShadow
         >
@@ -273,19 +366,21 @@ export const Environment = memo(function Environment({
           <meshStandardMaterial color="#b6b9a6" roughness={1} />
         </mesh>
       ))}
+
+      {/* Mid-altitude Floating Island Drift Clouds */}
       <Cloud
-        position={[-5.7, 3.7, -5.5]}
-        scale={1.2}
+        position={[-6.2, 4.2, -6.2]}
+        scale={1.3}
         reducedMotion={reducedMotion}
       />
       <Cloud
-        position={[5.5, 4.4, 1.4]}
-        scale={1.15}
+        position={[6.2, 4.6, 1.8]}
+        scale={1.25}
         reducedMotion={reducedMotion}
       />
       <Cloud
-        position={[-4.5, 2.4, 8.8]}
-        scale={0.8}
+        position={[-5.2, 3.2, 9.4]}
+        scale={1.0}
         reducedMotion={reducedMotion}
       />
     </group>

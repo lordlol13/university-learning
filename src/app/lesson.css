@@ -56,41 +56,81 @@
   background: #10b981;
 }
 .minimal-step-btn {
-  width: 25px;
-  height: 25px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   border: none;
   padding: 0;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 .minimal-step-btn.done {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.38);
 }
 .minimal-step-btn.done:hover {
   transform: translateY(-1px) scale(1.08);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.48);
 }
 .minimal-step-btn.active {
   background: #ffffff;
   color: #059669;
-  border: 2px solid #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+  border: 2.4px solid #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
 }
 .minimal-step-btn.pending {
-  background: #f1f5f9;
+  background: #f8fafc;
   color: #64748b;
-  border: 1px solid #cbd5e1;
+  border: 1.6px solid #cbd5e1;
 }
 .minimal-step-btn.pending:hover {
-  background: #e2e8f0;
-  color: #334155;
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+/* Individual Step Icon Styles */
+.step-icon-empty {
+  display: block;
+  margin: 0;
+}
+.step-icon-empty.step-active-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  margin: 0 auto;
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+  flex-shrink: 0;
+}
+.step-icon-question,
+.step-icon-play,
+.step-icon-code,
+.step-icon-practice,
+.step-icon-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+}
+.minimal-step-btn:hover .step-icon-question,
+.minimal-step-btn:hover .step-icon-play,
+.minimal-step-btn:hover .step-icon-code,
+.minimal-step-btn:hover .step-icon-practice {
+  transform: scale(1.12);
 }
 .minimal-step-counter {
   font-size: 11px;

@@ -13,7 +13,10 @@ import {
   BookOpen,
   Check,
   Clock3,
+  Code,
   GraduationCap,
+  PenLine,
+  Play,
   Sparkles,
   Star,
   X,
@@ -278,6 +281,70 @@ function SimulationScope({
     children
   );
 }
+type StageKind = "quiz" | "video" | "code" | "practice" | "lesson";
+
+function getSectionStageKind(section: LessonContent["sections"][number]): {
+  kind: StageKind;
+  label: string;
+} {
+  const stage = (section.stage || "").toLowerCase();
+  const title = (section.title || "").toLowerCase();
+  const types = section.blocks.map((b) => b.type);
+
+  // 1. Test / Quiz / Assess -> question mark
+  if (
+    types.includes("quiz") ||
+    stage.includes("assess") ||
+    stage.includes("test") ||
+    stage.includes("quiz") ||
+    title.includes("quiz") ||
+    title.includes("test") ||
+    title.includes("тест") ||
+    title.includes("проверк")
+  ) {
+    return { kind: "quiz", label: "Quiz / Test" };
+  }
+
+  // 2. Video / Interactive simulation / Visualizer -> play triangle
+  if (
+    types.includes("interactive-graph") ||
+    types.includes("algorithm-visualizer") ||
+    stage.includes("visualize") ||
+    stage.includes("experiment") ||
+    title.includes("visualiz") ||
+    title.includes("simulat") ||
+    title.includes("видео")
+  ) {
+    return { kind: "video", label: "Interactive / Video" };
+  }
+
+  // 3. Code / Implementation -> code icon
+  if (
+    types.includes("code") ||
+    stage.includes("code") ||
+    stage.includes("implement") ||
+    title.includes("code") ||
+    title.includes("код")
+  ) {
+    return { kind: "code", label: "Code" };
+  }
+
+  // 4. Practice / Applied problems -> practice icon
+  if (
+    types.includes("practice") ||
+    types.includes("worked-example") ||
+    stage.includes("practice") ||
+    stage.includes("apply") ||
+    title.includes("practice") ||
+    title.includes("практик")
+  ) {
+    return { kind: "practice", label: "Practice" };
+  }
+
+  // 5. Default: Lesson / Theory -> empty circle
+  return { kind: "lesson", label: "Lesson" };
+}
+
 export function LessonRenderer({
   lesson,
   directionId,
@@ -407,6 +474,7 @@ export function LessonRenderer({
             {lesson.sections.map((s, i) => {
               const isDone = sectionDone(i);
               const isActive = i === sectionIndex;
+              const stageInfo = getSectionStageKind(s);
               const statusLabel = isDone
                 ? "Completed"
                 : isActive
@@ -424,16 +492,49 @@ export function LessonRenderer({
                     type="button"
                     role="tab"
                     data-section={s.id}
+                    data-kind={stageInfo.kind}
                     aria-selected={isActive}
-                    aria-label={`Step ${i + 1}: ${s.title} (${statusLabel})`}
-                    className={`minimal-step-btn ${isDone ? "done" : isActive ? "active" : "pending"}`}
+                    aria-label={`Step ${i + 1}: ${s.title} (${stageInfo.label}, ${statusLabel})`}
+                    className={`minimal-step-btn ${isDone ? "done" : isActive ? "active" : "pending"} kind-${stageInfo.kind}`}
                     onClick={() => goto(i)}
-                    title={`Step ${i + 1}: ${s.title} (${statusLabel})`}
+                    title={`Step ${i + 1}: ${s.title} · ${stageInfo.label} (${statusLabel})`}
                   >
                     {isDone ? (
-                      <Check size={11} strokeWidth={3} />
+                      <Check size={16} strokeWidth={3} className="step-icon-check" />
+                    ) : stageInfo.kind === "quiz" ? (
+                      <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                        className="step-icon-question"
+                      >
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none" />
+                      </svg>
+                    ) : stageInfo.kind === "video" ? (
+                      <Play
+                        size={14}
+                        fill="currentColor"
+                        strokeWidth={0}
+                        style={{ marginLeft: 2.5 }}
+                        className="step-icon-play"
+                        aria-hidden="true"
+                      />
+                    ) : stageInfo.kind === "code" ? (
+                      <Code size={16} strokeWidth={2.4} className="step-icon-code" aria-hidden="true" />
+                    ) : stageInfo.kind === "practice" ? (
+                      <PenLine size={15} strokeWidth={2.2} className="step-icon-practice" aria-hidden="true" />
                     ) : (
-                      <span>{i + 1}</span>
+                      <span
+                        className={`step-icon-empty ${isActive ? "step-active-dot" : ""}`}
+                        aria-hidden="true"
+                      />
                     )}
                   </button>
                 </div>

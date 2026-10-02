@@ -246,47 +246,12 @@ function IslandSignpost({
   );
 }
 
-export function IslandSignposts({
-  currentDirectionId,
-}: {
-  currentDirectionId: string;
+export function IslandSignposts(_props?: {
+  currentDirectionId?: string;
   reducedMotion?: boolean;
 }) {
-  const availableWorlds: Direction[] = directions.filter((d) =>
-    learningWorlds.some((w) => w.directionId === d.id),
-  );
-
-  if (availableWorlds.length <= 1) return null;
-
-  const currentIndex = availableWorlds.findIndex(
-    (w) => w.id === currentDirectionId,
-  );
-  const activeIndex = currentIndex >= 0 ? currentIndex : 0;
-
-  const prevIndex =
-    (activeIndex - 1 + availableWorlds.length) % availableWorlds.length;
-  const nextIndex = (activeIndex + 1) % availableWorlds.length;
-
-  const prevWorld = availableWorlds[prevIndex] ?? availableWorlds[0];
-  const nextWorld = availableWorlds[nextIndex] ?? availableWorlds[0];
-
-  return (
-    <group name="island-signposts">
-      {/* Previous Island Signpost on Left Side of Island (Arrow points left toward previous) */}
-      <IslandSignpost
-        world={prevWorld}
-        direction="prev"
-        position={[3.5, 0.28, -1.8]}
-        rotation={[0.26, Math.PI + 0.25, 0]}
-      />
-
-      {/* Next Island Signpost on Right Side of Island (Arrow points right toward next) */}
-      <IslandSignpost
-        world={nextWorld}
-        direction="next"
-        position={[-3.8, 0.28, -0.6]}
-        rotation={[0.26, Math.PI - 0.25, 0]}
-      />
-    </group>
-  );
+  return null;
 }
+
+export default IslandSignposts;
+

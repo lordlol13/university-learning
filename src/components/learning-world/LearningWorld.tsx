@@ -197,7 +197,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       const lesson = getLesson(id);
       if (
         lesson &&
-        getLessonStatus(lesson, state) === "current" &&
+        getLessonStatus(lesson, state) !== "locked" &&
         state.startLesson(id)
       )
         setOpenLesson(id);
@@ -351,7 +351,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               </span>
             ) : (
               <button className="button primary" onClick={openSelected}>
-                {status === "completed" ? "Review lesson" : "Start lesson"}
+                {status === "completed" ? "Review / Retake" : "Start lesson"}
                 <ArrowRight size={16} />
               </button>
             )}

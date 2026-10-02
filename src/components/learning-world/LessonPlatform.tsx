@@ -493,7 +493,7 @@ export function LessonPlatform({
                   ? "Start lesson"
                   : isLocked
                     ? "Locked"
-                    : "Completed"}
+                    : "Review / Retake"}
               </span>
               <span className="label-xp">
                 <Star size={10} />

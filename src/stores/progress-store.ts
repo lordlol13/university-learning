@@ -28,6 +28,7 @@ export interface ProgressState {
 }
 interface ProgressActions {
   recordLessonActivity: (key: string, kind: keyof LessonActivity, id: string) => void;
+  resetLessonActivity: (key: string) => void;
   startLesson: (lessonId: string) => boolean;
   completeLesson: (lessonId: string) => boolean;
   addXP: (amount: number) => void;
@@ -79,6 +80,11 @@ export const createProgressStore = (
           const activity = activities[key] ?? { viewed: [], completed: [], practice: [], quiz: [] };
           if (activity[kind].includes(id)) return;
           set({ lessonActivities: { ...activities, [key]: { ...activity, [kind]: [...activity[kind], id] } } });
+        },
+        resetLessonActivity: (key) => {
+          const activities = { ...(get().lessonActivities ?? {}) };
+          delete activities[key];
+          set({ lessonActivities: activities });
         },
         startLesson: (lessonId) => {
           const lesson = getLesson(lessonId);

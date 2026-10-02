@@ -15,6 +15,7 @@ import {
   GraduationCap,
   PenLine,
   Play,
+  RotateCcw,
   Sparkles,
   Star,
   X,
@@ -430,12 +431,22 @@ export function LessonRenderer({
   const key = `${lesson.id}:v${lesson.version}`;
   const ready = useProgressReady(),
     activity = useProgress((s) => s.lessonActivities?.[key] ?? empty),
-    recordActivity = useProgress((s) => s.recordLessonActivity);
+    recordActivity = useProgress((s) => s.recordLessonActivity),
+    resetLessonActivity = useProgress((s) => s.resetLessonActivity);
   const alreadyCompleted = useProgress((s) =>
     s.completedLessons.includes(lesson.curriculumLessonId),
   );
   const startLesson = useProgress((s) => s.startLesson),
     completeLesson = useProgress((s) => s.completeLesson);
+  const handleRetakeLesson = useCallback(() => {
+    resetLessonActivity(key);
+    setSectionIndex(0);
+    window.requestAnimationFrame(() =>
+      document
+        .getElementById("lesson-section")
+        ?.scrollIntoView({ block: "start" }),
+    );
+  }, [key, resetLessonActivity]);
   const record = useCallback(
     (kind: keyof LessonActivity, id: string) => {
       if (ready) recordActivity(key, kind, id);
@@ -632,6 +643,18 @@ export function LessonRenderer({
         </div>
 
         <div className="task-topbar-right">
+          {(alreadyCompleted || progress.percent > 0) && (
+            <button
+              type="button"
+              className="task-retake-btn"
+              onClick={handleRetakeLesson}
+              title="Retake this lesson from the beginning"
+              aria-label="Retake this lesson from the beginning"
+            >
+              <RotateCcw size={14} />
+              <span>Retake</span>
+            </button>
+          )}
           <div className="task-progress-pill">
             <span className="task-progress-value">{progress.percent}%</span>
             {ready && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, Lightbulb, MessageCircle } from "lucide-react";
+import { Check, Lightbulb, MessageCircle, RotateCcw } from "lucide-react";
 import type { PracticeProblem, QuizQuestion } from "@/types/lesson-engine";
 import { RichText } from "./Math";
 
@@ -78,11 +78,15 @@ export function ChatQuizQuestion({
   }, []);
 
   const handleSelect = (index: number) => {
-    if (completed) return;
     setSelected(index);
     const isCorrect = index === question.answerIndex;
     setFeedback(isCorrect ? "correct" : "incorrect");
     if (isCorrect) onCorrect();
+  };
+
+  const handleRetry = () => {
+    setSelected(null);
+    setFeedback(null);
   };
 
   return (
@@ -105,18 +109,18 @@ export function ChatQuizQuestion({
           {question.options.map((option, index) => {
             const staggerClass = `chat-stagger-${Math.min(index + 1, 4)}`;
             const isSelected = selected === index;
-            const isCorrect = completed && index === question.answerIndex;
+            const isCorrect = isSelected && index === question.answerIndex;
             const isIncorrect = isSelected && feedback === "incorrect";
 
             return (
               <button
                 key={option}
+                type="button"
                 className={`chat-chip chat-fade-in ${staggerClass} ${
                   isSelected ? "selected" : ""
                 } ${isCorrect ? "correct" : ""} ${
                   isIncorrect ? "incorrect" : ""
                 }`}
-                disabled={completed}
                 onClick={() => handleSelect(index)}
               >
                 {option}
@@ -126,21 +130,32 @@ export function ChatQuizQuestion({
         </div>
       )}
 
-      {(feedback || completed) && (
+      {(feedback || selected !== null) && (
         <div
           className={`chat-bubble feedback ${
-            completed || feedback === "correct" ? "correct" : "incorrect"
+            feedback === "correct" || selected === question.answerIndex ? "correct" : "incorrect"
           } chat-fade-in chat-stagger-1`}
         >
-          <strong>
-            {completed || feedback === "correct"
-              ? "You’ve got it."
-              : "Try another approach."}
-          </strong>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+            <strong>
+              {feedback === "correct" || selected === question.answerIndex
+                ? "You’ve got it."
+                : "Try another approach."}
+            </strong>
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="chat-retry-inline-btn"
+              title="Retake question"
+            >
+              <RotateCcw size={12} />
+              <span>Retake</span>
+            </button>
+          </div>
           <p>
             <RichText
               text={
-                completed || feedback === "correct"
+                feedback === "correct" || selected === question.answerIndex
                   ? question.explanation
                   : "Think about the update rule and what it does to the distance from the minimum. You can revisit the lab before trying again."
               }
@@ -176,7 +191,7 @@ export function ChatPracticeProblem({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (completed || !answer.trim()) return;
+    if (!answer.trim()) return;
 
     const value = Number(answer.trim());
     const correct =
@@ -185,6 +200,11 @@ export function ChatPracticeProblem({
 
     setFeedback(correct ? "correct" : "incorrect");
     if (correct) onCorrect();
+  };
+
+  const handleRetry = () => {
+    setAnswer("");
+    setFeedback(null);
   };
 
   return (
@@ -227,7 +247,6 @@ export function ChatPracticeProblem({
               autoComplete="off"
               placeholder="Your numerical answer..."
               value={answer}
-              disabled={completed}
               onChange={(e) => {
                 setAnswer(e.target.value);
                 setFeedback(null);
@@ -236,9 +255,9 @@ export function ChatPracticeProblem({
             <button
               type="submit"
               className="lesson-btn primary"
-              disabled={completed || !answer.trim()}
+              disabled={!answer.trim()}
             >
-              {completed ? (
+              {feedback === "correct" ? (
                 <>
                   <Check size={16} /> Solved
                 </>
@@ -250,21 +269,32 @@ export function ChatPracticeProblem({
         </div>
       )}
 
-      {(feedback || completed) && (
+      {(feedback || (completed && feedback === null)) && (
         <div
           className={`chat-bubble feedback ${
-            completed || feedback === "correct" ? "correct" : "incorrect"
+            feedback === "correct" || (completed && feedback === null) ? "correct" : "incorrect"
           } chat-fade-in chat-stagger-1`}
         >
-          <strong>
-            {completed || feedback === "correct"
-              ? "That’s it. Here’s why:"
-              : "Not quite yet."}
-          </strong>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+            <strong>
+              {feedback === "correct" || (completed && feedback === null)
+                ? "That’s it. Here’s why:"
+                : "Not quite yet."}
+            </strong>
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="chat-retry-inline-btn"
+              title="Retake problem"
+            >
+              <RotateCcw size={12} />
+              <span>Retake</span>
+            </button>
+          </div>
           <p>
             <RichText
               text={
-                completed || feedback === "correct"
+                feedback === "correct" || (completed && feedback === null)
                   ? problem.explanation
                   : "Recalculate the gradient and the update separately. You can use the hint and try again."
               }

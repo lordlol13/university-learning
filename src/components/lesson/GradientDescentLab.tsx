@@ -336,7 +336,7 @@ export function GradientDescentGraph({
       <button
         className="lesson-btn lab-complete"
         onClick={onComplete}
-        disabled={completed || s.iteration < 2}
+        disabled={s.iteration < 2}
       >
         {completed
           ? "Experiment completed ✓"
@@ -407,7 +407,7 @@ export function GradientDescentAlgorithm({
       </AlgorithmVisualizer>
       <button
         className="lesson-btn lab-complete"
-        disabled={completed || s.iteration < 2}
+        disabled={s.iteration < 2}
         onClick={onComplete}
       >
         {completed ? "Algorithm explored ✓" : "I can explain these updates"}

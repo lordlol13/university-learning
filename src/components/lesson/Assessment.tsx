@@ -49,7 +49,6 @@ export function PracticeProblemCard({
           autoComplete="off"
           placeholder="e.g. 2.5"
           value={answer}
-          disabled={completed}
           onChange={(e) => {
             setAnswer(e.target.value);
             setFeedback(null);
@@ -57,7 +56,7 @@ export function PracticeProblemCard({
         />
         <button
           className="lesson-btn primary"
-          disabled={completed || !answer.trim()}
+          disabled={!answer.trim()}
         >
           {completed ? (
             <>
@@ -147,7 +146,6 @@ export function QuizQuestionCard({
                 name={question.id}
                 value={index}
                 checked={selected === index}
-                disabled={completed}
                 onChange={() => {
                   setSelected(index);
                   setChecked(false);
@@ -160,7 +158,7 @@ export function QuizQuestionCard({
       </fieldset>
       <button
         className="lesson-btn primary"
-        disabled={selected === null || completed}
+        disabled={selected === null}
       >
         {completed ? (
           <>

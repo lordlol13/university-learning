@@ -3,19 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ArrowUpRight,
   GraduationCap,
   House,
   LayoutGrid,
+  RotateCcw,
   Trophy,
   UserRound,
   UsersRound,
   X,
 } from "lucide-react";
-import { directions, university } from "@/data/curriculum";
+import { directions } from "@/data/curriculum";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
-import { StorkAssistant } from "@/components/mascot/StorkAssistant";
-import { worldConfig } from "@/data/world-config";
 import { CACHE_VERSION } from "@/data/cache-bust-v2";
 
 export function Sidebar({
@@ -28,6 +26,7 @@ export function Sidebar({
   const pathname = usePathname();
   const navClass = (href: string) =>
     `nav-item ${pathname === href ? "active" : ""}`;
+
   return (
     <>
       {open && (
@@ -51,11 +50,9 @@ export function Sidebar({
             aria-label="Uplift home"
           >
             <span className="brand-mark">
-              <GraduationCap size={29} />
+              <GraduationCap size={20} />
             </span>
-            <span>
-              uplift<span className="brand-dot">.</span>
-            </span>
+            <span className="brand-text">Uplift</span>
           </Link>
           <button
             className="icon-button close-menu"
@@ -65,7 +62,7 @@ export function Sidebar({
             <X size={20} />
           </button>
         </div>
-        <div className="workspace-label">YOUR LEARNING CAMPUS</div>
+        
         <nav aria-label="Main navigation" suppressHydrationWarning>
           <Link
             href="/dashboard"
@@ -73,10 +70,12 @@ export function Sidebar({
             aria-current={pathname === "/dashboard" ? "page" : undefined}
             onClick={onClose}
           >
-            <House size={21} />
-            Home
+            <span className="nav-icon"><House size={20} /></span>
+            <span className="nav-label-text">Home</span>
           </Link>
+
           <div className="nav-label">MY DIRECTIONS</div>
+          
           {directions
             .filter((d) => d.id !== "computer-engineering")
             .map((direction) => (
@@ -89,23 +88,38 @@ export function Sidebar({
                 }
                 onClick={onClose}
               >
-                <CurriculumIcon name={direction.icon} size={21} />
-                {direction.shortTitle}
+                <span className="nav-icon">
+                  <CurriculumIcon name={direction.icon} size={20} />
+                </span>
+                <span className="nav-label-text">{direction.shortTitle}</span>
                 {pathname === `/path/${direction.id}` && (
                   <span className="active-dot" />
                 )}
               </Link>
             ))}
+
           <Link
             href="/courses"
             className={navClass("/courses")}
             aria-current={pathname === "/courses" ? "page" : undefined}
             onClick={onClose}
           >
-            <LayoutGrid size={21} />
-            All Courses
+            <span className="nav-icon"><LayoutGrid size={20} /></span>
+            <span className="nav-label-text">All Courses</span>
           </Link>
+
+          <Link
+            href="/repeat"
+            className={navClass("/repeat")}
+            aria-current={pathname === "/repeat" ? "page" : undefined}
+            onClick={onClose}
+          >
+            <span className="nav-icon"><RotateCcw size={20} /></span>
+            <span className="nav-label-text">Repeat</span>
+          </Link>
+
           <div className="nav-divider" />
+
           {[
             { href: "/achievements", title: "Achievements", icon: Trophy },
             { href: "/leaderboard", title: "Leaderboard", icon: UsersRound },
@@ -118,36 +132,11 @@ export function Sidebar({
               aria-current={pathname === href ? "page" : undefined}
               onClick={onClose}
             >
-              <Icon size={21} />
-              {title}
+              <span className="nav-icon"><Icon size={20} /></span>
+              <span className="nav-label-text">{title}</span>
             </Link>
           ))}
         </nav>
-        <div className="assistant-card" style={worldConfig.mascot.enabled ? undefined : { padding: "20px 18px", minHeight: "120px" }}>
-          {worldConfig.mascot.enabled ? (
-            <StorkAssistant />
-          ) : (
-            <div className="assistant-tip-body">
-              <span className="eyebrow" style={{ color: "#699851", fontWeight: 700 }}>STUDENT FOCUS</span>
-              <p style={{ marginTop: "8px", fontSize: "19px", lineHeight: 1.3 }}>
-                Small steps. <strong style={{ color: "#36792e" }}>Big futures.</strong>
-              </p>
-              <span style={{ display: "block", marginTop: "8px", fontSize: "12px", color: "var(--muted)" }}>
-                Mastering core concepts one lesson at a time.
-              </span>
-            </div>
-          )}
-        </div>
-        <Link href="/profile" className="university-link" onClick={onClose}>
-          <span className="university-icon">
-            <GraduationCap size={19} />
-          </span>
-          <span>
-            {university.shortName}
-            <small>Student workspace</small>
-          </span>
-          <ArrowUpRight size={15} />
-        </Link>
       </aside>
     </>
   );

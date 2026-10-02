@@ -10,9 +10,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
   Check,
-  Clock3,
   Code,
   GraduationCap,
   PenLine,
@@ -36,7 +34,7 @@ import {
   GradientDescentProvider,
 } from "./GradientDescentLab";
 import { CodeExample } from "./CodeExample";
-import { PracticeProblemCard, QuizQuestionCard } from "./Assessment";
+import { ChatPracticeProblem, ChatQuizQuestion } from "./ChatAssessment";
 
 const empty = emptyActivity();
 function ObservedBlock({
@@ -71,15 +69,80 @@ function ObservedBlock({
     </div>
   );
 }
+export function isCodingSubject(
+  directionId?: string,
+  lessonId?: string,
+): boolean {
+  const dir = (directionId ?? "").toLowerCase();
+  const id = (lessonId ?? "").toLowerCase();
+
+  // Non-coding subjects specified by requirements: physics, math, italian language, and similar
+  if (
+    dir.includes("physics") ||
+    dir.includes("math") ||
+    dir.includes("italian") ||
+    dir.includes("language")
+  ) {
+    return false;
+  }
+
+  const nonCodingLessons = [
+    "calc-derivatives",
+    "calc-integrals",
+    "discrete-logic",
+    "linear-systems",
+    "si-base-units",
+    "dimensional-scaling",
+    "water-equivalency",
+    "vector-components",
+    "vector-dot-product",
+    "vector-cross-product",
+    "physics-tactical-exam",
+    "italian-greetings",
+    "italian-numbers-time",
+    "italian-engineering-terms",
+  ];
+  if (nonCodingLessons.some((l) => id.includes(l))) {
+    return false;
+  }
+
+  // Coding subjects specified by requirements: ai & ml, database, algorithm, programming, etc.
+  if (
+    dir.includes("ai-ml") ||
+    dir.includes("programming") ||
+    dir.includes("data-science") ||
+    dir.includes("computer") ||
+    dir.includes("database") ||
+    id.includes("python") ||
+    id.includes("database") ||
+    id.includes("deep-learning") ||
+    id.includes("gradient-descent") ||
+    id.includes("machine-learning") ||
+    id.includes("algorithm")
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 interface BlockProps {
   block: LessonBlock;
   lesson: LessonContent;
   activity: LessonActivity;
   record: (kind: keyof LessonActivity, id: string) => void;
+  directionId?: string;
 }
 /** Exhaustive discriminated renderer: adding a schema type requires an implementation. */
-function ContentBlock({ block, lesson, activity, record }: BlockProps) {
+function ContentBlock({
+  block,
+  lesson,
+  activity,
+  record,
+  directionId,
+}: BlockProps) {
   const completed = activity.completed.includes(block.id);
+  const codingSubject = isCodingSubject(directionId, lesson.id);
   switch (block.type) {
     case "introduction":
     case "intuition":
@@ -133,6 +196,9 @@ function ContentBlock({ block, lesson, activity, record }: BlockProps) {
         </>
       );
     case "code":
+      if (!codingSubject) {
+        return null;
+      }
       return (
         <>
           <h3>{block.title}</h3>
@@ -175,7 +241,7 @@ function ContentBlock({ block, lesson, activity, record }: BlockProps) {
             const problem = lesson.practiceProblems.find((p) => p.id === id);
             if (!problem) throw new Error(`Unknown practice problem ${id}`);
             return (
-              <PracticeProblemCard
+              <ChatPracticeProblem
                 key={id}
                 problem={problem}
                 number={i + 1}
@@ -201,7 +267,7 @@ function ContentBlock({ block, lesson, activity, record }: BlockProps) {
             const question = lesson.quiz.find((q) => q.id === id);
             if (!question) throw new Error(`Unknown quiz question ${id}`);
             return (
-              <QuizQuestionCard
+              <ChatQuizQuestion
                 key={id}
                 question={question}
                 number={i + 1}
@@ -283,7 +349,10 @@ function SimulationScope({
 }
 type StageKind = "quiz" | "video" | "code" | "practice" | "lesson";
 
-function getSectionStageKind(section: LessonContent["sections"][number]): {
+function getSectionStageKind(
+  section: LessonContent["sections"][number],
+  isCoding: boolean = true,
+): {
   kind: StageKind;
   label: string;
 } {
@@ -318,13 +387,14 @@ function getSectionStageKind(section: LessonContent["sections"][number]): {
     return { kind: "video", label: "Interactive / Video" };
   }
 
-  // 3. Code / Implementation -> code icon
+  // 3. Code / Implementation -> code icon (only for coding subjects!)
   if (
-    types.includes("code") ||
-    stage.includes("code") ||
-    stage.includes("implement") ||
-    title.includes("code") ||
-    title.includes("код")
+    isCoding &&
+    (types.includes("code") ||
+      stage.includes("code") ||
+      stage.includes("implement") ||
+      title.includes("code") ||
+      title.includes("код"))
   ) {
     return { kind: "code", label: "Code" };
   }
@@ -387,8 +457,24 @@ export function LessonRenderer({
         ?.scrollIntoView({ block: "start" }),
     );
   };
+  const codingSubject = isCodingSubject(directionId, lesson.id);
+
+  useEffect(() => {
+    if (!codingSubject) {
+      lesson.sections.forEach((s) => {
+        s.blocks.forEach((b) => {
+          if (b.type === "code" && !activity.completed.includes(b.id)) {
+            record("completed", b.id);
+            record("viewed", b.id);
+          }
+        });
+      });
+    }
+  }, [codingSubject, lesson, activity.completed, record]);
+
   const readingBlocks = section.blocks.filter(
     (b) =>
+      (codingSubject || b.type !== "code") &&
       ![
         "interactive-graph",
         "algorithm-visualizer",
@@ -474,7 +560,7 @@ export function LessonRenderer({
             {lesson.sections.map((s, i) => {
               const isDone = sectionDone(i);
               const isActive = i === sectionIndex;
-              const stageInfo = getSectionStageKind(s);
+              const stageInfo = getSectionStageKind(s, codingSubject);
               const statusLabel = isDone
                 ? "Completed"
                 : isActive
@@ -542,30 +628,7 @@ export function LessonRenderer({
             })}
           </div>
 
-          <span className="minimal-step-counter">
-            Step {sectionIndex + 1}/{lesson.sections.length} · {section.stage}
-          </span>
-
-          <div className="task-topbar-divider" aria-hidden="true" />
-
-          {/* Minimalist Lesson Info Chips */}
-          <div className="minimal-lesson-info">
-            <h1 className="minimal-lesson-title">{lesson.title}</h1>
-            <div className="minimal-meta-chips">
-              <span className="minimal-chip">
-                <Clock3 size={11} />
-                {lesson.estimatedMinutes}m
-              </span>
-              <span className="minimal-chip">
-                <BookOpen size={11} />
-                {lesson.difficulty}
-              </span>
-              <span className="minimal-chip xp">
-                <Star size={11} />
-                +{lesson.xp} XP{alreadyCompleted ? " · earned" : ""}
-              </span>
-            </div>
-          </div>
+          <h1 className="minimal-lesson-title">{lesson.title}</h1>
         </div>
 
         <div className="task-topbar-right">
@@ -609,28 +672,26 @@ export function LessonRenderer({
           <div className="section-heading">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
               <span className="lesson-kicker">
-                {String(sectionIndex + 1).padStart(2, "0")} /{" "}
-                {String(lesson.sections.length).padStart(2, "0")} ·{" "}
                 {section.stage.toUpperCase()}
               </span>
               {sectionPracticeProblems.length > 0 ? (
-                <span className="lesson-kicker" style={{ color: completedPracticeCount === sectionPracticeProblems.length ? "#2b803d" : "#956c16" }}>
+                <span className="lesson-kicker" style={{ color: completedPracticeCount === sectionPracticeProblems.length ? "#0f766e" : "#94a3b8" }}>
                   {completedPracticeCount === sectionPracticeProblems.length
-                    ? "✓ ALL PROBLEMS SOLVED"
-                    : `${completedPracticeCount} / ${sectionPracticeProblems.length} SOLVED`}
+                    ? "✓ All solved"
+                    : `${completedPracticeCount}/${sectionPracticeProblems.length} solved`}
                 </span>
               ) : sectionQuizQuestions.length > 0 ? (
-                <span className="lesson-kicker" style={{ color: completedQuizCount === sectionQuizQuestions.length ? "#2b803d" : "#956c16" }}>
+                <span className="lesson-kicker" style={{ color: completedQuizCount === sectionQuizQuestions.length ? "#0f766e" : "#94a3b8" }}>
                   {completedQuizCount === sectionQuizQuestions.length
-                    ? "✓ ALL QUESTIONS ANSWERED"
-                    : `${completedQuizCount} / ${sectionQuizQuestions.length} ANSWERED`}
+                    ? "✓ All answered"
+                    : `${completedQuizCount}/${sectionQuizQuestions.length} answered`}
                 </span>
               ) : null}
             </div>
             <h2>{section.title}</h2>
             {sectionIndex === 0 && (
               <p>
-                Before the equations, let’s give the idea somewhere to land.
+                Before the equations, let&apos;s give the idea somewhere to land.
               </p>
             )}
           </div>
@@ -660,6 +721,7 @@ export function LessonRenderer({
                   lesson={lesson}
                   activity={activity}
                   record={record}
+                  directionId={directionId}
                 />
               </ObservedBlock>
             ))}

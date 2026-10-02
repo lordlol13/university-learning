@@ -1,4 +1,5 @@
 "use client";
+
 import { useRef, useState } from "react";
 import { Html, useCursor } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -7,6 +8,10 @@ import { MathUtils, type Group, type Mesh } from "three";
 import type { Lesson, LessonStatus } from "@/types/curriculum";
 import type { Point3 } from "@/types/learning-world";
 
+// ============================================================================
+// 1. DISTINCT HIGH-FIDELITY SUBJECT 3D SYMBOLS
+// ============================================================================
+
 function PlatformSymbol({
   lesson,
   status,
@@ -14,159 +19,260 @@ function PlatformSymbol({
   lesson: Lesson;
   status: LessonStatus;
 }) {
-  const color = status === "locked" ? "#e7ece8" : "#ffffff";
-  if (status === "locked")
+  const isLocked = status === "locked";
+  const symbolColor = isLocked ? "#94a3b8" : "#ffffff";
+  const accentColor = isLocked ? "#64748b" : "#38bdf8";
+
+  // Locked: Heavy carved padlock with prominent gleaming brass face & keyhole
+  if (isLocked) {
     return (
-      <group position={[0, 0.65, 0]}>
-        <mesh position={[0, 0.23, 0]}>
-          <torusGeometry args={[0.21, 0.055, 8, 20, Math.PI]} />
-          <meshStandardMaterial color={color} />
+      <group position={[0, 0.72, 0]} name="symbol-locked">
+        {/* Heavy Polished Chrome Shackle Arch */}
+        <mesh position={[0, 0.28, 0]}>
+          <torusGeometry args={[0.22, 0.055, 12, 28, Math.PI]} />
+          <meshStandardMaterial color="#f1f5f9" metalness={0.92} roughness={0.18} />
         </mesh>
-        <mesh position={[0, 0.05, 0]} castShadow>
-          <boxGeometry args={[0.55, 0.4, 0.22]} />
-          <meshStandardMaterial color={color} roughness={0.45} />
+        {/* Solid Brass Lock Body with Golden Luster */}
+        <mesh position={[0, 0.06, 0]} castShadow>
+          <boxGeometry args={[0.58, 0.46, 0.24]} />
+          <meshStandardMaterial
+            color="#f59e0b"
+            emissive="#b45309"
+            emissiveIntensity={0.25}
+            roughness={0.25}
+            metalness={0.85}
+          />
         </mesh>
-        <mesh position={[0, 0.07, 0.115]}>
-          <circleGeometry args={[0.045, 12]} />
-          <meshStandardMaterial color="#939f99" />
+        {/* Dark Obsidian Base Rim */}
+        <mesh position={[0, -0.16, 0]} castShadow>
+          <boxGeometry args={[0.62, 0.06, 0.26]} />
+          <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.4} />
+        </mesh>
+        {/* Front Keyhole Escutcheon Plate */}
+        <mesh position={[0, 0.06, 0.122]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.13, 0.13, 0.015, 20]} />
+          <meshStandardMaterial color="#1e293b" metalness={0.7} roughness={0.3} />
+        </mesh>
+        {/* Front High-Contrast Keyhole Cutout */}
+        <mesh position={[0, 0.085, 0.132]}>
+          <circleGeometry args={[0.045, 16]} />
+          <meshBasicMaterial color="#020617" />
+        </mesh>
+        <mesh position={[0, 0.035, 0.132]}>
+          <boxGeometry args={[0.035, 0.07, 0.005]} />
+          <meshBasicMaterial color="#020617" />
+        </mesh>
+        {/* Back Keyhole Escutcheon Plate (Guarantees zero blank side) */}
+        <mesh position={[0, 0.06, -0.122]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.13, 0.13, 0.015, 20]} />
+          <meshStandardMaterial color="#1e293b" metalness={0.7} roughness={0.3} />
+        </mesh>
+        <mesh position={[0, 0.085, -0.132]} rotation={[0, Math.PI, 0]}>
+          <circleGeometry args={[0.045, 16]} />
+          <meshBasicMaterial color="#020617" />
+        </mesh>
+        <mesh position={[0, 0.035, -0.132]} rotation={[0, Math.PI, 0]}>
+          <boxGeometry args={[0.035, 0.07, 0.005]} />
+          <meshBasicMaterial color="#020617" />
         </mesh>
       </group>
     );
-  if (lesson.icon === "chart")
+  }
+
+  // Analytics & Statistics: 3D Tiered Glass Chart Bars
+  if (lesson.icon === "chart") {
     return (
-      <group position={[0, 0.63, 0]}>
+      <group position={[0, 0.68, 0]} name="symbol-chart">
         {[-1, 0, 1].map((x, i) => (
-          <mesh key={x} position={[x * 0.24, i * 0.1, 0]} castShadow>
-            <boxGeometry args={[0.18, 0.26 + i * 0.2, 0.22]} />
+          <mesh key={x} position={[x * 0.26, (i + 1) * 0.11, 0]} castShadow>
+            <boxGeometry args={[0.2, 0.28 + i * 0.22, 0.2]} />
             <meshStandardMaterial
-              color={["#92dcf7", "#fcda62", "#fa8979"][i]}
-              roughness={0.35}
+              color={["#38bdf8", "#fbbf24", "#f43f5e"][i]}
+              roughness={0.25}
+              metalness={0.3}
             />
           </mesh>
         ))}
       </group>
     );
-  if (lesson.icon === "brain")
+  }
+
+  // Brain & AI Neural Networks: Luminous Neural Lobes
+  if (lesson.icon === "brain") {
     return (
-      <group position={[0, 0.86, 0]}>
+      <group position={[0, 0.88, 0]} name="symbol-brain">
         {[-1, 1].map((side) => (
           <group key={side}>
             {[0, 1, 2].map((i) => (
               <mesh
                 key={i}
-                position={[side * (i === 1 ? 0.18 : 0.13), (i - 1) * 0.18, 0]}
-                scale={[0.19, 0.2, 0.15]}
+                position={[side * (i === 1 ? 0.22 : 0.15), (i - 1) * 0.18, 0]}
+                scale={[0.2, 0.22, 0.18]}
                 castShadow
               >
-                <sphereGeometry args={[1, 14, 10]} />
-                <meshStandardMaterial color="#f3fbff" roughness={0.3} />
+                <sphereGeometry args={[1, 16, 12]} />
+                <meshStandardMaterial
+                  color="#e0f2fe"
+                  emissive="#38bdf8"
+                  emissiveIntensity={0.6}
+                  roughness={0.2}
+                />
               </mesh>
             ))}
           </group>
         ))}
-        <mesh position={[0, -0.36, 0]}>
-          <cylinderGeometry args={[0.045, 0.045, 0.16, 8]} />
-          <meshStandardMaterial color="#e0f4ff" />
+        {/* Brain stem */}
+        <mesh position={[0, -0.38, 0]}>
+          <cylinderGeometry args={[0.05, 0.05, 0.18, 8]} />
+          <meshStandardMaterial color="#bae6fd" />
         </mesh>
       </group>
     );
-  if (lesson.icon === "matrix")
+  }
+
+  // Linear Algebra & Matrix: Floating 3D Tensor Cube
+  if (lesson.icon === "matrix") {
     return (
-      <group position={[0, 0.79, 0]}>
+      <group position={[0, 0.82, 0]} name="symbol-matrix">
         {[-1, 1].flatMap((x) =>
           [-1, 1].map((y) => (
             <mesh
               key={`${x}${y}`}
-              position={[x * 0.19, y * 0.19, 0]}
+              position={[x * 0.2, y * 0.2, 0]}
               castShadow
             >
-              <boxGeometry args={[0.16, 0.25, 0.15]} />
-              <meshStandardMaterial color={color} roughness={0.35} />
+              <boxGeometry args={[0.18, 0.24, 0.16]} />
+              <meshStandardMaterial
+                color="#a855f7"
+                emissive="#7e22ce"
+                emissiveIntensity={0.6}
+                roughness={0.3}
+              />
             </mesh>
           )),
         )}
+        {/* Core coordinate axes */}
+        <mesh>
+          <cylinderGeometry args={[0.015, 0.015, 0.6, 6]} />
+          <meshBasicMaterial color="#ffffff" />
+        </mesh>
       </group>
     );
-  if (lesson.icon === "database")
+  }
+
+  // Databases: Multi-tiered Magnetic Data Cylinders
+  if (lesson.icon === "database") {
     return (
-      <group position={[0, 0.67, 0]}>
+      <group position={[0, 0.72, 0]} name="symbol-database">
         {[0, 1, 2].map((i) => (
-          <mesh key={i} position={[0, i * 0.17, 0]} castShadow>
-            <cylinderGeometry args={[0.31, 0.31, 0.14, 24]} />
+          <mesh key={i} position={[0, i * 0.18, 0]} castShadow>
+            <cylinderGeometry args={[0.33, 0.33, 0.14, 24]} />
             <meshStandardMaterial
-              color="#f3f9f6"
-              metalness={0.12}
-              roughness={0.28}
+              color="#f8fafc"
+              metalness={0.7}
+              roughness={0.25}
             />
           </mesh>
         ))}
+        {/* Status read-head LED */}
+        <mesh position={[0.28, 0.36, 0.18]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial
+            color="#10b981"
+            emissive="#10b981"
+            emissiveIntensity={2}
+            toneMapped={false}
+          />
+        </mesh>
       </group>
     );
-  if (lesson.icon === "network")
+  }
+
+  // Network & Graphs: Luminous Nodes with Connecting Rods
+  if (lesson.icon === "network") {
     return (
-      <group position={[0, 0.83, 0]}>
+      <group position={[0, 0.84, 0]} name="symbol-network">
         {[-1, 0, 1].map((x, i) => (
           <group key={x}>
-            <mesh position={[x * 0.33, i === 1 ? 0.25 : -0.12, 0]} castShadow>
-              <sphereGeometry args={[0.13, 12, 8]} />
-              <meshStandardMaterial color="#f3f9f6" roughness={0.3} />
+            <mesh position={[x * 0.34, i === 1 ? 0.26 : -0.14, 0]} castShadow>
+              <sphereGeometry args={[0.14, 14, 10]} />
+              <meshStandardMaterial
+                color="#38bdf8"
+                emissive="#0284c7"
+                emissiveIntensity={0.8}
+                roughness={0.25}
+              />
             </mesh>
             {x !== 0 && (
-              <mesh position={[x * 0.16, 0.06, 0]} rotation={[0, 0, x * 0.73]}>
-                <cylinderGeometry args={[0.035, 0.035, 0.48, 8]} />
-                <meshStandardMaterial color="#dcebdc" />
+              <mesh position={[x * 0.17, 0.06, 0]} rotation={[0, 0, x * 0.75]}>
+                <cylinderGeometry args={[0.03, 0.03, 0.5, 8]} />
+                <meshStandardMaterial color="#bae6fd" roughness={0.3} />
               </mesh>
             )}
           </group>
         ))}
       </group>
     );
+  }
+
+  // Default: Crossed Code Brackets / Vector Crest
   return (
-    <group position={[0, 0.8, 0]}>
+    <group position={[0, 0.82, 0]} name="symbol-default">
       {[-1, 1].flatMap((side) =>
         [-1, 1].map((half) => (
           <mesh
             key={`${side}${half}`}
-            position={[side * 0.24, half * 0.11, 0]}
-            rotation={[0, 0, side * half * -0.64]}
+            position={[side * 0.25, half * 0.12, 0]}
+            rotation={[0, 0, side * half * -0.65]}
             castShadow
           >
-            <boxGeometry args={[0.1, 0.35, 0.15]} />
-            <meshStandardMaterial color={color} roughness={0.3} />
+            <boxGeometry args={[0.1, 0.36, 0.16]} />
+            <meshStandardMaterial color={symbolColor} roughness={0.3} />
           </mesh>
         )),
       )}
-      <mesh rotation={[0, 0, -0.22]}>
-        <boxGeometry args={[0.07, 0.49, 0.12]} />
-        <meshStandardMaterial color="#ddf4b8" />
+      <mesh rotation={[0, 0, -0.25]}>
+        <boxGeometry args={[0.08, 0.52, 0.14]} />
+        <meshStandardMaterial
+          color={accentColor}
+          emissive={accentColor}
+          emissiveIntensity={0.5}
+        />
       </mesh>
     </group>
   );
 }
 
+// ============================================================================
+// 2. LESSON PLATFORM PEDESTAL
+// ============================================================================
+
 export function LessonPlatform({
   lesson,
   status,
-  index,
   position,
   selected,
   reducedMotion,
+  showAllLabels = false,
   onSelect,
 }: {
   lesson: Lesson;
   status: LessonStatus;
-  index: number;
+  index?: number;
   position: Point3;
   selected: boolean;
   reducedMotion: boolean;
+  showAllLabels?: boolean;
   onSelect: (lessonId: string) => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const group = useRef<Group>(null),
-    ring = useRef<Mesh>(null);
+  const group = useRef<Group>(null);
+  const ring = useRef<Mesh>(null);
   const { gl } = useThree();
+
   useCursor(hovered, "pointer", "auto", gl.domElement);
   const time = useRef(0);
+
   useFrame((_, delta) => {
     time.current += Math.min(delta, 0.05);
     if (group.current) {
@@ -178,30 +284,28 @@ export function LessonPlatform({
       );
       const scale = MathUtils.damp(
         group.current.scale.x,
-        hovered && !reducedMotion ? 1.035 : 1,
+        hovered && !reducedMotion ? 1.04 : 1,
         9,
         Math.min(delta, 0.1),
       );
       group.current.scale.setScalar(scale);
     }
     if (ring.current && !reducedMotion) {
-      ring.current.rotation.z = time.current * 0.32;
-      ring.current.scale.setScalar(1 + Math.sin(time.current * 2.5) * 0.035);
+      ring.current.rotation.z = time.current * 0.35;
+      ring.current.scale.setScalar(1 + Math.sin(time.current * 2.8) * 0.04);
     }
   });
-  const topColor =
-    status === "current"
-      ? "#37a4f3"
-      : status === "completed"
-        ? "#6dc53f"
-        : "#aeb9ad";
-  const baseColor =
-    status === "current"
-      ? "#417db0"
-      : status === "completed"
-        ? "#539e31"
-        : "#8e9b90";
+
+  const isCurrent = status === "current";
+  const isCompleted = status === "completed";
+  const isLocked = status === "locked";
+
+  const topColor = isCurrent ? "#38bdf8" : isCompleted ? "#22c55e" : "#94a3b8";
+  const baseColor = isCurrent ? "#0284c7" : isCompleted ? "#15803d" : "#64748b";
+
   const hover = (value: boolean) => setHovered(value);
+  const isExpanded = hovered || selected || showAllLabels;
+
   return (
     <group
       ref={group}
@@ -217,125 +321,222 @@ export function LessonPlatform({
         onSelect(lesson.id);
       }}
     >
-      <mesh position={[0, 0.22, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.93, 1.02, 0.25, 48]} />
-        <meshStandardMaterial color={baseColor} roughness={0.5} />
+      {/* Tier 1: Wide Beveled Lower Stone Plinth */}
+      <mesh position={[0, 0.1, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.08, 1.2, 0.2, 48]} />
+        <meshStandardMaterial color="#cbd5e1" roughness={0.85} />
       </mesh>
-      <mesh position={[0, 0.39, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.86, 0.93, 0.22, 48]} />
+
+      {/* Tier 2: Sculpted Middle Dais */}
+      <mesh position={[0, 0.26, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.96, 1.06, 0.18, 48]} />
+        <meshStandardMaterial color={baseColor} roughness={0.55} />
+      </mesh>
+
+      {/* Tier 3: Polished Upper Platform Disc */}
+      <mesh position={[0, 0.42, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.88, 0.95, 0.16, 48]} />
         <meshStandardMaterial
           color={topColor}
-          roughness={0.3}
-          metalness={0.08}
-        />
-      </mesh>
-      <mesh position={[0, 0.515, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.8, 0.033, 6, 48]} />
-        <meshStandardMaterial
-          color={status === "locked" ? "#cad3c7" : "#b9ed94"}
           roughness={0.28}
+          metalness={0.12}
         />
       </mesh>
-      <group rotation={[0, 0.24, 0]}>
+
+      {/* Glowing Runic / Energy Edge Ring */}
+      <mesh position={[0, 0.51, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.82, 0.035, 8, 48]} />
+        <meshStandardMaterial
+          color={isLocked ? "#94a3b8" : isCurrent ? "#38bdf8" : "#86efac"}
+          emissive={isLocked ? "#000000" : isCurrent ? "#0284c7" : "#22c55e"}
+          emissiveIntensity={isLocked ? 0 : 0.8}
+          roughness={0.25}
+        />
+      </mesh>
+
+      {/* 3D Platform Symbol (Rotated & tilted UPWARDS to face camera line of sight) */}
+      <group rotation={[0.32, Math.PI + 0.24, 0]}>
         <PlatformSymbol lesson={lesson} status={status} />
       </group>
-      {status === "completed" && (
-        <group position={[0.69, 0.57, 0.63]} rotation={[-0.4, 0.2, 0]}>
-          <mesh>
-            <sphereGeometry args={[0.24, 16, 12]} />
-            <meshStandardMaterial color="#fffdf0" />
+
+      {/* Completed State: Laurel Medal Badge (Tilted up towards player, dual-sided with glowing checkmark) */}
+      {isCompleted && (
+        <group position={[-0.72, 0.6, -0.64]} rotation={[0.36, Math.PI + 0.25, 0]}>
+          {/* Golden Outer Laurel Rim Disc */}
+          <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.26, 0.26, 0.06, 24]} />
+            <meshStandardMaterial color="#f59e0b" metalness={0.85} roughness={0.2} />
           </mesh>
-          <mesh position={[0, 0, 0.08]}>
-            <sphereGeometry args={[0.2, 16, 12]} />
-            <meshStandardMaterial color="#54b530" />
+          {/* Emerald Green Center Inset on Front */}
+          <mesh position={[0, 0, 0.032]}>
+            <circleGeometry args={[0.22, 24]} />
+            <meshStandardMaterial color="#16a34a" roughness={0.25} />
           </mesh>
-          <mesh position={[-0.06, -0.02, 0.251]} rotation={[0, 0, Math.PI / 4]}>
-            <boxGeometry args={[0.06, 0.13, 0.035]} />
-            <meshStandardMaterial color="white" />
+          {/* Emerald Green Center Inset on Back */}
+          <mesh position={[0, 0, -0.032]} rotation={[0, Math.PI, 0]}>
+            <circleGeometry args={[0.22, 24]} />
+            <meshStandardMaterial color="#16a34a" roughness={0.25} />
           </mesh>
-          <mesh
-            position={[0.045, 0.025, 0.249]}
-            rotation={[0, 0, -Math.PI / 4]}
-          >
-            <boxGeometry args={[0.06, 0.24, 0.035]} />
-            <meshStandardMaterial color="white" />
+          {/* Front Glowing White Checkmark Bars */}
+          <mesh position={[-0.06, -0.02, 0.045]} rotation={[0, 0, Math.PI / 4]}>
+            <boxGeometry args={[0.05, 0.13, 0.02]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={0.6}
+              toneMapped={false}
+            />
+          </mesh>
+          <mesh position={[0.045, 0.03, 0.045]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[0.05, 0.24, 0.02]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={0.6}
+              toneMapped={false}
+            />
+          </mesh>
+          {/* Back Glowing White Checkmark Bars */}
+          <mesh position={[-0.06, -0.02, -0.045]} rotation={[0, Math.PI, Math.PI / 4]}>
+            <boxGeometry args={[0.05, 0.13, 0.02]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={0.6}
+              toneMapped={false}
+            />
+          </mesh>
+          <mesh position={[0.045, 0.03, -0.045]} rotation={[0, Math.PI, -Math.PI / 4]}>
+            <boxGeometry args={[0.05, 0.24, 0.02]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={0.6}
+              toneMapped={false}
+            />
           </mesh>
         </group>
       )}
-      {status === "current" && (
+
+      {/* Current State: Pulsing Holo Energy Ring & Soft Light */}
+      {isCurrent && (
         <>
           <mesh
             ref={ring}
-            position={[0, 0.22, 0]}
+            position={[0, 0.25, 0]}
             rotation={[-Math.PI / 2, 0, 0]}
           >
-            <torusGeometry args={[1.1, 0.05, 8, 64]} />
+            <torusGeometry args={[1.15, 0.055, 8, 64]} />
             <meshStandardMaterial
-              color="#b7edff"
-              emissive="#69caff"
-              emissiveIntensity={1.7}
+              color="#bae6fd"
+              emissive="#38bdf8"
+              emissiveIntensity={2.2}
               toneMapped={false}
             />
           </mesh>
           <pointLight
-            position={[0, 1.1, 0]}
-            color="#7ed5ff"
-            intensity={1.8}
-            distance={3}
+            position={[0, 1.2, 0]}
+            color="#38bdf8"
+            intensity={2.2}
+            distance={3.5}
             decay={2}
           />
           {[-1, 1].map((side) => (
-            <mesh key={side} position={[side * 1.07, 0.28, 0]}>
-              <sphereGeometry args={[0.075, 10, 8]} />
-              <meshBasicMaterial color="#e6faff" />
+            <mesh key={side} position={[side * 1.12, 0.32, 0]}>
+              <sphereGeometry args={[0.08, 10, 8]} />
+              <meshBasicMaterial color="#e0f2fe" />
             </mesh>
           ))}
         </>
       )}
-      <Html
-        position={[1.48, 0.73, 0.02]}
-        zIndexRange={[12, 0]}
-        style={{ pointerEvents: "auto" }}
-      >
-        <button
-          className={`world-lesson-label ${status} ${selected ? "selected" : ""}`}
-          onClick={(event) => {
-            event.stopPropagation();
-            onSelect(lesson.id);
-          }}
-          onMouseEnter={() => hover(true)}
-          onMouseLeave={() => hover(false)}
-          aria-label={`${index + 1}. ${lesson.title}, ${status === "current" ? "start lesson" : status === "completed" ? "completed, review lesson" : "locked, view prerequisites"}`}
+
+      {/* Smart Adaptive Step Pin vs Full Expanded Lesson Card (Prevents occluding adjacent steps) */}
+      {isExpanded ? (
+        <Html
+          position={[0, 1.88, 0]}
+          center
+          zIndexRange={[30, 0]}
+          style={{ pointerEvents: "auto" }}
         >
-          {status === "current" && (
-            <span className="world-here">YOU’RE HERE!</span>
-          )}
-          <strong>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {lesson.title}
-          </strong>
-          <span className="world-label-meta">
-            {status === "completed" ? (
-              <Check size={11} />
-            ) : status === "locked" ? (
-              <LockKeyhole size={11} />
-            ) : (
-              <Play size={10} fill="currentColor" />
+          <button
+            className={`world-lesson-label ${status} ${selected ? "selected" : ""}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(lesson.id);
+            }}
+            onMouseEnter={() => hover(true)}
+            onMouseLeave={() => hover(false)}
+            aria-label={`${lesson.title}, ${
+              isCurrent
+                ? "start lesson"
+                : isCompleted
+                  ? "completed, review lesson"
+                  : "locked, view prerequisites"
+            }`}
+          >
+            {isCurrent && (
+              <span className="world-here">YOU’RE HERE!</span>
             )}
-            <span>
-              {status === "current"
-                ? "Start lesson"
-                : status === "locked"
-                  ? "Locked"
-                  : "Completed"}
+            <strong>
+              {lesson.title}
+            </strong>
+            <span className="world-label-meta">
+              {isCompleted ? (
+                <Check size={11} />
+              ) : isLocked ? (
+                <LockKeyhole size={11} />
+              ) : (
+                <Play size={10} fill="currentColor" />
+              )}
+              <span>
+                {isCurrent
+                  ? "Start lesson"
+                  : isLocked
+                    ? "Locked"
+                    : "Completed"}
+              </span>
+              <span className="label-xp">
+                <Star size={10} />
+                {lesson.xp} XP
+              </span>
             </span>
-            <span className="label-xp">
-              <Star size={10} />
-              {lesson.xp} XP
+          </button>
+        </Html>
+      ) : (
+        <Html
+          position={[0, 1.45, 0]}
+          center
+          zIndexRange={[10, 0]}
+          style={{ pointerEvents: "auto" }}
+        >
+          <button
+            className={`world-lesson-pin ${status} ${selected ? "selected" : ""}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(lesson.id);
+            }}
+            onMouseEnter={() => hover(true)}
+            onMouseLeave={() => hover(false)}
+            aria-label={`${lesson.title}, ${
+              isCurrent ? "current lesson" : isCompleted ? "completed" : "locked"
+            }`}
+          >
+            <span className="world-pin-icon">
+              {isCompleted ? (
+                <Check size={10} strokeWidth={2.5} />
+              ) : isCurrent ? (
+                <Play size={9} fill="currentColor" />
+              ) : (
+                <LockKeyhole size={9} />
+              )}
             </span>
-          </span>
-        </button>
-      </Html>
+            <span className="world-pin-title">{lesson.title}</span>
+            {isCurrent && (
+              <span className="world-pin-current-tag">START</span>
+            )}
+          </button>
+        </Html>
+      )}
     </group>
   );
 }

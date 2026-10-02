@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Html } from "@react-three/drei";
 import { directions } from "@/data/curriculum";
 import { learningWorlds } from "@/data/learning-world";
 import type { Direction } from "@/types/curriculum";
@@ -86,59 +87,161 @@ function IslandSignpost({
         />
       </mesh>
 
-      {/* 3D Directional Wooden Signboard with Arrow Tip (Zero text overlay) */}
+      {/* 3D Directional Wooden Signboard with Arrow Tip (Always crisp and clearly front-facing) */}
       <group position={[isPrev ? -0.2 : 0.2, 1.35, 0]}>
         {/* Main Board Plank */}
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[1.35, 0.44, 0.12]} />
+          <boxGeometry args={[1.38, 0.46, 0.12]} />
           <meshStandardMaterial
             color={hovered ? "#fffbf0" : "#f5e8c9"}
-            roughness={0.7}
+            roughness={0.65}
+          />
+        </mesh>
+
+        {/* High-Contrast Plaque Inset on Front */}
+        <mesh position={[0, 0, 0.063]}>
+          <boxGeometry args={[1.24, 0.36, 0.012]} />
+          <meshStandardMaterial
+            color={hovered ? "#0f172a" : "#1e293b"}
+            roughness={0.4}
+          />
+        </mesh>
+
+        {/* High-Contrast Plaque Inset on Back (Guarantees zero blank side) */}
+        <mesh position={[0, 0, -0.063]}>
+          <boxGeometry args={[1.24, 0.36, 0.012]} />
+          <meshStandardMaterial
+            color={hovered ? "#0f172a" : "#1e293b"}
+            roughness={0.4}
           />
         </mesh>
 
         {/* Directional Pointed Arrow Tip */}
         <mesh
-          position={[isPrev ? -0.76 : 0.76, 0, 0]}
+          position={[isPrev ? -0.78 : 0.78, 0, 0]}
           rotation={[0, 0, isPrev ? Math.PI / 2 : -Math.PI / 2]}
           castShadow
         >
-          <coneGeometry args={[0.22, 0.26, 3]} />
+          <coneGeometry args={[0.24, 0.28, 4]} />
           <meshStandardMaterial
-            color={hovered ? "#fffbf0" : "#f5e8c9"}
-            roughness={0.7}
+            color={hovered ? "#ffffff" : "#f5e8c9"}
+            roughness={0.65}
           />
         </mesh>
 
-        {/* Painted 3D Green Arrow Chevron */}
-        <mesh
-          position={[isPrev ? -0.42 : 0.42, 0, 0.068]}
-          rotation={[0, 0, isPrev ? Math.PI / 2 : -Math.PI / 2]}
-        >
-          <coneGeometry args={[0.13, 0.18, 3]} />
-          <meshStandardMaterial
-            color={hovered ? "#389e22" : "#2b7719"}
-            roughness={0.4}
-          />
-        </mesh>
+        {/* Bold Glowing 3D Directional Chevron on Front */}
+        <group position={[isPrev ? -0.42 : 0.42, 0, 0.076]}>
+          <mesh
+            rotation={[0, 0, isPrev ? Math.PI / 4 : -Math.PI / 4]}
+            position={[0, 0.06, 0]}
+          >
+            <boxGeometry args={[0.045, 0.16, 0.024]} />
+            <meshStandardMaterial
+              color="#4ade80"
+              emissive="#22c55e"
+              emissiveIntensity={1.8}
+              toneMapped={false}
+            />
+          </mesh>
+          <mesh
+            rotation={[0, 0, isPrev ? -Math.PI / 4 : Math.PI / 4]}
+            position={[0, -0.06, 0]}
+          >
+            <boxGeometry args={[0.045, 0.16, 0.024]} />
+            <meshStandardMaterial
+              color="#4ade80"
+              emissive="#22c55e"
+              emissiveIntensity={1.8}
+              toneMapped={false}
+            />
+          </mesh>
+        </group>
+
+        {/* Matching Glowing 3D Directional Chevron on Back */}
+        <group position={[isPrev ? -0.42 : 0.42, 0, -0.076]}>
+          <mesh
+            rotation={[0, 0, isPrev ? Math.PI / 4 : -Math.PI / 4]}
+            position={[0, 0.06, 0]}
+          >
+            <boxGeometry args={[0.045, 0.16, 0.024]} />
+            <meshStandardMaterial
+              color="#4ade80"
+              emissive="#22c55e"
+              emissiveIntensity={1.8}
+              toneMapped={false}
+            />
+          </mesh>
+          <mesh
+            rotation={[0, 0, isPrev ? -Math.PI / 4 : Math.PI / 4]}
+            position={[0, -0.06, 0]}
+          >
+            <boxGeometry args={[0.045, 0.16, 0.024]} />
+            <meshStandardMaterial
+              color="#4ade80"
+              emissive="#22c55e"
+              emissiveIntensity={1.8}
+              toneMapped={false}
+            />
+          </mesh>
+        </group>
 
         {/* Wooden Roof Cap */}
-        <mesh position={[0, 0.25, 0]} castShadow>
-          <boxGeometry args={[1.48, 0.07, 0.2]} />
+        <mesh position={[0, 0.27, 0]} castShadow>
+          <boxGeometry args={[1.52, 0.08, 0.18]} />
           <meshStandardMaterial color="#7a552c" roughness={0.8} />
         </mesh>
 
         {/* Glowing Lantern / Emerald Gem on Top */}
-        <mesh position={[0, 0.36, 0]} castShadow>
-          <dodecahedronGeometry args={[0.09, 0]} />
+        <mesh position={[0, 0.38, 0]} castShadow>
+          <dodecahedronGeometry args={[0.1, 0]} />
           <meshStandardMaterial
-            color={hovered ? "#9df069" : "#6fcf38"}
-            emissive={hovered ? "#5cb825" : "#328c0b"}
-            emissiveIntensity={hovered ? 2.2 : 0.9}
+            color={hovered ? "#a3e635" : "#4ade80"}
+            emissive={hovered ? "#84cc16" : "#22c55e"}
+            emissiveIntensity={hovered ? 2.6 : 1.6}
             toneMapped={false}
           />
         </mesh>
       </group>
+
+      {/* Prominent Always-Readable Floating Campus Sign Badge */}
+      <Html
+        position={[0, 2.05, 0]}
+        center
+        zIndexRange={[25, 0]}
+        style={{
+          pointerEvents: "none",
+          transition: "transform 0.18s ease, box-shadow 0.18s ease",
+          transform: hovered ? "scale(1.08)" : "scale(1)",
+        }}
+      >
+        <div
+          style={{
+            background: hovered
+              ? "rgba(15, 23, 42, 0.96)"
+              : "rgba(15, 23, 42, 0.88)",
+            color: "#ffffff",
+            padding: "4px 10px",
+            borderRadius: "6px",
+            fontSize: "11px",
+            fontWeight: 700,
+            whiteSpace: "nowrap",
+            boxShadow: hovered
+              ? "0 6px 18px rgba(0,0,0,0.45)"
+              : "0 3px 10px rgba(0,0,0,0.3)",
+            border: hovered
+              ? "1px solid rgba(74, 222, 128, 0.6)"
+              : "1px solid rgba(255,255,255,0.22)",
+            letterSpacing: "-0.2px",
+            display: "flex",
+            alignItems: "center",
+            gap: "5px",
+          }}
+        >
+          {isPrev && <span style={{ color: "#4ade80", fontSize: "10px" }}>◀</span>}
+          <span>{world.title}</span>
+          {!isPrev && <span style={{ color: "#4ade80", fontSize: "10px" }}>▶</span>}
+        </div>
+      </Html>
     </group>
   );
 }
@@ -169,20 +272,20 @@ export function IslandSignposts({
 
   return (
     <group name="island-signposts">
-      {/* Previous Island Signpost on Left Side of Grass (Arrow points left toward previous) */}
+      {/* Previous Island Signpost on Left Side of Island (Arrow points left toward previous) */}
       <IslandSignpost
         world={prevWorld}
         direction="prev"
-        position={[-3.3, 0.28, 2.4]}
-        rotation={[0, 0.25, 0]}
+        position={[3.5, 0.28, -1.8]}
+        rotation={[0.26, Math.PI + 0.25, 0]}
       />
 
-      {/* Next Island Signpost on Right Side of Grass (Arrow points right toward next) */}
+      {/* Next Island Signpost on Right Side of Island (Arrow points right toward next) */}
       <IslandSignpost
         world={nextWorld}
         direction="next"
-        position={[3.5, 0.28, 0.6]}
-        rotation={[0, -0.28, 0]}
+        position={[-3.8, 0.28, -0.6]}
+        rotation={[0.26, Math.PI - 0.25, 0]}
       />
     </group>
   );

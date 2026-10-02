@@ -36,6 +36,34 @@ export const achievementCatalog: Achievement[] = [
     icon: "compass",
     color: "gold",
   },
+  {
+    id: "physics-master",
+    title: "Physics & Engineering Master",
+    description: "Complete every lesson in Physics & Engineering.",
+    icon: "compass",
+    color: "purple",
+  },
+  {
+    id: "math-pioneer",
+    title: "Mathematics Pioneer",
+    description: "Complete every lesson in Mathematics & Logic.",
+    icon: "book",
+    color: "blue",
+  },
+  {
+    id: "italian-scholar",
+    title: "Italian Culture Scholar",
+    description: "Complete every lesson in Italian Language & Culture.",
+    icon: "sprout",
+    color: "green",
+  },
+  {
+    id: "practice-champion",
+    title: "Practice Champion",
+    description: "Complete a repeat practice session to reinforce your knowledge.",
+    icon: "flame",
+    color: "gold",
+  },
 ];
 export const levelSize = 250;
 export const initialProgress = {

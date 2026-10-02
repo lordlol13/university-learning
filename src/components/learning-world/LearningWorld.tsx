@@ -11,7 +11,9 @@ import {
   List,
   LockKeyhole,
   Map,
+  RotateCcw,
   Star,
+  Tag,
   X,
 } from "lucide-react";
 import { getDirectionLessons, getLesson } from "@/data/curriculum";
@@ -22,6 +24,7 @@ import {
 } from "@/stores/progress-provider";
 import { getLessonStatus } from "@/stores/progress-store";
 import { LessonView } from "@/components/lesson/LessonView";
+import { RepeatTasksView } from "@/components/repeat/RepeatTasksView";
 import { StorkSpeechBubble } from "@/components/mascot/StorkSpeechBubble";
 import { LearningPath } from "./LearningPath";
 import type { Direction } from "@/types/curriculum";
@@ -89,6 +92,61 @@ function LessonDialog({
   );
 }
 
+function RepeatDialog({
+  directionId,
+  onClose,
+}: {
+  directionId: string;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    dialog?.showModal();
+    const before = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialog?.close();
+      document.body.style.overflow = before;
+      previousFocus?.focus();
+    };
+  }, []);
+
+  return (
+    <dialog
+      ref={ref}
+      className="world-lesson-dialog repeat-dialog"
+      aria-label="Repeat previous themes"
+      onCancel={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="dialog-inner"
+        style={{
+          maxWidth: "880px",
+          margin: "0 auto",
+          padding: "20px 16px",
+        }}
+      >
+        <button
+          className="dialog-close icon-button"
+          onClick={onClose}
+          aria-label="Close repeat"
+        >
+          <X size={22} />
+        </button>
+        <RepeatTasksView
+          initialDirectionId={directionId}
+          onClose={onClose}
+        />
+      </div>
+    </dialog>
+  );
+}
+
 export function LearningWorld({ direction }: { direction: Direction }) {
   const lessons = getDirectionLessons(direction);
   const unit = direction.subjects[0]?.units[0];
@@ -101,8 +159,10 @@ export function LearningWorld({ direction }: { direction: Direction }) {
     () => true,
     () => false,
   );
+  const [showAllLabels, setShowAllLabels] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [openLesson, setOpenLesson] = useState<string | null>(null);
+  const [openRepeat, setOpenRepeat] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const closeLesson = useCallback(() => setOpenLesson(null), [setOpenLesson]);
   const closeMessage = useCallback(() => setMessage(null), [setMessage]);
@@ -158,25 +218,50 @@ export function LearningWorld({ direction }: { direction: Direction }) {
             <span className="eyebrow">UNIT 01</span>
             <h2>{unit?.title ?? "Your next chapter"}</h2>
           </div>
-          <div
-            className="world-view-switch"
-            role="group"
-            aria-label="Learning path view"
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
             <button
-              aria-pressed={view === "world"}
-              onClick={() => setView("world")}
+              type="button"
+              className="world-repeat-btn"
+              onClick={() => setOpenRepeat(true)}
+              title="Repeat tasks from previous themes"
+              aria-label="Repeat tasks from previous themes"
             >
-              <Map size={15} />
-              World
+              <RotateCcw size={14} />
+              <span>Repeat</span>
             </button>
-            <button
-              aria-pressed={view === "list"}
-              onClick={() => setView("list")}
+            {view === "world" && (
+              <button
+                type="button"
+                className={`world-labels-toggle ${showAllLabels ? "active" : ""}`}
+                onClick={() => setShowAllLabels((prev) => !prev)}
+                aria-pressed={showAllLabels}
+                title={showAllLabels ? "Switch to Smart clean labels (unclutter view)" : "Show all lesson labels simultaneously"}
+                aria-label={showAllLabels ? "Switch to Smart clean labels" : "Show all lesson labels"}
+              >
+                <Tag size={13} />
+                <span>{showAllLabels ? "All labels" : "Smart labels"}</span>
+              </button>
+            )}
+            <div
+              className="world-view-switch"
+              role="group"
+              aria-label="Learning path view"
             >
-              <List size={16} />
-              <span>Lesson list</span>
-            </button>
+              <button
+                aria-pressed={view === "world"}
+                onClick={() => setView("world")}
+              >
+                <Map size={15} />
+                World
+              </button>
+              <button
+                aria-pressed={view === "list"}
+                onClick={() => setView("list")}
+              >
+                <List size={16} />
+                <span>Lesson list</span>
+              </button>
+            </div>
           </div>
         </div>
         <div className="world-subheading">
@@ -204,6 +289,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               selectedId={selected?.id ?? null}
               onSelect={selectLesson}
               paused={openLesson !== null}
+              showAllLabels={showAllLabels}
             />
           ) : (
             <div className="world-loading">
@@ -278,6 +364,12 @@ export function LearningWorld({ direction }: { direction: Direction }) {
           lessonId={openLesson}
           directionId={direction.id}
           onClose={closeLesson}
+        />
+      )}
+      {openRepeat && (
+        <RepeatDialog
+          directionId={direction.id}
+          onClose={() => setOpenRepeat(false)}
         />
       )}
     </section>

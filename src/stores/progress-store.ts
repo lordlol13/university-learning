@@ -34,6 +34,7 @@ interface ProgressActions {
   setCurrentLesson: (lessonId: string) => boolean;
   setCurrentDirection: (directionId: string) => void;
   unlockLesson: (lessonId: string) => boolean;
+  unlockAchievement: (achievementId: string) => boolean;
   resetProgress: () => void;
 }
 export type ProgressStore = ProgressState & ProgressActions;
@@ -160,6 +161,33 @@ export const createProgressStore = (
             )
           )
             achievements.add("ai-explorer");
+
+          const physics = getDirection("physics-engineering");
+          if (
+            physics &&
+            getDirectionLessons(physics).every((item) =>
+              completedLessons.includes(item.id),
+            )
+          )
+            achievements.add("physics-master");
+
+          const math = getDirection("mathematics");
+          if (
+            math &&
+            getDirectionLessons(math).every((item) =>
+              completedLessons.includes(item.id),
+            )
+          )
+            achievements.add("math-pioneer");
+
+          const italian = getDirection("italian-language");
+          if (
+            italian &&
+            getDirectionLessons(italian).every((item) =>
+              completedLessons.includes(item.id),
+            )
+          )
+            achievements.add("italian-scholar");
           const direction = getLessonDirection(lessonId);
           const next =
             direction &&
@@ -195,6 +223,14 @@ export const createProgressStore = (
           });
           return true;
         },
+        unlockAchievement: (achievementId) => {
+          const state = get();
+          if (state.achievements.includes(achievementId)) return false;
+          const achievements = [...state.achievements, achievementId];
+          set({ achievements });
+          events.emit({ type: "ACHIEVEMENT_UNLOCKED", achievementId });
+          return true;
+        },
         addXP: (amount) => {
           if (
             !Number.isSafeInteger(amount) ||
@@ -209,7 +245,18 @@ export const createProgressStore = (
           if (get().level > previousLevel)
             events.emit({ type: "LEVEL_UP", level: get().level });
         },
-        resetProgress: () => set({ ...freshProgress(), lessonActivities: {} }),
+        resetProgress: () => {
+          try {
+            if (typeof globalThis !== "undefined" && globalThis.localStorage) {
+              globalThis.localStorage.removeItem("uplift_solved_repeat_tasks");
+              globalThis.localStorage.removeItem("uplift_practice_sessions");
+            } else if (typeof localStorage !== "undefined") {
+              localStorage.removeItem("uplift_solved_repeat_tasks");
+              localStorage.removeItem("uplift_practice_sessions");
+            }
+          } catch {}
+          set({ ...freshProgress(), lessonActivities: {} });
+        },
       }),
       {
         name: "uplift-progress",

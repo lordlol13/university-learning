@@ -3,7 +3,7 @@
 }
 .lesson-engine {
   --lesson-blue: #277bb6;
-  --lesson-green: #10b981;
+  --lesson-green: #0d9488;
   --lesson-line: #e2e8f0;
   width: 100%;
   margin: 0;
@@ -22,8 +22,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 10px 24px;
-  background: rgba(248, 250, 252, 0.94);
+  padding: 8px 20px;
+  background: rgba(250, 251, 252, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid #e2e8f0;
@@ -53,7 +53,7 @@
   transition: all 0.25s ease;
 }
 .minimal-step-line.done {
-  background: #10b981;
+  background: #0d9488;
 }
 .minimal-step-btn {
   width: 33px;
@@ -76,19 +76,19 @@
   vertical-align: middle;
 }
 .minimal-step-btn.done {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.38);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.38);
 }
 .minimal-step-btn.done:hover {
   transform: translateY(-1px) scale(1.08);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.48);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.48);
 }
 .minimal-step-btn.active {
   background: #ffffff;
-  color: #059669;
-  border: 2.4px solid #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+  color: #0d9488;
+  border: 2.4px solid #0d9488;
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.18);
 }
 .minimal-step-btn.pending {
   background: #f8fafc;
@@ -110,9 +110,9 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #10b981;
+  background: #0d9488;
   margin: 0 auto;
-  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 4px rgba(13, 148, 136, 0.5);
   flex-shrink: 0;
 }
 .step-icon-question,
@@ -155,8 +155,8 @@
   flex-wrap: wrap;
 }
 .minimal-lesson-title {
-  font-size: 14px;
-  font-weight: 750;
+  font-size: 16px;
+  font-weight: 600;
   color: #0f172a;
   letter-spacing: -0.3px;
   margin: 0;
@@ -205,7 +205,7 @@
 .task-progress-value {
   font-size: 11px;
   font-weight: 750;
-  color: #059669;
+  color: #0f766e;
 }
 .task-save-indicator {
   display: flex;
@@ -241,14 +241,14 @@
   height: 6px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #10b981;
+  background: #0d9488;
   box-shadow: 0 0 0 2px #d1fae5;
 }
 .lesson-kicker {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #059669;
+  color: #0f766e;
   font-size: 11px;
   font-weight: 750;
   letter-spacing: 1.2px;
@@ -355,8 +355,8 @@
   margin: 0.6em 0;
 }
 .formula-card {
-  background: #f5f9fc;
-  border: 1px solid #e0ebf3;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
   border-radius: 14px;
   padding: 23px;
 }
@@ -425,20 +425,20 @@
   font-size: 12px;
   line-height: 1.4;
   font-weight: 650;
-  color: #4c6250;
+  color: #0f766e;
 }
 .lesson-btn:hover:not(:disabled) {
-  background: #f3f7ef;
-  border-color: #a8c59d;
+  background: #f0fdfa;
+  border-color: #99f6e4;
 }
 .lesson-btn.primary {
-  background: #449c3c;
+  background: #0d9488;
   color: white;
-  border-color: #449c3c;
-  box-shadow: 0 2px 0 #307b2d;
+  border-color: #0d9488;
+  box-shadow: 0 2px 0 #0f766e;
 }
 .lesson-btn.primary:hover:not(:disabled) {
-  background: #358530;
+  background: #0f766e;
 }
 .lesson-btn.subtle {
   background: transparent;
@@ -507,57 +507,1329 @@
   background: #369849;
 }
 .interactive-plot {
-  background: #fbfdfd;
-  border-top: 1px solid #e9eeed;
-  border-bottom: 1px solid #e9eeed;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.interactive-plot.theme-dark {
+  background: #090d16;
+  border-color: #1e293b;
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+}
+.gradient-lab > .interactive-plot {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid #dce7e7;
+}
+.gradient-lab > .interactive-plot.theme-dark {
+  border-bottom-color: #1e293b;
+}
+
+/* Side-by-side workspace split: Calculator on Left, Graph Canvas on Right */
+.desmos-workspace-split {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+  min-height: 400px;
+}
+.desmos-workspace-left {
+  flex: 0 0 350px;
+  width: 350px;
+  min-width: 290px;
+  max-width: 380px;
+  border-right: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.interactive-plot.theme-dark .desmos-workspace-left {
+  border-right-color: #1e293b;
+  background: #090d16;
+}
+.desmos-workspace-right {
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #ffffff;
+}
+.interactive-plot.theme-dark .desmos-workspace-right {
+  background: #090d16;
+}
+.desmos-workspace-left .math-calculator-panel {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  height: 100%;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+@media (max-width: 840px) {
+  .desmos-workspace-split {
+    flex-direction: column;
+  }
+  .desmos-workspace-left {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .interactive-plot.theme-dark .desmos-workspace-left {
+    border-bottom-color: #1e293b;
+  }
 }
 .interactive-plot > svg {
   width: 100%;
   display: block;
   touch-action: none;
   cursor: grab;
+  user-select: none;
 }
 .interactive-plot > svg:active {
   cursor: grabbing;
 }
-.plot-coordinates line {
-  stroke: #e7eeee;
-  stroke-width: 1;
+
+/* Glassmorphic Floating HUD Toolbar */
+.desmos-glass-hud {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  flex-wrap: wrap;
 }
-.plot-coordinates .plot-axis {
-  stroke: #b8caca;
+.interactive-plot.theme-light .desmos-glass-hud {
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  color: #0f172a;
 }
-.plot-coordinates text {
-  fill: #7c9490;
+.desmos-hud-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.desmos-brand-badge,
+.math-studio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.interactive-plot.theme-light .desmos-brand-badge,
+.interactive-plot.theme-light .math-studio-badge {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+.desmos-preset-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.desmos-preset-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.interactive-plot.theme-light .desmos-preset-pill {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+.desmos-preset-pill:hover {
+  background: rgba(51, 65, 85, 0.8);
+  color: #ffffff;
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+}
+.interactive-plot.theme-light .desmos-preset-pill:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.desmos-preset-pill.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+}
+.interactive-plot.theme-light .desmos-preset-pill.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.32);
+}
+.desmos-preset-dropdown {
+  font-size: 11.5px;
+  font-weight: 550;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: #0f172a;
+  color: #cbd5e1;
+  cursor: pointer;
+  outline: none;
+}
+.interactive-plot.theme-light .desmos-preset-dropdown {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+.desmos-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.desmos-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 4px 9px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.5);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.interactive-plot.theme-light .desmos-hud-btn {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+.desmos-hud-btn:hover {
+  background: rgba(51, 65, 85, 0.8);
+  color: #ffffff;
+  border-color: #64748b;
+}
+.interactive-plot.theme-light .desmos-hud-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.desmos-hud-btn.active {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
+}
+.interactive-plot.theme-light .desmos-hud-btn.active {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.15);
+}
+.math-calc-btn {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  color: #2563eb !important;
+  font-weight: 700 !important;
+}
+.interactive-plot.theme-dark .math-calc-btn {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+}
+.math-calc-btn:hover {
+  background: rgba(37, 99, 235, 0.16) !important;
+  border-color: #2563eb !important;
+}
+.math-calc-btn.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+}
+.interactive-plot.theme-dark .math-calc-btn.active {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.35) !important;
+}
+
+/* Definite Integral Parameter Toolbar */
+.desmos-integral-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 14px;
+  background: rgba(13, 148, 136, 0.1);
+  border-bottom: 1px solid rgba(13, 148, 136, 0.25);
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+.interactive-plot.theme-light .desmos-integral-toolbar {
+  background: rgba(13, 148, 136, 0.08);
+  border-bottom-color: rgba(13, 148, 136, 0.3);
+}
+.integral-param-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.integral-sym {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0d9488;
+}
+.integral-bound-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.interactive-plot.theme-light .integral-bound-label {
+  color: #475569;
+}
+.integral-bound-label input {
+  width: 54px;
+  padding: 3px 6px;
+  font-size: 11.5px;
+  font-family: ui-monospace, monospace;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 5px;
+  color: #f8fafc;
+  outline: none;
+}
+.interactive-plot.theme-light .integral-bound-label input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+.integral-eval-pill {
+  color: #34d399;
+  background: rgba(13, 148, 136, 0.15);
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+.interactive-plot.theme-light .integral-eval-pill {
+  color: #0f766e;
+  background: rgba(13, 148, 136, 0.12);
+}
+.integral-quick-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.desmos-mini-btn {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  background: rgba(15, 23, 42, 0.6);
+  color: #0d9488;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.interactive-plot.theme-light .desmos-mini-btn {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+.desmos-mini-btn:hover {
+  background: #0d9488;
+  color: #ffffff;
+}
+
+/* Formula Editor Bar */
+.desmos-formula-editor-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #0b1220;
+  border-bottom: 1px solid #1e293b;
+  animation: fadeInDown 0.15s ease-out;
+}
+.interactive-plot.theme-light .desmos-formula-editor-bar {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.formula-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.desmos-formula-editor-bar label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #38bdf8;
+  font-style: italic;
+}
+.desmos-formula-editor-bar input {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  color: #f8fafc;
+  outline: none;
+}
+.interactive-plot.theme-light .desmos-formula-editor-bar input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+.desmos-formula-editor-bar input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+.desmos-formula-error {
+  font-size: 11.5px;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 4px 8px;
+  border-radius: 5px;
+  border-left: 3px solid #ef4444;
+}
+.desmos-sample-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+.desmos-sample-chips .sample-label {
+  color: #64748b;
+  font-weight: 600;
+}
+.desmos-sample-chip {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 5px;
+  color: #94a3b8;
+  padding: 2px 7px;
+  font-size: 10.5px;
+  font-family: ui-monospace, monospace;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.interactive-plot.theme-light .desmos-sample-chip {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+.desmos-sample-chip:hover {
+  background: #38bdf8;
+  color: #0f172a;
+  border-color: #38bdf8;
+}
+
+/* Canvas Wrapper */
+.desmos-canvas-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Active Formula Badge */
+.desmos-active-formula-chip {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #cbd5e1;
+  pointer-events: none;
+}
+.interactive-plot.theme-light .desmos-active-formula-chip {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(203, 213, 225, 0.8);
+  color: #334155;
+}
+.desmos-active-formula-chip .formula-label {
+  font-weight: 700;
+  color: #38bdf8;
+  font-style: italic;
+}
+.desmos-active-formula-chip .formula-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #f1f5f9;
+}
+.interactive-plot.theme-light .desmos-active-formula-chip .formula-text {
+  color: #0f172a;
+}
+
+/* Pinned Point Inspector Card */
+.desmos-point-inspector-card {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 25;
+  width: 250px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  animation: fadeInDown 0.15s ease-out;
+}
+.interactive-plot.theme-light .desmos-point-inspector-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+.inspector-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #1e293b;
+}
+.interactive-plot.theme-light .inspector-card-header {
+  border-bottom-color: #f1f5f9;
+}
+.inspector-card-header strong {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.inspector-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+  margin-bottom: 10px;
+}
+.inspector-stat span {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+}
+.interactive-plot.theme-light .inspector-stat span {
+  color: #64748b;
+}
+.inspector-stat strong {
+  display: block;
   font-size: 12px;
+  color: #f8fafc;
+  font-weight: 600;
 }
-.current-plot-point {
-  transition:
-    cx 0.25s ease,
-    cy 0.25s ease;
+.interactive-plot.theme-light .inspector-stat strong {
+  color: #0f172a;
 }
+.inspector-delete-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.inspector-delete-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* Controls Toolbar */
 .plot-controls {
-  padding: 8px 12px;
+  padding: 8px 14px;
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
-  color: #7e9188;
-  font-size: 10px;
+  color: #94a3b8;
+  font-size: 11px;
+  flex-wrap: wrap;
+  background: #0b1220;
+  border-top: 1px solid #1e293b;
 }
-.plot-controls > div {
+.interactive-plot.theme-light .plot-controls {
+  background: #f8fafc;
+  border-top-color: #e2e8f0;
+  color: #64748b;
+}
+.plot-controls .plot-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.interactive-plot.theme-light .plot-controls .plot-hint {
+  color: #64748b;
+}
+.plot-controls > div,
+.plot-controls .plot-buttons-group {
   display: flex;
-  gap: 4px;
+  gap: 5px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 .plot-controls button {
   display: grid;
   place-items: center;
-  background: #fff;
-  border: 1px solid #e1e9e5;
+  background: #1e293b;
+  border: 1px solid #334155;
   border-radius: 7px;
   min-width: 32px;
-  min-height: 34px;
-  color: #688474;
+  min-height: 32px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.interactive-plot.theme-light .plot-controls button {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+.plot-controls button:hover {
+  background: #334155;
+  border-color: #475569;
+  color: #ffffff;
+}
+.interactive-plot.theme-light .plot-controls button:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+.plot-controls button.plot-settings-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+.plot-controls button.plot-clear-points-btn {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.35);
+}
+.plot-controls button.plot-clear-points-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* Desmos Settings Popover Panel */
+.desmos-settings-panel {
+  margin: 10px 14px 14px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  animation: fadeInDown 0.18s ease-out;
+}
+.interactive-plot.theme-light .desmos-settings-panel {
+  background: #ffffff;
+  border-color: #d5e2dc;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.desmos-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e293b;
+}
+.interactive-plot.theme-light .desmos-settings-header {
+  border-bottom-color: #eef3f0;
+}
+.desmos-settings-header h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+}
+.interactive-plot.theme-light .desmos-settings-header h4 {
+  color: #1f3b2d;
+}
+.desmos-settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.desmos-setting-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.desmos-setting-row input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: #38bdf8;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+.desmos-setting-row strong {
+  display: block;
+  color: #f8fafc;
+  font-weight: 500;
+}
+.interactive-plot.theme-light .desmos-setting-row strong {
+  color: #1e293b;
+}
+.desmos-setting-row span {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+.interactive-plot.theme-light .desmos-setting-row span {
+  color: #64748b;
+}
+.desmos-clear-btn {
+  margin-top: 6px;
+  padding: 8px 14px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.desmos-clear-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* Full Scientific & Graphing Calculator Drawer */
+.math-calculator-panel {
+  position: relative;
+  z-index: 30;
+  margin: 10px 14px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.05);
+  animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.math-calculator-panel.theme-dark {
+  background: #0f172a;
+  border-color: #334155;
+  box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.55);
+}
+.math-calc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.math-calculator-panel.theme-dark .math-calc-header {
+  border-bottom-color: #1e293b;
+}
+.math-calc-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.math-calculator-panel.theme-dark .math-calc-title {
+  color: #f8fafc;
+}
+.calc-accent-icon {
+  color: #2563eb;
+}
+.math-calculator-panel.theme-dark .calc-accent-icon {
+  color: #38bdf8;
+}
+.math-calc-close-btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.math-calc-close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.math-calculator-panel.theme-dark .math-calc-close-btn:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* Calculator Screen */
+.math-calc-screen {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s ease;
+}
+.math-calc-screen:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.math-calculator-panel.theme-dark .math-calc-screen {
+  background: #090d16;
+  border-color: #334155;
+}
+.math-calculator-panel.theme-dark .math-calc-screen:focus-within {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+.math-calc-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.math-calc-fx-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  font-weight: 800;
+  color: #2563eb;
+  font-style: italic;
+  user-select: none;
+}
+.math-calculator-panel.theme-dark .math-calc-fx-badge {
+  color: #38bdf8;
+}
+.math-calc-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+}
+.math-calculator-panel.theme-dark .math-calc-input {
+  color: #f8fafc;
+}
+.math-calc-output-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+  flex-wrap: wrap;
+}
+.math-calculator-panel.theme-dark .math-calc-output-bar {
+  border-top-color: #1e293b;
+}
+.math-calc-output {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.math-calc-output.function-ready {
+  color: #0f766e;
+}
+.math-calculator-panel.theme-dark .math-calc-output.function-ready {
+  color: #34d399;
+}
+.math-calc-output.number-eval {
+  color: #2563eb;
+  font-size: 14px;
+  font-family: ui-monospace, monospace;
+}
+.math-calculator-panel.theme-dark .math-calc-output.number-eval {
+  color: #38bdf8;
+}
+.math-calc-output.calc-hint {
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.math-calc-output.calc-error {
+  color: #ef4444;
+  font-weight: 600;
+}
+.math-calculator-panel.theme-dark .math-calc-output.calc-error {
+  color: #f87171;
+}
+
+.math-calc-plot-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+.math-calc-plot-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+.math-calc-plot-btn.success {
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);
+}
+
+/* Header Actions & Keypad Toggle */
+.math-calc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.math-calc-header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.math-calc-header-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+.math-calc-header-btn.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+.math-calculator-panel.theme-dark .math-calc-header-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+.math-calculator-panel.theme-dark .math-calc-header-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+.math-calculator-panel.theme-dark .math-calc-header-btn.active {
+  background: #1e3a8a;
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+/* Keypad toggle bar under the formula screen */
+.math-calc-keypad-toggle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+.math-calculator-panel.theme-dark .math-calc-keypad-toggle-bar {
+  background: #1e293b;
+  border-color: #334155;
+}
+.math-calc-keypad-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.math-calculator-panel.theme-dark .math-calc-keypad-toggle-pill {
+  background: #0f172a;
+  border-color: #475569;
+  color: #f8fafc;
+}
+.math-calc-keypad-toggle-pill:hover {
+  background: #f8fafc;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+.math-calculator-panel.theme-dark .math-calc-keypad-toggle-pill:hover {
+  background: #1e293b;
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+.math-calc-keypad-toggle-pill.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+.math-calculator-panel.theme-dark .math-calc-keypad-toggle-pill.active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+.math-calc-mode-hint {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.math-calculator-panel.theme-dark .math-calc-mode-hint {
+  color: #94a3b8;
+}
+.math-calc-keypad-wrapper {
+  animation: fadeInDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Category Tabs */
+.math-calc-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.math-calc-tab {
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.math-calc-tab:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.math-calc-tab.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+.math-calculator-panel.theme-dark .math-calc-tab {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+.math-calculator-panel.theme-dark .math-calc-tab:hover {
+  background: #334155;
+  color: #ffffff;
+}
+.math-calculator-panel.theme-dark .math-calc-tab.active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+/* Calculator Grid */
+.math-calc-grid {
+  display: grid;
+  gap: 6px;
+}
+.math-calc-grid.basic-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+.math-calc-grid.trig-grid,
+.math-calc-grid.sci-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+.calc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+.calc-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.calc-btn:active {
+  transform: translateY(0);
+}
+.calc-btn.fn-btn {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+}
+.calc-btn.fn-btn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+.calc-btn.num-btn {
+  background: #ffffff;
+  color: #0f172a;
+}
+.calc-btn.num-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+.calc-btn.op-btn {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  font-size: 15px;
+  font-weight: 700;
+}
+.calc-btn.op-btn:hover {
+  background: #dbeafe;
+}
+.calc-btn.clear-btn {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+  font-weight: 800;
+}
+.calc-btn.clear-btn:hover {
+  background: #fee2e2;
+}
+.calc-btn.del-btn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #ea580c;
+}
+.calc-btn.del-btn:hover {
+  background: #ffedd5;
+}
+.calc-btn.eq-btn {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
+}
+.calc-btn.eq-btn:hover {
+  background: #1d4ed8;
+}
+.calc-btn.const-btn {
+  background: #faf5ff;
+  border-color: #e9d5ff;
+  color: #7e22ce;
+  font-weight: 700;
+}
+.calc-btn.const-btn:hover {
+  background: #f3e8ff;
+}
+
+/* Dark mode buttons */
+.math-calculator-panel.theme-dark .calc-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+.math-calculator-panel.theme-dark .calc-btn:hover {
+  background: #334155;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.math-calculator-panel.theme-dark .calc-btn.fn-btn {
+  background: #0f172a;
+  color: #38bdf8;
+  border-color: #1e293b;
+}
+.math-calculator-panel.theme-dark .calc-btn.fn-btn:hover {
+  background: #1e293b;
+}
+.math-calculator-panel.theme-dark .calc-btn.op-btn {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #60a5fa;
+}
+.math-calculator-panel.theme-dark .calc-btn.clear-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+.math-calculator-panel.theme-dark .calc-btn.del-btn {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.35);
+  color: #fb923c;
+}
+.math-calculator-panel.theme-dark .calc-btn.eq-btn {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+.math-calculator-panel.theme-dark .calc-btn.const-btn {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.35);
+  color: #c084fc;
+}
+
+/* Presets List */
+.math-calc-presets-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.math-calc-preset-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+.math-calc-preset-item:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  transform: translateX(2px);
+}
+.math-calculator-panel.theme-dark .math-calc-preset-item {
+  background: #1e293b;
+  border-color: #334155;
+}
+.math-calculator-panel.theme-dark .math-calc-preset-item:hover {
+  background: #0f172a;
+  border-color: #38bdf8;
+}
+.preset-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.preset-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.math-calculator-panel.theme-dark .preset-name {
+  color: #f8fafc;
+}
+.preset-code {
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: #2563eb;
+}
+.math-calculator-panel.theme-dark .preset-code {
+  color: #38bdf8;
+}
+.preset-arrow {
+  color: #94a3b8;
+}
+.math-calc-preset-item:hover .preset-arrow {
+  color: #2563eb;
+}
+
+.math-calc-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.math-calculator-panel.theme-dark .math-calc-footer {
+  border-top-color: #1e293b;
+  color: #64748b;
+}
+
+/* Pinned Points Animation */
+@keyframes pinnedPulse {
+  0% { r: 8px; opacity: 0.8; }
+  50% { r: 14px; opacity: 0.2; }
+  100% { r: 8px; opacity: 0.8; }
+}
+.pinned-point-pulse {
+  animation: pinnedPulse 2.4s infinite ease-in-out;
 }
 .lab-stats {
   display: grid;
@@ -777,9 +2049,9 @@
   align-items: flex-start;
   gap: 12px;
   padding: 18px;
-  background: #fff9ed;
+  background: #f0fdfa;
   border-radius: 12px;
-  color: #b29648;
+  color: #0f766e;
 }
 .lesson-insight p {
   font-size: 12px;
@@ -959,7 +2231,7 @@
   line-height: 1.65;
 }
 .lesson-options input {
-  accent-color: #449c3c;
+  accent-color: #0d9488;
 }
 .lesson-options .selected {
   border-color: #75acd0;
@@ -976,9 +2248,9 @@
 .summary-icon {
   display: inline-grid;
   place-items: center;
-  background: #edf6e7;
-  color: #5b9a42;
-  border: 1px solid #dce9ce;
+  background: #f0fdfa;
+  color: #0d9488;
+  border: 1px solid #ccfbf1;
   width: 78px;
   height: 78px;
   border-radius: 24px;
@@ -999,11 +2271,11 @@
   padding: 15px 0;
   font-size: 13px;
   line-height: 1.85;
-  color: #637565;
-  border-bottom: 1px solid #edf1ea;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
 }
 .summary-block li > svg {
-  color: #5c9a49;
+  color: #0d9488;
   margin-top: 3px;
 }
 .completion-requirements {
@@ -1026,7 +2298,7 @@
 }
 .lesson-finished-card {
   background: white;
-  border: 1px solid #deead7;
+  border: 1px solid #ccfbf1;
   padding: 50px 30px;
   border-radius: 24px;
   text-align: center;
@@ -1040,14 +2312,14 @@
   margin: 15px 0;
 }
 .lesson-finished-card p {
-  color: #71806e;
+  color: #94a3b8;
 }
 .lesson-reward {
   display: flex;
   gap: 10px;
   justify-content: center;
-  color: #a37c1e;
-  background: #fff7de;
+  color: #0f766e;
+  background: #f0fdfa;
   border-radius: 12px;
   padding: 15px;
   width: max-content;
@@ -1261,4 +2533,287 @@
   .lesson-contents progress::-webkit-progress-value {
     transition: none;
   }
+}
+
+
+.lesson-prose {
+  line-height: 1.8;
+}
+
+/* ─── Chat-Style Assessment ─── */
+.chat-assessment {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+}
+.chat-bubble {
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 15px;
+  line-height: 1.7;
+  animation: chatSlideIn 0.3s ease-out;
+}
+.chat-bubble.assistant {
+  align-self: flex-start;
+  background: var(--chat-bubble-bg, #f0fdfa);
+  border: 1px solid var(--chat-bubble-border, #ccfbf1);
+  color: var(--ink);
+}
+.chat-bubble.user {
+  align-self: flex-end;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px 14px 4px 14px;
+}
+.chat-bubble.feedback {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.chat-bubble.feedback.correct {
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  color: #0f766e;
+}
+.chat-bubble.feedback.incorrect {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+.chat-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 4px 0;
+}
+.chat-chip {
+  padding: 10px 18px;
+  border-radius: 28px;
+  border: 1.5px solid #ccfbf1;
+  background: white;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1.5;
+  text-align: left;
+}
+.chat-chip:hover {
+  border-color: #0d9488;
+  background: #f0fdfa;
+  transform: translateY(-1px);
+}
+.chat-chip.selected {
+  border-color: #0d9488;
+  background: #f0fdfa;
+  color: #0d9488;
+  font-weight: 600;
+}
+.chat-chip.correct {
+  border-color: #0d9488;
+  background: #f0fdfa;
+  color: #0f766e;
+  font-weight: 600;
+}
+.chat-chip.incorrect {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+}
+.chat-chip:disabled {
+  cursor: default;
+  opacity: 0.7;
+  transform: none;
+}
+.chat-typing-indicator {
+  display: flex;
+  gap: 5px;
+  padding: 14px 18px;
+  background: var(--chat-bubble-bg, #f0fdfa);
+  border: 1px solid var(--chat-bubble-border, #ccfbf1);
+  border-radius: 14px 14px 14px 4px;
+  align-self: flex-start;
+  max-width: 80px;
+}
+.chat-typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  animation: chatBounce 1.4s ease-in-out infinite;
+}
+.chat-typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.chat-typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  max-width: 400px;
+}
+.chat-input-row input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 28px;
+  font-size: 15px;
+  background: white;
+  transition: border-color 0.2s;
+  outline: none;
+}
+.chat-input-row input:focus {
+  border-color: #0d9488;
+}
+.chat-input-row button {
+  padding: 10px 20px;
+  border-radius: 28px;
+  background: #0d9488;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.chat-input-row button:hover {
+  background: #0f766e;
+}
+.chat-input-row button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+.chat-hint-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.chat-hint-toggle:hover {
+  color: #0d9488;
+}
+.chat-hint-content {
+  padding: 10px 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  animation: chatSlideIn 0.2s ease-out;
+}
+.chat-fade-in {
+  animation: chatFadeIn 0.4s ease-out;
+}
+.chat-stagger-1 { animation: chatFadeIn 0.3s ease-out 0.1s both; }
+.chat-stagger-2 { animation: chatFadeIn 0.3s ease-out 0.2s both; }
+.chat-stagger-3 { animation: chatFadeIn 0.3s ease-out 0.3s both; }
+.chat-stagger-4 { animation: chatFadeIn 0.3s ease-out 0.4s both; }
+@keyframes chatSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chatFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chatBounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px); }
+}
+
+/* ——— Minimal Hover Toolbar (replaces glassmorphic HUD) ——— */
+.desmos-hover-toolbar {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+.interactive-plot:hover .desmos-hover-toolbar,
+.desmos-hover-toolbar:focus-within {
+  opacity: 1;
+  transform: translateY(0);
+}
+.desmos-mini-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+.desmos-mini-btn:hover {
+  background: #f0fdfa;
+  color: #0d9488;
+}
+.desmos-mini-btn.active {
+  background: #f0fdfa;
+  color: #0d9488;
+}
+.desmos-mini-sep {
+  width: 1px;
+  height: 20px;
+  background: #e2e8f0;
+  margin: 0 4px;
+}
+/* Dark theme hover toolbar */
+.theme-dark .desmos-hover-toolbar {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: rgba(51, 65, 85, 0.8);
+}
+.theme-dark .desmos-mini-btn {
+  color: #94a3b8;
+}
+.theme-dark .desmos-mini-btn:hover,
+.theme-dark .desmos-mini-btn.active {
+  background: rgba(13, 148, 136, 0.15);
+  color: #5eead4;
+}
+.theme-dark .desmos-mini-sep {
+  background: #334155;
+}
+
+/* ——— Clean Interactive Plot Container ——— */
+.interactive-plot {
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-lg, 20px);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft, 0 1px 3px rgba(0,0,0,0.04));
+  background: white;
+  position: relative;
+}
+.theme-dark.interactive-plot {
+  background: #0f172a;
+  border-color: #1e293b;
 }

@@ -36,6 +36,7 @@ export const linearSystemsLesson: LessonContent = {
           title: "The Matrix Equation",
           latex: "A \\vec{x} = \\vec{b} \\iff \\begin{bmatrix} a_{11} & a_{12} \\\\ a_{21} & a_{22} \\end{bmatrix} \\begin{bmatrix} x_1 \\\\ x_2 \\end{bmatrix} = \\begin{bmatrix} b_1 \\\\ b_2 \\end{bmatrix}",
           explanation: "The solution vector x maps through the linear transformation A to reach the target vector b.",
+          demoId: "linear-systems",
         },
         {
           id: "det-formula",

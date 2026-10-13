@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -29,8 +29,15 @@ export function LessonView({
   directionId: string;
   onReturn?: () => void;
 }) {
-  const state = useProgress((s) => s);
-  const status = getLessonStatus(lesson, state);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const unlockedLessons = useProgress((s) => s.unlockedLessons);
+  const startLesson = useProgress((s) => s.startLesson);
+  const completeLesson = useProgress((s) => s.completeLesson);
+  const lessonState = useMemo(
+    () => ({ completedLessons, unlockedLessons }),
+    [completedLessons, unlockedLessons],
+  );
+  const status = getLessonStatus(lesson, lessonState);
   const [answer, setAnswer] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -42,7 +49,7 @@ export function LessonView({
       setFinished(true);
       return;
     }
-    if (state.startLesson(lesson.id) && state.completeLesson(lesson.id)) {
+    if (startLesson(lesson.id) && completeLesson(lesson.id)) {
       setAwarded(true);
       setFinished(true);
     }
@@ -178,8 +185,8 @@ export function LessonView({
             <button
               className="button secondary"
               onClick={() => {
-                if (state.startLesson(lesson.id))
-                  state.completeLesson(lesson.id);
+                if (startLesson(lesson.id))
+                  completeLesson(lesson.id);
               }}
             >
               Simulate completion · +{lesson.xp} XP

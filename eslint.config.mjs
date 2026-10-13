@@ -1,9 +1,33 @@
-import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-export default defineConfig([
+const eslintConfig = [
+  {
+    ignores: [
+      ".next/**",
+      "next-env.d.ts",
+      ".qa/**",
+      ".agents/**",
+      "**/.agents/**",
+      "scripts/**",
+      "coverage/**",
+      "node_modules/**",
+    ],
+  },
   ...nextVitals,
   ...nextTs,
-  globalIgnores([".next/**", "next-env.d.ts", ".qa/**"]),
-]);
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+];
+
+export default eslintConfig;

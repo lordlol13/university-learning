@@ -53,6 +53,7 @@ export const dimensionalScalingLesson: LessonContent = {
           latex: "\\left(\\frac{1\\text{ m}}{100\\text{ cm}}\\right)^2 = \\frac{1\\text{ m}^2}{10{,}000\\text{ cm}^2}, \\quad \\left(\\frac{1\\text{ m}}{100\\text{ cm}}\\right)^3 = \\frac{1\\text{ m}^3}{10^6\\text{ cm}^3}",
           explanation:
             "Converting units of dimension $d$ requires raising the entire 1D conversion factor to the power $d$.",
+          demoId: "dimensional-scaling",
         },
         {
           id: "factor-label-formula",

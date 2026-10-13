@@ -70,8 +70,24 @@ function GltfStork({
     }
     lastAnimation.current = animationKey;
   });
+
+  useEffect(() => {
+    return () => {
+      model.copy.traverse((object) => {
+        if ("geometry" in object && object.geometry) {
+          (object.geometry as import("three").BufferGeometry).dispose();
+        }
+        if ("material" in object && object.material) {
+          const mat = object.material;
+          if (Array.isArray(mat)) mat.forEach((m) => m.dispose());
+          else (mat as import("three").Material).dispose();
+        }
+      });
+    };
+  }, [model.copy]);
+
   return (
-    <group scale={model.scale} dispose={null}>
+    <group scale={model.scale}>
       <primitive object={model.copy} />
     </group>
   );

@@ -14,7 +14,7 @@ import { useProgress } from "@/stores/progress-provider";
 import { getDirectionProgress } from "@/stores/progress-store";
 
 export function CoursesView() {
-  const state = useProgress((s) => s);
+  const completedLessons = useProgress((s) => s.completedLessons);
   return (
     <div className="standard-page">
       <div className="page-heading">
@@ -38,7 +38,7 @@ export function CoursesView() {
       <div className="course-grid">
         {directions.map((direction) => {
           const count = getDirectionLessons(direction).length;
-          const progress = getDirectionProgress(direction.id, state);
+          const progress = getDirectionProgress(direction.id, { completedLessons });
           return (
             <Link
               href={`/path/${direction.id}`}

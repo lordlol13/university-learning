@@ -259,29 +259,35 @@ export function savePracticeSession(session: PracticeSession): void {
             err.name === "NS_ERROR_DOM_QUOTA_REACHED")) ||
           ("code" in err && (err.code === 22 || err.code === 1014)));
 
-      if (isQuota && sessions.length > 1) {
-        try {
-          const pruned = sessions.slice(0, Math.min(100, sessions.length));
-          storage.setItem(
-            PRACTICE_SESSIONS_STORAGE_KEY,
-            JSON.stringify(pruned),
-          );
-          return;
-        } catch {
+      if (isQuota) {
+        if (sessions.length > 1) {
           try {
-            const emergencyPruned = sessions.slice(
-              0,
-              Math.min(20, sessions.length),
-            );
+            const pruned = sessions.slice(0, Math.min(100, sessions.length));
             storage.setItem(
               PRACTICE_SESSIONS_STORAGE_KEY,
-              JSON.stringify(emergencyPruned),
+              JSON.stringify(pruned),
             );
             return;
           } catch {
-            // If emergency save still fails, swallow
+            try {
+              const emergencyPruned = sessions.slice(
+                0,
+                Math.min(20, sessions.length),
+              );
+              storage.setItem(
+                PRACTICE_SESSIONS_STORAGE_KEY,
+                JSON.stringify(emergencyPruned),
+              );
+              return;
+            } catch {
+              // If emergency save still fails, fall through to warning
+            }
           }
         }
+        if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+          console.warn("Storage quota exceeded while saving practice session; session dropped.");
+        }
+        return;
       }
       console.error("Failed to save practice session:", err);
     }

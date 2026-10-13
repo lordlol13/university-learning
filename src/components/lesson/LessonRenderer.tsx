@@ -1,5 +1,6 @@
 "use client";
 import {
+  createElement,
   useCallback,
   useEffect,
   useRef,
@@ -36,6 +37,7 @@ import {
 } from "./GradientDescentLab";
 import { CodeExample } from "./CodeExample";
 import { ChatPracticeProblem, ChatQuizQuestion } from "./ChatAssessment";
+import { getDemoComponent } from "./demos";
 
 const empty = emptyActivity();
 function ObservedBlock({
@@ -134,6 +136,38 @@ interface BlockProps {
   record: (kind: keyof LessonActivity, id: string) => void;
   directionId?: string;
 }
+interface DynamicDemoProps {
+  demoId?: string;
+  title?: string;
+  caption?: string;
+  completed: boolean;
+  onComplete: () => void;
+}
+
+function DynamicDemo({
+  demoId,
+  title,
+  caption,
+  completed,
+  onComplete,
+}: DynamicDemoProps) {
+  if (!demoId) return null;
+  const DemoComp = getDemoComponent(demoId);
+  if (!DemoComp) {
+    return (
+      <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200 text-sm my-2">
+        Interactive demo unavailable ({demoId})
+      </div>
+    );
+  }
+  return createElement(DemoComp, {
+    title,
+    caption,
+    completed,
+    onComplete,
+  });
+}
+
 /** Exhaustive discriminated renderer: adding a schema type requires an implementation. */
 function ContentBlock({
   block,
@@ -147,7 +181,7 @@ function ContentBlock({
   switch (block.type) {
     case "introduction":
     case "intuition":
-    case "theory":
+    case "theory": {
       return (
         <div className={`lesson-prose ${block.type}`}>
           <h3>{block.title}</h3>
@@ -156,9 +190,19 @@ function ContentBlock({
               <RichText text={p} />
             </p>
           ))}
+          {block.demoId && (
+            <div className="theory-companion-demo mt-4">
+              <DynamicDemo
+                demoId={block.demoId}
+                completed={completed}
+                onComplete={() => record("completed", block.id)}
+              />
+            </div>
+          )}
         </div>
       );
-    case "formula":
+    }
+    case "formula": {
       return (
         <div className="formula-card">
           <h3>{block.title}</h3>
@@ -166,15 +210,48 @@ function ContentBlock({
           <p>
             <RichText text={block.explanation} />
           </p>
+          {block.demoId && (
+            <div className="formula-companion-demo mt-4">
+              <DynamicDemo
+                demoId={block.demoId}
+                completed={completed}
+                onComplete={() => record("completed", block.id)}
+              />
+            </div>
+          )}
         </div>
       );
-    case "formula-breakdown":
+    }
+    case "formula-breakdown": {
       return (
         <>
           <h3>{block.title}</h3>
           <FormulaBreakdown block={block} />
+          {block.demoId && (
+            <div className="formula-companion-demo mt-4">
+              <DynamicDemo
+                demoId={block.demoId}
+                completed={completed}
+                onComplete={() => record("completed", block.id)}
+              />
+            </div>
+          )}
         </>
       );
+    }
+    case "interactive-demo": {
+      return (
+        <div className="interactive-demo-block my-4">
+          <DynamicDemo
+            demoId={block.demoId}
+            title={block.title}
+            caption={block.caption}
+            completed={completed}
+            onComplete={() => record("completed", block.id)}
+          />
+        </div>
+      );
+    }
     case "interactive-graph":
       return (
         <GradientDescentGraph
@@ -240,7 +317,16 @@ function ContentBlock({
         <>
           {block.problemIds.map((id, i) => {
             const problem = lesson.practiceProblems.find((p) => p.id === id);
-            if (!problem) throw new Error(`Unknown practice problem ${id}`);
+            if (!problem) {
+              return (
+                <div
+                  key={id}
+                  className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200 text-sm my-2"
+                >
+                  Practice problem temporarily unavailable (ID: {id}).
+                </div>
+              );
+            }
             return (
               <ChatPracticeProblem
                 key={id}
@@ -266,7 +352,16 @@ function ContentBlock({
         <>
           {block.questionIds.map((id, i) => {
             const question = lesson.quiz.find((q) => q.id === id);
-            if (!question) throw new Error(`Unknown quiz question ${id}`);
+            if (!question) {
+              return (
+                <div
+                  key={id}
+                  className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200 text-sm my-2"
+                >
+                  Quiz question temporarily unavailable (ID: {id}).
+                </div>
+              );
+            }
             return (
               <ChatQuizQuestion
                 key={id}
@@ -379,6 +474,8 @@ function getSectionStageKind(
   if (
     types.includes("interactive-graph") ||
     types.includes("algorithm-visualizer") ||
+    types.includes("interactive-demo") ||
+    section.blocks.some((b) => "demoId" in b && b.demoId) ||
     stage.includes("visualize") ||
     stage.includes("experiment") ||
     title.includes("visualiz") ||

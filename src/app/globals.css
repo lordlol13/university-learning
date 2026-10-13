@@ -3081,3 +3081,211 @@ main:focus {
   color: #64748b;
 }
 
+/* ==========================================================================
+   Tactile Explorable Explanations (Interactive Demonstrations)
+   ========================================================================== */
+
+.interactive-demo-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin: 18px 0;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.interactive-demo-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+}
+
+.interactive-demo-card.is-completed {
+  border-color: #99f6e4;
+}
+
+.demo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.demo-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #0f766e;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  width: fit-content;
+}
+
+.demo-badge-icon {
+  color: #0d9488;
+}
+
+.demo-title {
+  margin: 4px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.demo-caption {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.demo-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.demo-reset-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.demo-metrics-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.demo-metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left-width: 3.5px;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+
+.metric-label {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.metric-value {
+  font-weight: 800;
+  color: #0f172a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.metric-unit {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.demo-canvas-wrap {
+  position: relative;
+  width: 100%;
+  background: #fafbfc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 10px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.tactile-svg {
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  display: block;
+  user-select: none;
+  touch-action: none;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Logic gate tabs */
+.logic-circuit-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gate-selector-bar {
+  display: flex;
+  gap: 8px;
+  padding: 4px 6px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.gate-tab {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gate-tab:hover {
+  color: #0f172a;
+}
+
+.gate-tab.active {
+  background: #ffffff;
+  color: #0f766e;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Pulse animation */
+@keyframes pulseGlow {
+  0% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.4); opacity: 0.08; }
+  100% { transform: scale(1); opacity: 0.25; }
+}
+
+.pulse-ring {
+  transform-origin: center;
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+.formula-companion-demo,
+.theory-companion-demo {
+  margin-top: 14px;
+}
+
+

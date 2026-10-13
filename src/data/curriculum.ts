@@ -668,16 +668,16 @@ export const university: University = {
 };
 
 export const program = university.programs[0];
-export const getDirection = (id: string) =>
+export const getDirection = (id: string): Direction | undefined =>
   directions.find((direction) => direction.id === id);
 export const getDirectionLessons = (direction: Direction): Lesson[] =>
   direction.subjects.flatMap((subject) =>
     subject.units.flatMap((unit) => unit.lessons),
   );
 export const allLessons = directions.flatMap(getDirectionLessons);
-export const getLesson = (id: string) =>
+export const getLesson = (id: string): Lesson | undefined =>
   allLessons.find((lesson) => lesson.id === id);
-export const getLessonDirection = (id: string) =>
+export const getLessonDirection = (id: string): Direction | undefined =>
   directions.find((direction) =>
     getDirectionLessons(direction).some((lesson) => lesson.id === id),
   );

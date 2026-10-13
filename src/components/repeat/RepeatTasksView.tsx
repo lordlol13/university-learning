@@ -41,11 +41,13 @@ export function RepeatTasksView({
   initialDirectionId?: string;
   onClose?: () => void;
 }) {
-  const state = useProgress((s) => s);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const addXP = useProgress((s) => s.addXP);
+  const unlockAchievement = useProgress((s) => s.unlockAchievement);
   const [filterMode, setFilterMode] = useState<"completed" | "all">(
     initialThemeId
       ? "all"
-      : state.completedLessons && state.completedLessons.length > 0
+      : completedLessons && completedLessons.length > 0
         ? "completed"
         : "all",
   );
@@ -53,24 +55,24 @@ export function RepeatTasksView({
   const completedThemes = useMemo(
     () =>
       getRepeatThemes(
-        Array.isArray(state.completedLessons)
-          ? state.completedLessons.filter(
+        Array.isArray(completedLessons)
+          ? completedLessons.filter(
               (id): id is string =>
                 typeof id === "string" && id.trim().length > 0,
             )
           : [],
       ),
-    [state.completedLessons],
+    [completedLessons],
   );
   const allThemes = useMemo(() => getRepeatThemes(), []);
 
   const safeCompletedLessons = useMemo(() => {
-    return Array.isArray(state.completedLessons)
-      ? state.completedLessons.filter(
+    return Array.isArray(completedLessons)
+      ? completedLessons.filter(
           (id): id is string => typeof id === "string" && id.trim().length > 0,
         )
       : [];
-  }, [state.completedLessons]);
+  }, [completedLessons]);
 
   const availableTasks = useMemo(() => {
     if (filterMode === "completed") {
@@ -216,11 +218,11 @@ export function RepeatTasksView({
       });
       setEarnedXp((prev) => prev + 15);
       setSessionXpEarned((prev) => prev + 15);
-      if (state.addXP) {
-        state.addXP(15);
+      if (addXP) {
+        addXP(15);
       }
     }
-  }, [currentTask, isChecked, selectedOption, numericInput, solvedTasks, state]);
+  }, [currentTask, isChecked, selectedOption, numericInput, solvedTasks, addXP]);
 
   const handleTryAgain = useCallback(() => {
     setIsChecked(false);
@@ -261,8 +263,8 @@ export function RepeatTasksView({
     };
 
     savePracticeSession(session);
-    if (state.unlockAchievement) {
-      state.unlockAchievement("practice-champion");
+    if (unlockAchievement) {
+      unlockAchievement("practice-champion");
     }
     setCurrentSessionSummary(session);
     setIsSessionComplete(true);
@@ -274,7 +276,7 @@ export function RepeatTasksView({
     currentThemes,
     filterMode,
     currentTask,
-    state,
+    unlockAchievement,
   ]);
 
   const handleRestartSession = useCallback(() => {

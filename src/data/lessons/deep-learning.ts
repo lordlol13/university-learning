@@ -53,6 +53,7 @@ export const deepLearningLesson: LessonContent = {
           latex: "y = f(z) = f\\left(\\sum_{i=1}^n w_i x_i + b\\right)",
           explanation:
             "The pre-activation $z$ is a linear combination of inputs plus bias. The activation function $f$ introduces non-linearity.",
+          demoId: "deep-learning",
         },
         {
           id: "relu-formula",

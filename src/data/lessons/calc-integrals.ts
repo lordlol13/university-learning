@@ -36,6 +36,7 @@ export const calcIntegralsLesson: LessonContent = {
           title: "The Fundamental Theorem of Calculus",
           latex: "\\int_a^b f(x)\\,dx = F(b) - F(a)",
           explanation: "If F is an antiderivative of f such that F'(x) = f(x), the net accumulation between a and b is given by F(b) - F(a).",
+          demoId: "calc-integrals",
         },
         {
           id: "ftc-breakdown",

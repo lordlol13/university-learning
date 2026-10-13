@@ -44,7 +44,7 @@ export const lessonContents: LessonContent[] = [
   italianEngineeringTermsLesson,
 ];
 
-export function getLessonContent(id: string) {
+export function getLessonContent(id: string): LessonContent | undefined {
   return lessonContents.find(
     (lesson) => lesson.id === id || lesson.curriculumLessonId === id,
   );

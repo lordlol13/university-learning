@@ -53,6 +53,7 @@ export const statisticsLesson: LessonContent = {
           latex: "\\mu = \\frac{1}{N} \\sum_{i=1}^N x_i = \\frac{x_1 + x_2 + \\dots + x_N}{N}",
           explanation:
             "The sum of all observed values divided by the sample count $N$.",
+          demoId: "statistics",
         },
         {
           id: "variance-formula",

@@ -26,16 +26,17 @@ function TypewriterText({
       return;
     }
 
+    const delay = Math.max(200, Math.min(1200, text.length * speed));
     const timer = setTimeout(() => {
       setPhase("showing");
       if (onComplete) {
         // brief delay for state propagation
         setTimeout(onComplete, 10);
       }
-    }, 800);
+    }, delay);
 
     return () => clearTimeout(timer);
-  }, [skipAnimation, onComplete]);
+  }, [skipAnimation, onComplete, speed, text.length]);
 
   if (phase === "typing") {
     return (

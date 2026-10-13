@@ -53,6 +53,7 @@ export const physicsTacticalExam: LessonContent = {
           latex: "\\begin{aligned}\\text{Unit Scaling: } & \\left(\\frac{1\\text{ m}}{100\\text{ cm}}\\right)^2 = \\frac{1\\text{ m}^2}{10^4\\text{ cm}^2}, \\quad 1\\text{ lb} = 4.45\\text{ N}\\\\\\text{Water Bridge: } & 1\\text{ dm}^3 \\equiv 1\\text{ L} \\equiv 1\\text{ kg}, \\quad 1\\text{ m}^3 = 1{,}000\\text{ L}\\\\\\text{Vector Sum: } & R_x = \\sum A_x, \\quad R_y = \\sum A_y, \\quad R = \\sqrt{R_x^2 + R_y^2}\\\\\\text{Dot Product: } & \\vec{A} \\cdot \\vec{B} = AB\\cos(\\phi), \\quad \\vec{A} \\perp \\vec{B} \\iff \\vec{A} \\cdot \\vec{B} = 0\\\\\\text{Cross Product: } & |\\vec{A} \\times \\vec{B}| = AB\\sin(\\theta), \\quad \\vec{A} \\times \\vec{B} = -(\\vec{B} \\times \\vec{A})\\end{aligned}",
           explanation:
             "Every formula in this matrix represents a core tool required for engineering mechanics and physical problem solving.",
+          demoId: "physics-tactical-exam",
         },
       ],
     },

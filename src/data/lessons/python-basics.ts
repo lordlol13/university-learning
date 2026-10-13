@@ -38,6 +38,7 @@ export const pythonBasicsLesson: LessonContent = {
             "Think of a variable as a labeled handle on a value in memory. A floating-point number like $x = 0.75$ might represent a normalized sensor reading.",
             "Lists group ordered measurements together. When indexing lists, Python counts from zero: the first item sits at index $0$, and negative indices like $-1$ read backward from the end.",
           ],
+          demoId: "python-basics",
         },
       ],
     },

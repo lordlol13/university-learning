@@ -71,6 +71,7 @@ export const gradientDescentLesson: LessonContent = {
             "\\begin{aligned}f'(x)&=2(x-2)\\cdot 1 + 0\\\\&=2(x-2)\\\\x_{t+1}&=x_t-\\eta\\,2(x_t-2)\\end{aligned}",
           explanation:
             "The chain rule differentiates the square; the inside derivative is $1$. The constant contributes $0$. At $x=5$, the slope is $6$, so subtracting a positive multiple moves left. At $x=0$, the slope is $-4$, so the update moves right.",
+          demoId: "gradient-descent",
         },
         {
           id: "breakdown",

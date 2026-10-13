@@ -53,6 +53,7 @@ export const vectorComponentsLesson: LessonContent = {
           latex: "\\begin{aligned}A_x &= A\\cos(\\theta), \\quad A_y = A\\sin(\\theta)\\\\A &= \\sqrt{A_x^2 + A_y^2}, \\quad \\theta = \\tan^{-1}\\left(\\frac{A_y}{A_x}\\right)\\\\R_x &= \\sum A_x, \\quad R_y = \\sum A_y, \\quad R = \\sqrt{R_x^2 + R_y^2}\\end{aligned}",
           explanation:
             "Sum components along each axis separately, then recombine using the Pythagorean theorem and arctangent.",
+          demoId: "vector-components",
         },
         {
           id: "quadrant-matrix-formula",

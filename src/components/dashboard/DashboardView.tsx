@@ -9,15 +9,20 @@ import { getLessonStatus } from "@/stores/progress-store";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 
 export function DashboardView() {
-  const state = useProgress((s) => s);
-  const selected = state.currentLessonId
-    ? getLesson(state.currentLessonId)
-    : undefined;
+  const currentLessonId = useProgress((s) => s.currentLessonId);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const unlockedLessons = useProgress((s) => s.unlockedLessons);
+  const streak = useProgress((s) => s.streak);
+  const xp = useProgress((s) => s.xp);
+  const startLesson = useProgress((s) => s.startLesson);
+
+  const lessonState = { completedLessons, unlockedLessons };
+  const selected = currentLessonId ? getLesson(currentLessonId) : undefined;
   const current =
-    selected && getLessonStatus(selected, state) === "current"
+    selected && getLessonStatus(selected, lessonState) === "current"
       ? selected
       : allLessons.find(
-          (lesson) => getLessonStatus(lesson, state) === "current",
+          (lesson) => getLessonStatus(lesson, lessonState) === "current",
         );
   return (
     <div className="standard-page">
@@ -33,11 +38,11 @@ export function DashboardView() {
         {[
           {
             icon: BookOpen,
-            value: state.completedLessons.length,
+            value: completedLessons.length,
             label: "lessons completed",
           },
-          { icon: Flame, value: state.streak, label: "day streak" },
-          { icon: Star, value: state.xp, label: "XP earned" },
+          { icon: Flame, value: streak, label: "day streak" },
+          { icon: Star, value: xp, label: "XP earned" },
         ].map(({ icon: Icon, value, label }) => (
           <div className="panel-card" key={label}>
             <Icon size={23} />
@@ -68,7 +73,7 @@ export function DashboardView() {
           href={current ? `/lesson/${current.id}` : "/achievements"}
           className="button primary"
           onClick={() => {
-            if (current) state.startLesson(current.id);
+            if (current) startLesson(current.id);
           }}
         >
           {current ? "Continue learning" : "See your achievements"}
@@ -112,14 +117,14 @@ export function DashboardView() {
       </div>
       <div className="recent-lessons">
         {allLessons
-          .filter((l) => state.completedLessons.includes(l.id))
+          .filter((l) => completedLessons.includes(l.id))
           .slice(-3)
           .reverse()
           .map((lesson) => (
             <Link
               key={lesson.id}
               href={`/lesson/${lesson.id}`}
-              onClick={() => state.startLesson(lesson.id)}
+              onClick={() => startLesson(lesson.id)}
             >
               <span className="recent-icon">
                 <CurriculumIcon name={lesson.icon} />

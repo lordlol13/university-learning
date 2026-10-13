@@ -1203,6 +1203,43 @@ export function InteractivePlot({
     };
   }, [viewport, W, H, L, R, T, B]);
 
+  const scaleRef = useRef(scale);
+  useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
+
+  const rafId = useRef<number | null>(null);
+  const pendingVp = useRef<PlotViewport | null>(null);
+  const settleTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const queueDomainSettle = useCallback((xMin: number, xMax: number) => {
+    if (settleTimer.current) clearTimeout(settleTimer.current);
+    settleTimer.current = setTimeout(() => {
+      setSettledDomain({ xMin, xMax });
+    }, 150);
+  }, []);
+
+  const scheduleViewportUpdate = useCallback((nextVp: PlotViewport) => {
+    pendingVp.current = nextVp;
+    currentViewportRef.current = nextVp;
+    if (rafId.current === null) {
+      rafId.current = requestAnimationFrame(() => {
+        if (pendingVp.current) {
+          setViewport(pendingVp.current);
+          pendingVp.current = null;
+        }
+        rafId.current = null;
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+    };
+  }, []);
+
   // Auto-detect critical points for active function in current visible domain
   // Throttle and preserve critical points during active dragging/panning by calculating against settledDomain
   const criticalPoints = useMemo(() => {
@@ -1229,11 +1266,11 @@ export function InteractivePlot({
           yMax: cy + Math.min(20000, Math.max(0.1, topSpan)),
         };
         currentViewportRef.current = next;
-        setSettledDomain({ xMin: next.xMin, xMax: next.xMax });
+        queueDomainSettle(next.xMin, next.xMax);
         return next;
       });
     },
-    [],
+    [queueDomainSettle],
   );
 
   const pan = useCallback((dx: number, dy: number) => {
@@ -1245,10 +1282,10 @@ export function InteractivePlot({
         yMax: v.yMax + dy * (v.yMax - v.yMin),
       };
       currentViewportRef.current = next;
-      setSettledDomain({ xMin: next.xMin, xMax: next.xMax });
+      queueDomainSettle(next.xMin, next.xMax);
       return next;
     });
-  }, []);
+  }, [queueDomainSettle]);
 
   // Dedicated non-passive wheel listener:
   // When cursor is inside the graph canvas, intercepts wheel events, prevents browser page scrolling,
@@ -1268,14 +1305,17 @@ export function InteractivePlot({
       const px = ((e.clientX - rect.left) / rect.width) * W;
       const py = ((e.clientY - rect.top) / rect.height) * H;
       const factor = e.deltaY < 0 ? 0.85 : 1.18;
-      zoomAt(factor, scale.invertX(px), scale.invertY(py));
+      const currentScale = scaleRef.current;
+      if (currentScale) {
+        zoomAt(factor, currentScale.invertX(px), currentScale.invertY(py));
+      }
     };
 
     svg.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
       svg.removeEventListener("wheel", handleWheel);
     };
-  }, [scale, zoomAt, W, H]);
+  }, [zoomAt, W, H]);
 
   // Double tap handler
   const triggerDoubleTapAt = useCallback(
@@ -1656,8 +1696,8 @@ export function InteractivePlot({
               yMin: centerGraphY - Math.min(25000, Math.max(0.05, bottomSpan)),
               yMax: centerGraphY + Math.min(25000, Math.max(0.05, topSpan)),
             };
-            currentViewportRef.current = nextVp;
-            setViewport(nextVp);
+            scheduleViewportUpdate(nextVp);
+            queueDomainSettle(nextVp.xMin, nextVp.xMax);
             setHover(null);
             return;
           }
@@ -1686,8 +1726,8 @@ export function InteractivePlot({
               yMin: d.viewport.yMin + dy,
               yMax: d.viewport.yMax + dy,
             };
-            currentViewportRef.current = nextVp;
-            setViewport(nextVp);
+            scheduleViewportUpdate(nextVp);
+            queueDomainSettle(nextVp.xMin, nextVp.xMax);
             setHover(null);
           } else if (settings.showHoverTooltip) {
             const px = ((e.clientX - rect.left) / rect.width) * W;

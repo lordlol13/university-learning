@@ -8,7 +8,12 @@ import { useProgress } from "@/stores/progress-provider";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 
 export function ProfileView() {
-  const state = useProgress((s) => s);
+  const level = useProgress((s) => s.level);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const streak = useProgress((s) => s.streak);
+  const xp = useProgress((s) => s.xp);
+  const resetProgress = useProgress((s) => s.resetProgress);
+
   const [confirmReset, setConfirmReset] = useState(false);
   const [resetNotice, setResetNotice] = useState(false);
   return (
@@ -24,17 +29,17 @@ export function ProfileView() {
         <p>
           {learner.year} · Joined {learner.joined}
         </p>
-        <span className="tiny-pill">Level {state.level} learner</span>
+        <span className="tiny-pill">Level {level} learner</span>
       </section>
       <div className="dashboard-stats">
         {[
           {
             icon: BookOpen,
-            value: state.completedLessons.length,
+            value: completedLessons.length,
             label: "lessons completed",
           },
-          { icon: Flame, value: state.streak, label: "day streak" },
-          { icon: Star, value: state.xp, label: "total XP" },
+          { icon: Flame, value: streak, label: "day streak" },
+          { icon: Star, value: xp, label: "total XP" },
         ].map(({ icon: Icon, value, label }) => (
           <div className="panel-card" key={label}>
             <Icon size={23} />
@@ -55,13 +60,13 @@ export function ProfileView() {
       </section>
       <section className="panel-card profile-section">
         <div className="card-heading">
-          <h2>A little closer to Level {state.level + 1}</h2>
+          <h2>A little closer to Level {level + 1}</h2>
           <span className="green-text">
-            {state.level * levelSize - state.xp} XP to go
+            {level * levelSize - xp} XP to go
           </span>
         </div>
         <ProgressBar
-          value={Math.round(((state.xp % levelSize) / levelSize) * 100)}
+          value={Math.round(((xp % levelSize) / levelSize) * 100)}
           label="Level progress"
         />
       </section>
@@ -86,7 +91,7 @@ export function ProfileView() {
             <button
               className="button danger"
               onClick={() => {
-                state.resetProgress();
+                resetProgress();
                 setConfirmReset(false);
                 setResetNotice(true);
               }}

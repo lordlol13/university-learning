@@ -11,7 +11,7 @@ export function FormulaBreakdown({
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const variable =
-    selected === null ? undefined : block.parts[selected].variable;
+    selected === null ? undefined : block.parts[selected]?.variable;
   return (
     <div className="formula-explorer">
       <div

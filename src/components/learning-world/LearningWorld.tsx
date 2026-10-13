@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   ArrowRight,
@@ -151,7 +151,14 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   const lessons = getDirectionLessons(direction);
   const unit = direction.subjects[0]?.units[0];
   const data = getLearningWorld(direction.id);
-  const state = useProgress((s) => s);
+  const currentLessonId = useProgress((s) => s.currentLessonId);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const unlockedLessons = useProgress((s) => s.unlockedLessons);
+  const startLesson = useProgress((s) => s.startLesson);
+  const lessonState = useMemo(
+    () => ({ completedLessons, unlockedLessons }),
+    [completedLessons, unlockedLessons],
+  );
   const events = useLearningEvents();
   const [view, setView] = useState<"world" | "list">("world");
   const mounted = useSyncExternalStore(
@@ -181,31 +188,31 @@ export function LearningWorld({ direction }: { direction: Direction }) {
     [events],
   );
   const currentDirectionLesson = lessons.find(
-    (l) => l.id === state.currentLessonId,
+    (l) => l.id === currentLessonId,
   );
   const fallbackLesson =
-    lessons.find((l) => getLessonStatus(l, state) === "current") ??
-    lessons.find((l) => getLessonStatus(l, state) !== "locked") ??
+    lessons.find((l) => getLessonStatus(l, lessonState) === "current") ??
+    lessons.find((l) => getLessonStatus(l, lessonState) !== "locked") ??
     lessons[0];
   const selected = getLesson(
     selectedId ?? currentDirectionLesson?.id ?? fallbackLesson?.id ?? "",
   );
-  const status = selected ? getLessonStatus(selected, state) : "locked";
+  const status = selected ? getLessonStatus(selected, lessonState) : "locked";
   const selectLesson = useCallback(
     (id: string) => {
       setSelectedId(id);
       const lesson = getLesson(id);
       if (
         lesson &&
-        getLessonStatus(lesson, state) !== "locked" &&
-        state.startLesson(id)
+        getLessonStatus(lesson, lessonState) !== "locked" &&
+        startLesson(id)
       )
         setOpenLesson(id);
     },
-    [state, setSelectedId, setOpenLesson],
+    [lessonState, startLesson, setSelectedId, setOpenLesson],
   );
   const openSelected = () => {
-    if (selected && state.startLesson(selected.id)) setOpenLesson(selected.id);
+    if (selected && startLesson(selected.id)) setOpenLesson(selected.id);
   };
   return (
     <section

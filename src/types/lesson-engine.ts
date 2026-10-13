@@ -11,11 +11,27 @@ interface BlockBase {
 }
 export type LessonBlock = BlockBase &
   (
-    | { type: "introduction" | "intuition" | "theory"; paragraphs: RichText[] }
-    | { type: "formula"; latex: string; explanation: RichText }
+    | {
+        type: "introduction" | "intuition" | "theory";
+        paragraphs: RichText[];
+        demoId?: string;
+      }
+    | {
+        type: "formula";
+        latex: string;
+        explanation: RichText;
+        demoId?: string;
+      }
     | {
         type: "formula-breakdown";
         parts: Array<{ latex: string; variable?: FormulaVariable }>;
+        demoId?: string;
+      }
+    | {
+        type: "interactive-demo";
+        demoId: string;
+        caption?: string;
+        config?: Record<string, unknown>;
       }
     | {
         type: "interactive-graph" | "algorithm-visualizer";

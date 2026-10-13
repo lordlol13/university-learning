@@ -53,6 +53,7 @@ export const linearAlgebraLesson: LessonContent = {
           latex: "\\vec{u} \\cdot \\vec{v} = \\sum_{i=1}^n u_i v_i = u_1 v_1 + u_2 v_2 + \\dots + u_n v_n",
           explanation:
             "The sum of coordinate-wise products maps two vectors of equal dimension $n$ to a single scalar number.",
+          demoId: "linear-algebra",
         },
         {
           id: "dot-product-breakdown",

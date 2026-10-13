@@ -70,8 +70,8 @@ export default function StorkDebug({
       let triangles = 0;
       const materials = new Set();
       model.current.traverse((object) => {
+        if (!("isMesh" in object) || !(object as Mesh).isMesh || !object.visible) return;
         const mesh = object as Mesh;
-        if (!mesh.isMesh || !mesh.visible) return;
         triangles +=
           (mesh.geometry.index?.count ??
             mesh.geometry.getAttribute("position")?.count ??

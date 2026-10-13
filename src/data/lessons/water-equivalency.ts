@@ -53,6 +53,7 @@ export const waterEquivalencyLesson: LessonContent = {
           latex: "\\begin{aligned}\\text{Micro: } & 1\\text{ cm}^3 \\equiv 1\\text{ mL} \\approx 1\\text{ g (water)}\\\\\\text{Macro: } & 1\\text{ dm}^3 \\equiv 1\\text{ L} \\equiv 1\\text{ kg (water)}\\\\\\text{Cubic Meter: } & 1\\text{ m}^3 = 1{,}000\\text{ dm}^3 = 1{,}000\\text{ L} = 1{,}000\\text{ kg}\\end{aligned}",
           explanation:
             "Because $1\\text{ dm} = 10\\text{ cm}$, a cubic decimeter is $10 \\times 10 \\times 10 = 1{,}000\\text{ cm}^3 = 1{,}000\\text{ mL} = 1\\text{ L}$.",
+          demoId: "water-equivalency",
         },
         {
           id: "weight-force-formula",

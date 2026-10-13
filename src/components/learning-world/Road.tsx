@@ -1,5 +1,5 @@
 "use client";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { CatmullRomCurve3, TubeGeometry } from "three";
 import { createRoadGeometry, sampleWorldPath } from "@/lib/world-geometry";
 import type { LearningWorldData } from "@/types/learning-world";
@@ -37,6 +37,13 @@ export const Road = memo(function Road({
       }),
     [curve, data],
   );
+
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+      edges.forEach((edge) => edge.dispose());
+    };
+  }, [geometry, edges]);
   return (
     <group name="raised-spline-road">
       <mesh geometry={geometry} castShadow receiveShadow>

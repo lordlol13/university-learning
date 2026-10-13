@@ -24,8 +24,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${nunito.className} ${nunito.variable}`} suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang="en" className={`${nunito.className} ${nunito.variable}`}>
+      <body>
         <Script
           id="sw-cache-cleaner"
           strategy="beforeInteractive"

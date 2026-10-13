@@ -36,6 +36,7 @@ export const discreteLogicLesson: LessonContent = {
           title: "De Morgan's Laws",
           latex: "\\neg (A \\land B) \\iff (\\neg A) \\lor (\\neg B)",
           explanation: "Negating a conjunction turns it into a disjunction of negations. Similarly, the negation of an OR is the AND of the negations.",
+          demoId: "discrete-logic",
         },
         {
           id: "demorgan-breakdown",

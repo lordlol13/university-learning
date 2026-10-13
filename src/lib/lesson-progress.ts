@@ -27,7 +27,7 @@ export function lessonCompletion(
   return {
     done,
     total,
-    percent: Math.round((done / total) * 100),
-    complete: done === total,
+    percent: total > 0 ? Math.round((done / total) * 100) : 0,
+    complete: total > 0 && done === total,
   };
 }

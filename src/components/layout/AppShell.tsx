@@ -14,9 +14,11 @@ import { TopBar } from "./TopBar";
 import { ProgressPanel } from "./ProgressPanel";
 import { StorkAssistant } from "@/components/mascot/StorkAssistant";
 import { worldConfig } from "@/data/world-config";
+import { useSmallScreen } from "@/hooks/use-small-screen";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const small = useSmallScreen();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const previousFocus = useRef<HTMLElement | null>(null);
@@ -78,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="footer-dot">·</span> Belong
             </span>
           </footer>
-          {worldConfig.mascot.enabled && <StorkAssistant mobile />}
+          {worldConfig.mascot.enabled && <StorkAssistant mobile={small} />}
         </div>
       </div>
     </MotionConfig>

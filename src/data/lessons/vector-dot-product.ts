@@ -53,6 +53,7 @@ export const vectorDotProductLesson: LessonContent = {
           latex: "\\vec{A} \\cdot \\vec{B} = AB\\cos(\\phi) = A_x B_x + A_y B_y + A_z B_z",
           explanation:
             "Multiply corresponding Cartesian components and sum the products to evaluate the scalar projection.",
+          demoId: "vector-dot-product",
         },
         {
           id: "angle-determination-formula",

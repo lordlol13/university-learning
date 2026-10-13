@@ -53,6 +53,7 @@ export const vectorCrossProductLesson: LessonContent = {
           latex: "\\vec{A} \\times \\vec{B} = (A_y B_z - A_z B_y)\\hat{i} + (A_z B_x - A_x B_z)\\hat{j} + (A_x B_y - A_y B_x)\\hat{k}",
           explanation:
             "This formula corresponds to expanding the formal $3 \\times 3$ matrix determinant with basis vectors along the top row.",
+          demoId: "vector-cross-product",
         },
         {
           id: "cyclic-breakdown",

@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, type RefObject } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Html, OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { PCFShadowMap, Vector3, type Group } from "three";
+import { PCFShadowMap, Vector3, DirectionalLight, type Group } from "three";
 import { StorkMascot } from "@/components/mascot/StorkMascot";
 import { SceneBoundary } from "@/components/ui/SceneBoundary";
 import {
@@ -83,6 +83,19 @@ function CharacterScene({
     gl.shadowMap.enabled = q.shadowSize > 0;
     gl.shadowMap.needsUpdate = true;
   }, [setDpr, gl, q]);
+  const dirLightRef = useRef<DirectionalLight>(null);
+  useEffect(() => {
+    if (dirLightRef.current && dirLightRef.current.shadow) {
+      const size = q.shadowSize || 256;
+      if (dirLightRef.current.shadow.map) {
+        dirLightRef.current.shadow.map.dispose();
+        dirLightRef.current.shadow.map = null;
+      }
+      dirLightRef.current.shadow.mapSize.set(size, size);
+      dirLightRef.current.shadow.needsUpdate = true;
+    }
+  }, [q.shadowSize]);
+
   const presentationScale =
     o.presentation === "small" ? 0.38 : o.presentation === "medium" ? 0.72 : 1;
   return (
@@ -105,7 +118,7 @@ function CharacterScene({
       <ambientLight intensity={0.55 * o.light} />
       <hemisphereLight args={["#fff9ed", "#a5b49e", 0.6 * o.light]} />
       <directionalLight
-        key={quality}
+        ref={dirLightRef}
         position={[-3, 6, 5]}
         intensity={2.1 * o.light}
         color="#fff2db"

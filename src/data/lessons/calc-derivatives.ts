@@ -36,6 +36,7 @@ export const calcDerivativesLesson: LessonContent = {
           title: "The Definition of the Derivative",
           latex: "f'(x) = \\lim_{h \\to 0} \\frac{f(x + h) - f(x)}{h}",
           explanation: "The difference quotient represents the slope of a secant line between x and x + h. As h approaches zero, the secant line becomes the tangent line.",
+          demoId: "calc-derivatives",
         },
         {
           id: "deriv-breakdown",

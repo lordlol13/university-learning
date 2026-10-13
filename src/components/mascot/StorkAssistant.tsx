@@ -29,8 +29,11 @@ export function StorkAssistant({ mobile = false }: { mobile?: boolean }) {
   const gaze = useRef({ x: 0, y: 0 }),
     clickIndex = useRef(0);
   const lastMessage = useRef({ time: 0, priority: 0 });
-  const state = useProgress((s) => s),
-    events = useLearningEvents();
+  const currentLessonId = useProgress((s) => s.currentLessonId);
+  const level = useProgress((s) => s.level);
+  const xp = useProgress((s) => s.xp);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const events = useLearningEvents();
   useEffect(
     () =>
       events.subscribe((event) => {
@@ -64,15 +67,13 @@ export function StorkAssistant({ mobile = false }: { mobile?: boolean }) {
   );
   const interact = () => {
     reactToStorkTap(controller);
-    const current = state.currentLessonId
-      ? getLesson(state.currentLessonId)
-      : undefined;
+    const current = currentLessonId ? getLesson(currentLessonId) : undefined;
     const messages = [
       current
         ? `Ready to continue? Your next lesson is ${current.title}.`
         : "You’re doing great! Explore your courses to find your next chapter.",
-      `Only ${state.level * levelSize - state.xp} XP until Level ${state.level + 1}.`,
-      `You’ve completed ${state.completedLessons.length} lessons. Small steps, big futures!`,
+      `Only ${level * levelSize - xp} XP until Level ${level + 1}.`,
+      `You’ve completed ${completedLessons.length} lessons. Small steps, big futures!`,
     ];
     const message = messages[clickIndex.current++ % messages.length];
     setSpeech({ message, type: "hint" });

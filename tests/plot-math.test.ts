@@ -538,4 +538,86 @@ test("gradient descent lab formula (x - 2)^2 + 1 compiles and evaluates correctl
   }
 });
 
+test("compileCustomExpression and evaluateCalculatorExpression handle scientific notation accurately without Euler corruption", () => {
+  // Scientific notation with negative exponent
+  const fNegExp = compileCustomExpression("1e-5");
+  assert.ok(fNegExp, "1e-5 should compile");
+  assert.ok(Math.abs(fNegExp(0) - 0.00001) < 1e-9, "1e-5 must evaluate to 0.00001, not Euler corruption");
+
+  // Calculator evaluation for 1e-5
+  const calcNeg = evaluateCalculatorExpression("1e-5");
+  assert.equal(calcNeg.success, true);
+  assert.equal(calcNeg.isFunction, false);
+  assert.equal(calcNeg.result, 0.00001);
+
+  // Scientific notation with positive exponent
+  const fPosExp = compileCustomExpression("1e5");
+  assert.ok(fPosExp, "1e5 should compile");
+  assert.equal(fPosExp(0), 100000);
+
+  const calcPos = evaluateCalculatorExpression("1e5");
+  assert.equal(calcPos.success, true);
+  assert.equal(calcPos.result, 100000);
+
+  // Decimal base and positive/negative exponents
+  const fDecimalSci = compileCustomExpression("2.5e3");
+  assert.ok(fDecimalSci);
+  assert.equal(fDecimalSci(0), 2500);
+
+  const fDecimalNegSci = compileCustomExpression("2.5e-3");
+  assert.ok(fDecimalNegSci);
+  assert.ok(Math.abs(fDecimalNegSci(0) - 0.0025) < 1e-9);
+
+  // Function with x and scientific notation
+  const fSciWithX = compileCustomExpression("x * 1e-2");
+  assert.ok(fSciWithX);
+  assert.ok(Math.abs(fSciWithX(4) - 0.04) < 1e-9);
+
+  // Euler constant e is preserved when standalone
+  const fEuler = compileCustomExpression("e");
+  assert.ok(fEuler);
+  assert.ok(Math.abs(fEuler(0) - Math.E) < 1e-9);
+
+  const fEulerPow = compileCustomExpression("e^2");
+  assert.ok(fEulerPow);
+  assert.ok(Math.abs(fEulerPow(0) - Math.E ** 2) < 1e-9);
+
+  // Deeply nested transcendental expression with Euler power
+  const fNested = compileCustomExpression("sin(e^(-x^2))");
+  assert.ok(fNested, "sin(e^(-x^2)) should compile successfully");
+  assert.ok(Math.abs(fNested(0) - Math.sin(1)) < 1e-6);
+  assert.ok(Math.abs(fNested(1) - Math.sin(Math.exp(-1))) < 1e-6);
+});
+
+test("niceStep defensively handles zero and non-finite targetTicks and ranges", () => {
+  assert.equal(niceStep(10, 0), 1);
+  assert.equal(niceStep(10, -5), 1);
+  assert.equal(niceStep(10, NaN), 1);
+  assert.equal(niceStep(0, 8), 1);
+  assert.equal(niceStep(-10, 8), 1);
+  assert.equal(niceStep(NaN, 8), 1);
+});
+
+test("calculus utilities gracefully survive throwing user functions", () => {
+  const throwingFn = () => {
+    throw new Error("Mathematical fault");
+  };
+  assert.doesNotThrow(() => {
+    const deriv = numericalDerivative(throwingFn, 2);
+    assert.equal(deriv, 0);
+  });
+  assert.doesNotThrow(() => {
+    const secondDeriv = numericalSecondDerivative(throwingFn, 2);
+    assert.equal(secondDeriv, 0);
+  });
+  assert.doesNotThrow(() => {
+    const integral = numericalDefiniteIntegral(throwingFn, 0, 5);
+    assert.equal(integral, 0);
+  });
+  assert.doesNotThrow(() => {
+    const pts = findCriticalPoints(throwingFn, -5, 5);
+    assert.ok(Array.isArray(pts));
+  });
+});
+
 

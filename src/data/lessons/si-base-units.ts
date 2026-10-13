@@ -53,6 +53,7 @@ export const siBaseUnitsLesson: LessonContent = {
           latex: "x = M \\times 10^n \\quad \\text{where } 1 \\le M < 10, \\, n \\in \\mathbb{Z}",
           explanation:
             "Shifting the decimal point left increases the exponent (+n). Shifting the decimal point right decreases the exponent (-n).",
+          demoId: "si-base-units",
         },
         {
           id: "sci-notation-breakdown",

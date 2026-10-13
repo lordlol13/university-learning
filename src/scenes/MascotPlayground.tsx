@@ -308,12 +308,12 @@ export default function MascotPlayground() {
               Presentation
               <select
                 value={options.presentation}
-                onChange={(e) =>
-                  update(
-                    "presentation",
-                    e.target.value as StageOptions["presentation"],
-                  )
-                }
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "hero" || val === "medium" || val === "small") {
+                    update("presentation", val);
+                  }
+                }}
               >
                 <option value="hero">Hero</option>
                 <option value="medium">Medium</option>
@@ -364,9 +364,17 @@ export default function MascotPlayground() {
                 Quality
                 <select
                   value={options.quality}
-                  onChange={(e) =>
-                    update("quality", e.target.value as StageOptions["quality"])
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (
+                      val === "auto" ||
+                      val === "low" ||
+                      val === "medium" ||
+                      val === "high"
+                    ) {
+                      update("quality", val);
+                    }
+                  }}
                 >
                   {["auto", "low", "medium", "high"].map((q) => (
                     <option key={q} value={q}>
@@ -379,12 +387,12 @@ export default function MascotPlayground() {
                 Background
                 <select
                   value={options.background}
-                  onChange={(e) =>
-                    update(
-                      "background",
-                      e.target.value as StageOptions["background"],
-                    )
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "light" || val === "green" || val === "blue") {
+                      update("background", val);
+                    }
+                  }}
                 >
                   <option value="light">Warm light</option>
                   <option value="green">Campus green</option>

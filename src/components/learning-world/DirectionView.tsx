@@ -12,13 +12,13 @@ import { LearningWorld } from "./LearningWorld";
 import type { Direction } from "@/types/curriculum";
 
 export function DirectionView({ direction }: { direction: Direction }) {
-  const state = useProgress((s) => s);
+  const completedLessons = useProgress((s) => s.completedLessons);
   const setCurrentDirection = useProgress((s) => s.setCurrentDirection);
   const hydrated = useProgressReady();
   useEffect(() => {
     if (hydrated) setCurrentDirection(direction.id);
   }, [direction.id, setCurrentDirection, hydrated]);
-  const progress = getDirectionProgress(direction.id, state);
+  const progress = getDirectionProgress(direction.id, { completedLessons });
   const available = getDirectionLessons(direction).length > 0;
   return (
     <div className="direction-view">

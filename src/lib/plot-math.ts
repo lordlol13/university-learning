@@ -43,7 +43,13 @@ export interface EquationPreset {
 
 /** Computes clean human-friendly step intervals (1, 2, 5 * 10^k). */
 export function niceStep(range: number, targetTicks: number = 8): number {
-  if (range <= 0 || !Number.isFinite(range)) return 1;
+  if (
+    range <= 0 ||
+    !Number.isFinite(range) ||
+    targetTicks <= 0 ||
+    !Number.isFinite(targetTicks)
+  )
+    return 1;
   const rawStep = range / targetTicks;
   const power = Math.pow(10, Math.floor(Math.log10(rawStep)));
   const fraction = rawStep / power;
@@ -115,16 +121,25 @@ export function computeGridLines(
   return { majorX, majorY, minorX, minorY, stepX, stepY };
 }
 
+function safeEval(fn: (x: number) => number, x: number): number {
+  try {
+    const val = fn(x);
+    return Number.isFinite(val) ? val : NaN;
+  } catch {
+    return NaN;
+  }
+}
+
 /** Numerical first derivative f'(x) using central difference. */
 export function numericalDerivative(
   fn: (x: number) => number,
   x: number,
   eps: number = 1e-4,
 ): number {
-  const y0 = fn(x);
+  const y0 = safeEval(fn, x);
   if (!Number.isFinite(y0)) return 0;
-  const y1 = fn(x - eps);
-  const y2 = fn(x + eps);
+  const y1 = safeEval(fn, x - eps);
+  const y2 = safeEval(fn, x + eps);
   if (!Number.isFinite(y1) || !Number.isFinite(y2)) return 0;
   return (y2 - y1) / (2 * eps);
 }
@@ -135,9 +150,9 @@ export function numericalSecondDerivative(
   x: number,
   eps: number = 1e-4,
 ): number {
-  const ym = fn(x - eps);
-  const y0 = fn(x);
-  const yp = fn(x + eps);
+  const ym = safeEval(fn, x - eps);
+  const y0 = safeEval(fn, x);
+  const yp = safeEval(fn, x + eps);
   if (!Number.isFinite(ym) || !Number.isFinite(y0) || !Number.isFinite(yp))
     return 0;
   return (yp - 2 * y0 + ym) / (eps * eps);
@@ -151,15 +166,21 @@ export function numericalDefiniteIntegral(
   intervals: number = 80,
 ): number {
   if (Math.abs(b - a) < 1e-9) return 0;
-  const n = intervals % 2 === 0 ? intervals : intervals + 1;
+  const safeIntervals =
+    intervals > 0 && Number.isFinite(intervals)
+      ? intervals % 2 === 0
+        ? intervals
+        : intervals + 1
+      : 80;
+  const n = safeIntervals;
   const h = (b - a) / n;
-  const fa = Number.isFinite(fn(a)) ? fn(a) : 0;
-  const fb = Number.isFinite(fn(b)) ? fn(b) : 0;
-  let sum = fa + fb;
+  const fa = safeEval(fn, a);
+  const fb = safeEval(fn, b);
+  let sum = (Number.isFinite(fa) ? fa : 0) + (Number.isFinite(fb) ? fb : 0);
 
   for (let i = 1; i < n; i++) {
     const x = a + i * h;
-    const y = fn(x);
+    const y = safeEval(fn, x);
     if (!Number.isFinite(y)) continue;
     sum += i % 2 === 0 ? 2 * y : 4 * y;
   }
@@ -190,7 +211,7 @@ export function findCriticalPoints(
 
   for (let i = 0; i <= samples; i++) {
     const x = xMin + i * dx;
-    const y = fn(x);
+    const y = safeEval(fn, x);
     xs.push(x);
     ys.push(y);
     d1s.push(numericalDerivative(fn, x));
@@ -199,7 +220,7 @@ export function findCriticalPoints(
 
   // 1. Y-Intercept if 0 is in visible range
   if (xMin <= 0 && xMax >= 0) {
-    const y0 = fn(0);
+    const y0 = safeEval(fn, 0);
     if (Number.isFinite(y0)) {
       points.push({
         id: "y-intercept-0",
@@ -615,6 +636,350 @@ function transformUnaryPower(expr: string): string {
   return res;
 }
 
+interface MathNode {
+  eval(x: number): number;
+}
+
+class NumNode implements MathNode {
+  constructor(private readonly val: number) {}
+  eval(_x: number): number {
+    return this.val;
+  }
+}
+
+class VarNode implements MathNode {
+  eval(x: number): number {
+    return x;
+  }
+}
+
+class UnaryNode implements MathNode {
+  constructor(
+    private readonly op: "+" | "-",
+    private readonly arg: MathNode,
+  ) {}
+  eval(x: number): number {
+    const v = this.arg.eval(x);
+    return this.op === "-" ? -v : v;
+  }
+}
+
+class BinaryNode implements MathNode {
+  constructor(
+    private readonly op: "+" | "-" | "*" | "/" | "%" | "^" | "**",
+    private readonly left: MathNode,
+    private readonly right: MathNode,
+  ) {}
+  eval(x: number): number {
+    const l = this.left.eval(x);
+    const r = this.right.eval(x);
+    switch (this.op) {
+      case "+":
+        return l + r;
+      case "-":
+        return l - r;
+      case "*":
+        return l * r;
+      case "/":
+        return r === 0 ? (l > 0 ? Infinity : l < 0 ? -Infinity : NaN) : l / r;
+      case "%":
+        return l % r;
+      case "^":
+      case "**":
+        return Math.pow(l, r);
+      default:
+        return NaN;
+    }
+  }
+}
+
+class CallNode implements MathNode {
+  constructor(
+    private readonly fn: (...args: number[]) => number,
+    private readonly args: MathNode[],
+  ) {}
+  eval(x: number): number {
+    const evaluated = this.args.map((a) => a.eval(x));
+    return this.fn(...evaluated);
+  }
+}
+
+const AST_FUNCTIONS: Record<string, (...args: number[]) => number> = {
+  "math.sin": Math.sin,
+  "math.cos": Math.cos,
+  "math.tan": Math.tan,
+  "math.asin": Math.asin,
+  "math.acos": Math.acos,
+  "math.atan": Math.atan,
+  "math.sinh": Math.sinh,
+  "math.cosh": Math.cosh,
+  "math.tanh": Math.tanh,
+  "math.sqrt": Math.sqrt,
+  "math.cbrt": Math.cbrt,
+  "math.exp": Math.exp,
+  "math.log": Math.log,
+  "math.log10": Math.log10,
+  "math.log2": Math.log2,
+  "math.abs": Math.abs,
+  "math.round": Math.round,
+  "math.floor": Math.floor,
+  "math.ceil": Math.ceil,
+  "math.min": Math.min,
+  "math.max": Math.max,
+  sin: Math.sin,
+  cos: Math.cos,
+  tan: Math.tan,
+  asin: Math.asin,
+  acos: Math.acos,
+  atan: Math.atan,
+  arcsin: Math.asin,
+  arccos: Math.acos,
+  arctan: Math.atan,
+  sinh: Math.sinh,
+  cosh: Math.cosh,
+  tanh: Math.tanh,
+  sqrt: Math.sqrt,
+  cbrt: Math.cbrt,
+  exp: Math.exp,
+  log: Math.log,
+  ln: Math.log,
+  log10: Math.log10,
+  log2: Math.log2,
+  abs: Math.abs,
+  round: Math.round,
+  floor: Math.floor,
+  ceil: Math.ceil,
+  min: Math.min,
+  max: Math.max,
+  cot: (x) => 1 / Math.tan(x),
+  sec: (x) => 1 / Math.cos(x),
+  csc: (x) => 1 / Math.sin(x),
+};
+
+const AST_CONSTANTS: Record<string, number> = {
+  "math.pi": Math.PI,
+  "math.e": Math.E,
+  pi: Math.PI,
+  e: Math.E,
+  phi: (1 + Math.sqrt(5)) / 2,
+};
+
+type ASTToken =
+  | { type: "num"; val: number }
+  | { type: "id"; name: string }
+  | { type: "op"; op: "+" | "-" | "*" | "/" | "%" | "^" | "**" }
+  | { type: "lparen" }
+  | { type: "rparen" }
+  | { type: "comma" };
+
+function tokenizeMathString(input: string): ASTToken[] | null {
+  const tokens: ASTToken[] = [];
+  let i = 0;
+  while (i < input.length) {
+    const ch = input[i]!;
+    if (/\s/.test(ch)) {
+      i++;
+      continue;
+    }
+    if (ch === "(") {
+      tokens.push({ type: "lparen" });
+      i++;
+      continue;
+    }
+    if (ch === ")") {
+      tokens.push({ type: "rparen" });
+      i++;
+      continue;
+    }
+    if (ch === ",") {
+      tokens.push({ type: "comma" });
+      i++;
+      continue;
+    }
+    if (ch === "*" && input[i + 1] === "*") {
+      tokens.push({ type: "op", op: "**" });
+      i += 2;
+      continue;
+    }
+    if (ch === "+" || ch === "-" || ch === "*" || ch === "/" || ch === "%" || ch === "^") {
+      tokens.push({ type: "op", op: ch as "+" | "-" | "*" | "/" | "%" | "^" });
+      i++;
+      continue;
+    }
+    if (/[0-9]/.test(ch) || (ch === "." && /[0-9]/.test(input[i + 1] ?? ""))) {
+      let numStr = "";
+      while (i < input.length && /[0-9.]/.test(input[i]!)) {
+        numStr += input[i];
+        i++;
+      }
+      if (i < input.length && /[eE]/.test(input[i]!) && /[0-9+-]/.test(input[i + 1] ?? "")) {
+        numStr += input[i];
+        i++;
+        if (/[+-]/.test(input[i] ?? "")) {
+          numStr += input[i];
+          i++;
+        }
+        while (i < input.length && /[0-9]/.test(input[i]!)) {
+          numStr += input[i];
+          i++;
+        }
+      }
+      const val = Number(numStr);
+      if (Number.isNaN(val)) return null;
+      tokens.push({ type: "num", val });
+      continue;
+    }
+    if (/[a-zA-Z_$]/.test(ch)) {
+      let idStr = "";
+      while (i < input.length && /[a-zA-Z0-9_$.]/.test(input[i]!)) {
+        idStr += input[i];
+        i++;
+      }
+      tokens.push({ type: "id", name: idStr.toLowerCase() });
+      continue;
+    }
+    return null;
+  }
+  return tokens;
+}
+
+function parseMathTokens(tokens: ASTToken[]): MathNode | null {
+  let pos = 0;
+
+  function peek(): ASTToken | undefined {
+    return tokens[pos];
+  }
+
+  function consume(): ASTToken | undefined {
+    return tokens[pos++];
+  }
+
+  function parseExpr(): MathNode | null {
+    let left = parseTerm();
+    if (!left) return null;
+
+    while (pos < tokens.length) {
+      const tok = peek();
+      if (tok && tok.type === "op" && (tok.op === "+" || tok.op === "-")) {
+        consume();
+        const right = parseTerm();
+        if (!right) return null;
+        left = new BinaryNode(tok.op, left, right);
+      } else {
+        break;
+      }
+    }
+    return left;
+  }
+
+  function parseTerm(): MathNode | null {
+    let left = parseUnary();
+    if (!left) return null;
+
+    while (pos < tokens.length) {
+      const tok = peek();
+      if (tok && tok.type === "op" && (tok.op === "*" || tok.op === "/" || tok.op === "%")) {
+        consume();
+        const right = parseUnary();
+        if (!right) return null;
+        left = new BinaryNode(tok.op, left, right);
+      } else {
+        break;
+      }
+    }
+    return left;
+  }
+
+  function parseUnary(): MathNode | null {
+    const tok = peek();
+    if (tok && tok.type === "op" && (tok.op === "+" || tok.op === "-")) {
+      consume();
+      const arg = parseUnary();
+      if (!arg) return null;
+      return new UnaryNode(tok.op, arg);
+    }
+    return parsePower();
+  }
+
+  function parsePower(): MathNode | null {
+    const left = parsePrimary();
+    if (!left) return null;
+
+    const tok = peek();
+    if (tok && tok.type === "op" && (tok.op === "^" || tok.op === "**")) {
+      consume();
+      const right = parseUnary();
+      if (!right) return null;
+      return new BinaryNode(tok.op, left, right);
+    }
+    return left;
+  }
+
+  function parsePrimary(): MathNode | null {
+    const tok = peek();
+    if (!tok) return null;
+
+    if (tok.type === "num") {
+      consume();
+      return new NumNode(tok.val);
+    }
+
+    if (tok.type === "lparen") {
+      consume();
+      const expr = parseExpr();
+      if (!expr) return null;
+      const closing = peek();
+      if (!closing || closing.type !== "rparen") return null;
+      consume();
+      return expr;
+    }
+
+    if (tok.type === "id") {
+      consume();
+      const name = tok.name;
+      if (name === "x") {
+        return new VarNode();
+      }
+      if (name in AST_CONSTANTS) {
+        return new NumNode(AST_CONSTANTS[name]!);
+      }
+
+      const next = peek();
+      if (next && next.type === "lparen") {
+        const fn = AST_FUNCTIONS[name];
+        if (!fn) return null;
+        consume(); // '('
+        const args: MathNode[] = [];
+        if (peek() && peek()!.type !== "rparen") {
+          while (true) {
+            const arg = parseExpr();
+            if (!arg) return null;
+            args.push(arg);
+            const sep = peek();
+            if (sep && sep.type === "comma") {
+              consume();
+              continue;
+            }
+            break;
+          }
+        }
+        const closing = peek();
+        if (!closing || closing.type !== "rparen") return null;
+        consume(); // ')'
+        return new CallNode(fn, args);
+      }
+
+      return null;
+    }
+
+    return null;
+  }
+
+  const root = parseExpr();
+  if (pos !== tokens.length) return null;
+  return root;
+}
+
 /**
  * Safely parses and compiles a human mathematical expression string into a callable function (x) => number.
  * Supports standard syntax: x^2, 2x, sin(x), 2sin(x), cos(x), exp(x), sqrt(x), abs(x), log(x), (x+1)(x-1), etc.
@@ -641,6 +1006,9 @@ export function compileCustomExpression(expr: string): ((x: number) => number) |
   ) {
     return null;
   }
+
+  // Normalize scientific notation (e.g. 1e-5 -> (1*10^(-5)), 2.5e4 -> (2.5*10^(4)))
+  clean = clean.replace(/(\d+(?:\.\d+)?)[eE]([+-]?\d+)/g, "($1*10^($2))");
 
   // Extract all identifier words and ensure every single one is an allowed math function/constant/variable
   const tokens = clean.match(/[a-zA-Z_$][a-zA-Z0-9_$]*/g) || [];
@@ -730,18 +1098,17 @@ export function compileCustomExpression(expr: string): ((x: number) => number) |
       s = s.replace(new RegExp(`(?<!Math\\.)\\b${f}\\b`, "gi"), target);
     }
 
-    // 4. Construct sandboxed function with strict mode and injected Math
-    const fn = new Function(
-      "Math",
-      "x",
-      `"use strict"; return Number(${s});`,
-    ).bind(null, Math) as (x: number) => number;
+    // 4. Construct sandboxed AST evaluator without dynamic code generation (no new Function / eval)
+    const tokens = tokenizeMathString(s);
+    if (!tokens) return null;
+    const root = parseMathTokens(tokens);
+    if (!root) return null;
 
     // 5. Test evaluation at test inputs to verify syntax and at least one finite output
     const testPoints = [-2, -1, -0.5, 0, 0.5, 1, 2, 3];
     const hasFinite = testPoints.some((pt) => {
       try {
-        return Number.isFinite(fn(pt));
+        return Number.isFinite(root.eval(pt));
       } catch {
         return false;
       }
@@ -750,7 +1117,7 @@ export function compileCustomExpression(expr: string): ((x: number) => number) |
 
     return (x: number) => {
       try {
-        const val = fn(x);
+        const val = root.eval(x);
         return Number.isFinite(val) ? val : NaN;
       } catch {
         return NaN;

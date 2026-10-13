@@ -13,7 +13,12 @@ import type { CSSProperties } from "react";
 
 export function ProgressPanel() {
   const pathname = usePathname();
-  const state = useProgress((s) => s);
+  const currentDirectionId = useProgress((s) => s.currentDirectionId);
+  const completedLessons = useProgress((s) => s.completedLessons);
+  const xp = useProgress((s) => s.xp);
+  const level = useProgress((s) => s.level);
+  const achievements = useProgress((s) => s.achievements);
+
   const routeDirection = pathname.startsWith("/path/")
     ? pathname.split("/")[2]
     : pathname.startsWith("/lesson/")
@@ -22,13 +27,13 @@ export function ProgressPanel() {
   const directionId =
     routeDirection && getDirection(routeDirection)
       ? routeDirection
-      : state.currentDirectionId;
+      : currentDirectionId;
   const { completed, total, percent } = getDirectionProgress(
     directionId,
-    state,
+    { completedLessons },
   );
-  const xpToNext = state.level * levelSize - state.xp;
-  const levelPercent = Math.round(((state.xp % levelSize) / levelSize) * 100);
+  const xpToNext = level * levelSize - xp;
+  const levelPercent = Math.round(((xp % levelSize) / levelSize) * 100);
   return (
     <aside className="progress-panel" aria-label="Learning progress">
       <section className="panel-card progress-card">
@@ -91,16 +96,16 @@ export function ProgressPanel() {
               className="badge-item"
             >
               <span
-                key={`${achievement.id}-${state.achievements.includes(achievement.id)}`}
+                key={`${achievement.id}-${achievements.includes(achievement.id)}`}
                 className={
-                  state.achievements.includes(achievement.id)
+                  achievements.includes(achievement.id)
                     ? "earned-reveal"
                     : ""
                 }
               >
                 <AchievementBadge
                   achievement={achievement}
-                  earned={state.achievements.includes(achievement.id)}
+                  earned={achievements.includes(achievement.id)}
                   size="sm"
                 />
               </span>
@@ -112,15 +117,15 @@ export function ProgressPanel() {
       <section className="panel-card secondary-progress">
         <div className="card-heading">
           <h2>Your XP</h2>
-          <span className="tiny-pill">Level {state.level}</span>
+          <span className="tiny-pill">Level {level}</span>
         </div>
         <div className="xp-overview">
           <div className="xp-coin">
             <Star size={27} fill="currentColor" strokeWidth={1.5} />
           </div>
           <div>
-            <strong key={state.xp} className="xp-value">
-              {state.xp} <span>XP</span>
+            <strong key={xp} className="xp-value">
+              {xp} <span>XP</span>
             </strong>
             <p>{xpToNext} XP until next level</p>
           </div>
@@ -131,8 +136,8 @@ export function ProgressPanel() {
           color="gold"
         />
         <div className="xp-level-labels">
-          <span>Level {state.level}</span>
-          <span>Level {state.level + 1}</span>
+          <span>Level {level}</span>
+          <span>Level {level + 1}</span>
         </div>
       </section>
       <section className="encouragement-card secondary-progress">

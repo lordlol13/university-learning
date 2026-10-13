@@ -31,6 +31,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const markHydrated = () => {
       if (active) setHydrated(true);
     };
+    const unsub = store.persist?.onFinishHydration?.(markHydrated);
     try {
       Promise.resolve(store.persist?.rehydrate()).then(markHydrated, markHydrated);
     } catch {
@@ -39,6 +40,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const timer = setTimeout(markHydrated, 100);
     return () => {
       active = false;
+      unsub?.();
       clearTimeout(timer);
     };
   }, [store]);

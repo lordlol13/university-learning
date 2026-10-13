@@ -43,20 +43,29 @@ export function getLessonStatus(
   lesson: Lesson,
   state: Pick<ProgressState, "completedLessons" | "unlockedLessons">,
 ): LessonStatus {
-  if (state.completedLessons.includes(lesson.id)) return "completed";
-  return state.unlockedLessons.includes(lesson.id) &&
-    lesson.prerequisites.every((id) => state.completedLessons.includes(id))
+  const completed = Array.isArray(state?.completedLessons)
+    ? state.completedLessons
+    : [];
+  const unlocked = Array.isArray(state?.unlockedLessons)
+    ? state.unlockedLessons
+    : [];
+  if (completed.includes(lesson.id)) return "completed";
+  return unlocked.includes(lesson.id) &&
+    lesson.prerequisites.every((id) => completed.includes(id))
     ? "current"
     : "locked";
 }
 export function getDirectionProgress(
   directionId: string,
-  state: ProgressState,
+  state: Pick<ProgressState, "completedLessons">,
 ) {
   const direction = getDirection(directionId);
   const lessons = direction ? getDirectionLessons(direction) : [];
+  const completedList = Array.isArray(state?.completedLessons)
+    ? state.completedLessons
+    : [];
   const completed = lessons.filter((lesson) =>
-    state.completedLessons.includes(lesson.id),
+    completedList.includes(lesson.id),
   ).length;
   return {
     completed,
@@ -256,9 +265,11 @@ export const createProgressStore = (
             if (typeof globalThis !== "undefined" && globalThis.localStorage) {
               globalThis.localStorage.removeItem("uplift_solved_repeat_tasks");
               globalThis.localStorage.removeItem("uplift_practice_sessions");
+              globalThis.localStorage.removeItem("uplift_math_studio_settings_v3");
             } else if (typeof localStorage !== "undefined") {
               localStorage.removeItem("uplift_solved_repeat_tasks");
               localStorage.removeItem("uplift_practice_sessions");
+              localStorage.removeItem("uplift_math_studio_settings_v3");
             }
           } catch {}
           set({ ...freshProgress(), lessonActivities: {} });
@@ -268,7 +279,58 @@ export const createProgressStore = (
         name: "uplift-progress",
         version: 1,
         skipHydration: true,
-        storage: createJSONStorage(() => localStorage),
+        storage: createJSONStorage(() => {
+          if (typeof window !== "undefined" && window.localStorage) {
+            return window.localStorage;
+          }
+          if (typeof globalThis !== "undefined" && globalThis.localStorage) {
+            return globalThis.localStorage;
+          }
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }),
+        merge: (persistedState: unknown, currentState: ProgressStore) => {
+          if (!persistedState || typeof persistedState !== "object") {
+            return currentState;
+          }
+          const p = persistedState as Partial<ProgressState>;
+          return {
+            ...currentState,
+            ...p,
+            completedLessons: Array.isArray(p.completedLessons)
+              ? p.completedLessons
+              : currentState.completedLessons,
+            unlockedLessons: Array.isArray(p.unlockedLessons)
+              ? p.unlockedLessons
+              : currentState.unlockedLessons,
+            achievements: Array.isArray(p.achievements)
+              ? p.achievements
+              : currentState.achievements,
+            xp:
+              typeof p.xp === "number" && Number.isFinite(p.xp) && p.xp >= 0
+                ? p.xp
+                : currentState.xp,
+            level:
+              typeof p.level === "number" &&
+              Number.isFinite(p.level) &&
+              p.level >= 1
+                ? p.level
+                : currentState.level,
+            streak:
+              typeof p.streak === "number" &&
+              Number.isFinite(p.streak) &&
+              p.streak >= 0
+                ? p.streak
+                : currentState.streak,
+            lessonActivities:
+              p.lessonActivities && typeof p.lessonActivities === "object"
+                ? p.lessonActivities
+                : currentState.lessonActivities,
+          };
+        },
         partialize: (state) => ({
           lessonActivities: state.lessonActivities,
           currentDirectionId: state.currentDirectionId,

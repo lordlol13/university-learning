@@ -38,6 +38,7 @@ export const databasesLesson: LessonContent = {
             "Imagine keeping user profiles and user clicks in the same table. Storing user addresses with every click would create massive redundancy and inconsistency.",
             "Instead, a Primary Key uniquely identifies a record (e.g., `user_id = 42`). A Foreign Key in an `events` table references that primary key, linking events to the user without duplicating their details.",
           ],
+          demoId: "databases",
         },
       ],
     },

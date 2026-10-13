@@ -25,12 +25,14 @@ export default function WorldCanvas({
   selectedId,
   onSelect,
   paused = false,
+  showAllLabels = false,
 }: {
   data: LearningWorldData;
   lessons: Lesson[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   paused?: boolean;
+  showAllLabels?: boolean;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const active = useSceneActivity(container);
@@ -96,39 +98,42 @@ export default function WorldCanvas({
           />
           <CameraController reducedMotion={reducedMotion} />
           <Suspense fallback={null}>
-            <Environment data={data} reducedMotion={reducedMotion} />
-            <Road curve={curve} data={data} />
-            <IslandSignposts
-              currentDirectionId={data.directionId}
-              reducedMotion={reducedMotion}
-            />
-            {data.lessons.map((placement, index) => {
-              const lesson = lessons.find(
-                (item) => item.id === placement.lessonId,
-              );
-              return lesson ? (
-                <LessonPlatform
-                  key={lesson.id}
-                  lesson={lesson}
-                  status={getLessonStatus(lesson, {
-                    completedLessons,
-                    unlockedLessons,
-                  })}
-                  index={index}
-                  position={positions[index]}
-                  selected={selectedId === lesson.id}
-                  reducedMotion={reducedMotion}
-                  onSelect={onSelect}
-                />
-              ) : null;
-            })}
-            {worldConfig.mascot.enabled && (
-              <WorldStork
-                curve={curve}
-                data={data}
+            <group rotation={[0, Math.PI, 0]} name="island-world-group">
+              <Environment data={data} reducedMotion={reducedMotion} />
+              <Road curve={curve} data={data} />
+              <IslandSignposts
+                currentDirectionId={data.directionId}
                 reducedMotion={reducedMotion}
               />
-            )}
+              {data.lessons.map((placement, index) => {
+                const lesson = lessons.find(
+                  (item) => item.id === placement.lessonId,
+                );
+                return lesson ? (
+                  <LessonPlatform
+                    key={lesson.id}
+                    lesson={lesson}
+                    status={getLessonStatus(lesson, {
+                      completedLessons,
+                      unlockedLessons,
+                    })}
+                    index={index}
+                    position={positions[index]}
+                    selected={selectedId === lesson.id}
+                    reducedMotion={reducedMotion}
+                    showAllLabels={showAllLabels}
+                    onSelect={onSelect}
+                  />
+                ) : null;
+              })}
+              {worldConfig.mascot.enabled && (
+                <WorldStork
+                  curve={curve}
+                  data={data}
+                  reducedMotion={reducedMotion}
+                />
+              )}
+            </group>
           </Suspense>
         </Canvas>
       </SceneBoundary>

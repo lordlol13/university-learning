@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Flame, Sparkles, Star } from "lucide-react";
+import { ArrowRight, BookOpen, Flame, RotateCcw, Sparkles, Star } from "lucide-react";
 import { learner } from "@/data/demo";
 import { allLessons, getLesson } from "@/data/curriculum";
 import { useProgress } from "@/stores/progress-provider";
@@ -83,6 +83,25 @@ export function DashboardView() {
             A few focused minutes can make a real difference. You’ve got this.
           </p>
         </div>
+      </div>
+      <div className="section-heading">
+        <h2>Repeat & reinforce</h2>
+        <Link href="/repeat">
+          Solve previous tasks
+          <ArrowRight size={15} />
+        </Link>
+      </div>
+      <div className="panel-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", padding: "18px 22px", marginBottom: "28px" }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: "17px", color: "var(--foreground)" }}>Solve tasks from previous themes</h3>
+          <p style={{ margin: "4px 0 0", fontSize: "14px", color: "var(--muted)" }}>
+            Strengthen your memory by solving practice questions and quizzes from completed units.
+          </p>
+        </div>
+        <Link href="/repeat" className="button primary" style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+          <RotateCcw size={16} />
+          Repeat tasks
+        </Link>
       </div>
       <div className="section-heading">
         <h2>Your recent lessons</h2>

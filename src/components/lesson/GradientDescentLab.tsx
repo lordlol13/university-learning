@@ -163,21 +163,11 @@ export function GradientDescentGraph({
     s.x < viewport.xMin || s.x > viewport.xMax || s.loss > viewport.yMax;
   return (
     <div className="gradient-lab">
-      <div className="lab-title">
-        <div>
-          <span className="live-dot" /> LIVE EXPERIMENT
-        </div>
-        <MathFormula latex="f(x)=(x-2)^2+1" />
-      </div>
-      <div className="lab-legend">
-        <span className="legend-blue">Current position</span>
-        <span className="legend-gold">Next update</span>
-        <span className="legend-green">Minimum (2, 1)</span>
-      </div>
       <InteractivePlot
         label={`Gradient descent. Iteration ${s.iteration}, x ${fmt(s.x)}, loss ${fmt(s.loss)}. Drag to pan or use the controls below.`}
         initialViewport={viewport}
         fn={objective}
+        initialFormula="(x - 2)^2 + 1"
       >
         {(scale) => (
           <>
@@ -346,7 +336,7 @@ export function GradientDescentGraph({
       <button
         className="lesson-btn lab-complete"
         onClick={onComplete}
-        disabled={completed || s.iteration < 2}
+        disabled={s.iteration < 2}
       >
         {completed
           ? "Experiment completed ✓"
@@ -417,7 +407,7 @@ export function GradientDescentAlgorithm({
       </AlgorithmVisualizer>
       <button
         className="lesson-btn lab-complete"
-        disabled={completed || s.iteration < 2}
+        disabled={s.iteration < 2}
         onClick={onComplete}
       >
         {completed ? "Algorithm explored ✓" : "I can explain these updates"}

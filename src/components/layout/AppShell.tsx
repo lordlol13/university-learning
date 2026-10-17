@@ -66,11 +66,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Sidebar open={menuOpen} onClose={closeMenu} />
         <div className="app-body" inert={menuOpen ? true : undefined}>
           <TopBar onMenuClick={() => setMenuOpen(true)} menuOpen={menuOpen} />
-          <div className={`content-grid ${pathname.startsWith("/lesson/") ? "lesson-content-grid" : ""}`}>
+          <div className={`content-grid ${pathname.startsWith("/lesson/") || pathname.startsWith("/path/") ? "lesson-content-grid" : ""}`}>
             <main id="main-content" tabIndex={-1}>
               {children}
             </main>
-            {!pathname.startsWith("/lesson/") && <ProgressPanel />}
+            {!pathname.startsWith("/lesson/") && !pathname.startsWith("/path/") && <ProgressPanel />}
           </div>
           <footer className="app-footer">
             <span>© {new Date().getFullYear()} Uplift</span>

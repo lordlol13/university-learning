@@ -1595,5 +1595,655 @@
   }
 }
 
+/* ==========================================================================
+   Lovable Uplift Island Campus — Spatial 3D Viewport & Glassmorphic HUD
+   ========================================================================== */
+
+.uplift-direction-view {
+  padding: 0;
+  margin: 0;
+}
+
+.uplift-island-viewport {
+  --track: #10b981;
+  --track-2: #22d3ee;
+  --gradient-sky:
+    radial-gradient(120% 80% at 70% 15%, oklch(0.95 0.08 80) 0%, transparent 55%),
+    linear-gradient(
+      180deg,
+      oklch(0.8 0.08 230) 0%,
+      oklch(0.88 0.06 200) 35%,
+      oklch(0.9 0.08 70) 70%,
+      oklch(0.88 0.1 50) 100%
+    );
+  --gradient-track: linear-gradient(135deg, var(--track), var(--track-2));
+  --shadow-glass:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 20px 50px -20px rgba(24, 39, 75, 0.32);
+  --shadow-glow: 0 10px 30px -8px color-mix(in oklab, var(--track) 60%, transparent);
+
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 104px);
+  min-height: 680px;
+  border-radius: 26px;
+  overflow: hidden;
+  background: var(--gradient-sky);
+  box-shadow: 0 18px 48px -18px rgba(15, 23, 42, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  isolation: isolate;
+}
+
+.uplift-canvas-layer {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.uplift-canvas-blurred {
+  transform: scale(1.02);
+  filter: blur(5px);
+}
+
+.uplift-glass {
+  background: rgba(254, 252, 246, 0.62);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-glass);
+}
+
+.uplift-glass-strong {
+  background: rgba(254, 252, 246, 0.86);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Top Glassmorphic Bar */
+.uplift-hud-topbar {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 18px;
+}
+
+.uplift-brand {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #1e293b;
+  flex-shrink: 0;
+}
+
+.uplift-brand-dot {
+  color: var(--track);
+}
+
+.uplift-track-nav {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.uplift-track-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.uplift-track-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 13px;
+  text-decoration: none;
+  color: #1e293b;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.uplift-track-pill:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.uplift-track-pill.active {
+  background: linear-gradient(135deg, var(--track), var(--track-2));
+  color: #ffffff;
+  box-shadow: 0 10px 26px -8px color-mix(in oklab, var(--track) 65%, transparent);
+}
+
+.uplift-track-pill-body {
+  line-height: 1.15;
+}
+
+.uplift-track-pill-title {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.uplift-track-pill-count {
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.uplift-track-pill-dots {
+  margin-top: 3px;
+  display: flex;
+  gap: 3px;
+}
+
+.uplift-pill-dot {
+  width: 9px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.16);
+}
+
+.uplift-track-pill.active .uplift-pill-dot {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.uplift-pill-dot.done {
+  background: var(--track);
+}
+
+.uplift-pill-dot.done-active {
+  background: #ffffff;
+}
+
+.uplift-hud-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.uplift-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  background: rgba(255, 253, 249, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+
+.uplift-hud-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.uplift-hud-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.uplift-hud-btn[data-on="true"] {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: #1e293b;
+}
+
+.uplift-hud-btn.uplift-icon-only {
+  padding: 7px 9px;
+}
+
+.uplift-stat-badge {
+  cursor: default;
+}
+.uplift-stat-badge:hover {
+  transform: none;
+}
+
+.uplift-icon-flame {
+  color: #ef4444;
+}
+
+.uplift-icon-gold {
+  color: #d99b26;
+}
+
+.uplift-xp-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+/* Left Floating Track Overview Card */
+.uplift-hud-aside {
+  position: absolute;
+  top: 82px;
+  left: 18px;
+  z-index: 15;
+  width: 316px;
+  padding: 20px;
+  border-radius: 24px;
+}
+
+.uplift-biome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--gradient-track);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.uplift-aside-main {
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.uplift-aside-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.uplift-aside-copy h1 {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+  margin: 0;
+}
+
+.uplift-aside-copy p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.uplift-progress-ring {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.uplift-progress-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.uplift-progress-ring circle {
+  transition: stroke-dasharray 0.7s ease;
+}
+
+.uplift-progress-ring span {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.uplift-aside-actions {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Centered Glassmorphic List Modal */
+.uplift-list-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 25;
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100% - 160px);
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border-radius: 24px;
+  animation: uplift-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.uplift-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.uplift-list-header h2 {
+  font-size: 19px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+}
+
+.uplift-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.uplift-list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.uplift-list-row:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.uplift-list-row.selected {
+  outline: 2px solid var(--track);
+}
+
+.uplift-list-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.uplift-list-num.completed {
+  background: #e5b54f;
+  color: #1e293b;
+}
+
+.uplift-list-num.current {
+  background: var(--gradient-track);
+  color: #ffffff;
+}
+
+.uplift-list-num.locked {
+  background: rgba(15, 23, 42, 0.08);
+  color: #64748b;
+}
+
+.uplift-list-row-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.uplift-list-row-status {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+/* Bottom Floating Milestone Inspector Dock */
+.uplift-hud-dock {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  z-index: 15;
+  transform: translateX(-50%);
+  width: min(680px, calc(100% - 24px));
+  padding: 16px 20px;
+  border-radius: 24px;
+}
+
+.uplift-dock-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.uplift-dock-step {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.uplift-dock-badge {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.uplift-dock-badge.completed {
+  background: #e5b54f;
+  color: #1e293b;
+}
+
+.uplift-dock-badge.current {
+  background: var(--gradient-track);
+  color: #ffffff;
+}
+
+.uplift-dock-badge.locked {
+  background: rgba(15, 23, 42, 0.08);
+  color: #64748b;
+}
+
+.uplift-dock-arrows {
+  margin-left: auto;
+  display: flex;
+  gap: 5px;
+}
+
+.uplift-dock-main {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.uplift-dock-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--gradient-track);
+  box-shadow: var(--shadow-glow);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.uplift-dock-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.uplift-dock-copy h3 {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+  margin: 0;
+}
+
+.uplift-dock-copy p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #475569;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.uplift-dock-meta {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.uplift-dock-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uplift-dock-xp {
+  color: #c88a1b;
+}
+
+.uplift-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 16px;
+  background: var(--gradient-track);
+  box-shadow: var(--shadow-glow);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+}
+
+.uplift-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.uplift-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 3D Projected Milestone Map Pins */
+.map-pin {
+  background: rgba(254, 252, 246, 0.72);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 12px 28px -10px rgba(24, 39, 75, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #1e293b;
+  cursor: pointer;
+  animation: uplift-pin-in 0.35s ease-out;
+}
+
+.map-pin[data-state="locked"] {
+  color: #64748b;
+}
+
+.map-pin-selected {
+  background: rgba(254, 252, 246, 0.92);
+  outline: 2px solid var(--track-2);
+}
+
+.map-pin-tag {
+  background: linear-gradient(135deg, var(--track), var(--track-2));
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+@keyframes uplift-pin-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes uplift-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 960px) {
+  .uplift-hud-aside {
+    display: none;
+  }
+  .uplift-stat-badge {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .uplift-island-viewport {
+    height: calc(100dvh - 88px);
+    min-height: 580px;
+    border-radius: 18px;
+  }
+  .uplift-dock-main {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .uplift-cta {
+    width: 100%;
+  }
+}
+
+
 
 

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { directions, getDirection } from "@/data/curriculum";
 import { DirectionView } from "@/components/learning-world/DirectionView";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 const ROUTE_ALIASES: Record<string, string> = {
   "italian-culture": "italian-language",

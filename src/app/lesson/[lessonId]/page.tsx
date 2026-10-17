@@ -3,7 +3,7 @@ import { allLessons, getLesson, getLessonDirection } from "@/data/curriculum";
 import { LessonView } from "@/components/lesson/LessonView";
 import { getLessonContent, lessonContents } from "@/data/lessons";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   const ids = new Set([

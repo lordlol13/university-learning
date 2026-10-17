@@ -8,6 +8,7 @@ import { useProgress, useProgressReady } from "@/stores/progress-provider";
 import { getDirectionProgress } from "@/stores/progress-store";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { IslandNavigator } from "./IslandNavigator";
 import { LearningWorld } from "./LearningWorld";
 import type { Direction } from "@/types/curriculum";
 
@@ -62,6 +63,7 @@ export function DirectionView({ direction }: { direction: Direction }) {
           {direction.subjects[0]?.title ?? "Curriculum in preparation"}
         </span>
       </div>
+      <IslandNavigator currentDirectionId={direction.id} />
       {available ? (
         <LearningWorld key={direction.id} direction={direction} />
       ) : (

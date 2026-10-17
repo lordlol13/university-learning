@@ -1376,4 +1376,224 @@
   }
 }
 
+/* ============================================================================
+ * Lovable Island Navigator & Audio Controls
+ * ============================================================================ */
+
+.island-navigator {
+  margin: 12px 0 16px;
+  width: 100%;
+}
+
+.island-navigator-inner {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.track-nav-item {
+  flex: 1 1 calc(25% - 8px);
+  min-width: 170px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #e4eadc;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #3f4e39;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.track-nav-item:hover {
+  background: #f7faf3;
+  border-color: #3c6d32;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(60, 109, 50, 0.08);
+}
+
+.track-nav-item[data-active="true"] {
+  background: #ffffff;
+  border-color: #3c6d32;
+  box-shadow: 0 0 0 2px rgba(60, 109, 50, 0.18), 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.campus-button-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #eff5eb;
+  color: #3c6d32;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.track-nav-item[data-active="true"] .campus-button-icon {
+  background: #3c6d32;
+  color: #ffffff;
+}
+
+.campus-button-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.track-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #263320;
+  line-height: 1.25;
+}
+
+.track-progress {
+  display: block;
+  font-size: 11px;
+  color: #75846a;
+  margin-top: 2px;
+}
+
+.mini-progress {
+  display: flex;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.mini-progress i {
+  height: 4px;
+  flex: 1;
+  max-width: 14px;
+  border-radius: 2px;
+  background: #e3ebd9;
+  display: inline-block;
+  transition: background-color 0.2s ease;
+}
+
+.mini-progress i.done {
+  background: #3c6d32;
+}
+
+/* World toolbar additions */
+.world-center-btn,
+.world-sound-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  background: #ffffff;
+  border: 1px solid #d9e3d0;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4b5d44;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.world-center-btn:hover,
+.world-sound-toggle:hover {
+  background: #f4f8f0;
+  border-color: #3c6d32;
+  color: #263320;
+}
+
+.world-sound-toggle.active {
+  color: #3c6d32;
+  border-color: #9ac291;
+  background: #f1f8ed;
+}
+
+/* Floating Compass Rose Widget */
+.campus-compass {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 14px rgba(40, 60, 30, 0.08);
+  display: grid;
+  place-items: center;
+  color: #3c6d32;
+  pointer-events: none;
+}
+
+.campus-compass::before {
+  content: "N";
+  position: absolute;
+  top: -11px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #637759;
+  letter-spacing: 0.5px;
+}
+
+/* Floating Journey Progress Badge */
+.campus-journey-badge {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  z-index: 10;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 14px rgba(40, 60, 30, 0.08);
+  pointer-events: none;
+}
+
+.journey-badge-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #68795f;
+  text-transform: uppercase;
+}
+
+.campus-journey-badge strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: #273620;
+  margin: 1px 0 4px;
+}
+
+.journey-badge-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.journey-badge-dots i {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: #d8e2cf;
+  display: inline-block;
+}
+
+.journey-badge-dots i.done {
+  background: #3c6d32;
+}
+
+@media (max-width: 680px) {
+  .track-nav-item {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 140px;
+  }
+  .campus-journey-badge {
+    display: none;
+  }
+}
+
+
 

@@ -1,7 +1,6 @@
 "use client";
 
-export function WorldSwitcher() {
-  return null;
-}
+import { IslandNavigator } from "./IslandNavigator";
 
-export default WorldSwitcher;
+export { IslandNavigator as WorldSwitcher };
+export default IslandNavigator;

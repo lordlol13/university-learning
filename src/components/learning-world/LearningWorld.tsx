@@ -8,12 +8,16 @@ import {
   BookOpen,
   Check,
   Clock3,
+  Compass,
   List,
   LockKeyhole,
   Map,
+  Navigation,
   RotateCcw,
   Star,
   Tag,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import { getDirectionLessons, getLesson } from "@/data/curriculum";
@@ -26,6 +30,12 @@ import { getLessonStatus } from "@/stores/progress-store";
 import { LessonView } from "@/components/lesson/LessonView";
 import { RepeatTasksView } from "@/components/repeat/RepeatTasksView";
 import { StorkSpeechBubble } from "@/components/mascot/StorkSpeechBubble";
+import {
+  playChime,
+  getSoundPreference,
+  setSoundPreference,
+  subscribeSoundPreference,
+} from "@/lib/island-audio";
 import { LearningPath } from "./LearningPath";
 import type { Direction } from "@/types/curriculum";
 
@@ -174,10 +184,23 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   const closeLesson = useCallback(() => setOpenLesson(null), [setOpenLesson]);
   const closeMessage = useCallback(() => setMessage(null), [setMessage]);
 
+  const soundEnabled = useSyncExternalStore(
+    subscribeSoundPreference,
+    getSoundPreference,
+    () => true,
+  );
+
+  const toggleSound = useCallback(() => {
+    const next = !getSoundPreference();
+    setSoundPreference(next);
+    playChime(next, false);
+  }, []);
+
   useEffect(
     () =>
       events.subscribe((event) => {
         if (event.type === "LESSON_COMPLETED") {
+          playChime(soundEnabled, true);
           setOpenLesson(null);
           setSelectedId(event.nextLessonId ?? event.lessonId);
           setMessage(
@@ -185,7 +208,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
           );
         }
       }),
-    [events],
+    [events, soundEnabled],
   );
   const currentDirectionLesson = lessons.find(
     (l) => l.id === currentLessonId,
@@ -198,8 +221,21 @@ export function LearningWorld({ direction }: { direction: Direction }) {
     selectedId ?? currentDirectionLesson?.id ?? fallbackLesson?.id ?? "",
   );
   const status = selected ? getLessonStatus(selected, lessonState) : "locked";
+
+  const handleCenterNext = useCallback(() => {
+    const nextLesson =
+      lessons.find((l) => getLessonStatus(l, lessonState) === "current") ??
+      lessons.find((l) => getLessonStatus(l, lessonState) !== "locked") ??
+      lessons[0];
+    if (nextLesson) {
+      setSelectedId(nextLesson.id);
+      playChime(soundEnabled, false);
+    }
+  }, [lessons, lessonState, soundEnabled, setSelectedId]);
+
   const selectLesson = useCallback(
     (id: string) => {
+      playChime(soundEnabled, false);
       setSelectedId(id);
       const lesson = getLesson(id);
       if (
@@ -209,7 +245,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       )
         setOpenLesson(id);
     },
-    [lessonState, startLesson, setSelectedId, setOpenLesson],
+    [lessonState, startLesson, setSelectedId, setOpenLesson, soundEnabled],
   );
   const openSelected = () => {
     if (selected && startLesson(selected.id)) setOpenLesson(selected.id);
@@ -237,18 +273,41 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               <span>Repeat</span>
             </button>
             {view === "world" && (
-              <button
-                type="button"
-                className={`world-labels-toggle ${showAllLabels ? "active" : ""}`}
-                onClick={() => setShowAllLabels((prev) => !prev)}
-                aria-pressed={showAllLabels}
-                title={showAllLabels ? "Switch to Smart clean labels (unclutter view)" : "Show all lesson labels simultaneously"}
-                aria-label={showAllLabels ? "Switch to Smart clean labels" : "Show all lesson labels"}
-              >
-                <Tag size={13} />
-                <span>{showAllLabels ? "All labels" : "Smart labels"}</span>
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="world-center-btn"
+                  onClick={handleCenterNext}
+                  title="Center on your next active milestone"
+                  aria-label="Center next milestone"
+                >
+                  <Navigation size={13} />
+                  <span>Center next</span>
+                </button>
+                <button
+                  type="button"
+                  className={`world-labels-toggle ${showAllLabels ? "active" : ""}`}
+                  onClick={() => setShowAllLabels((prev) => !prev)}
+                  aria-pressed={showAllLabels}
+                  title={showAllLabels ? "Switch to Smart clean labels (unclutter view)" : "Show all lesson labels simultaneously"}
+                  aria-label={showAllLabels ? "Switch to Smart clean labels" : "Show all lesson labels"}
+                >
+                  <Tag size={13} />
+                  <span>{showAllLabels ? "All labels" : "Smart labels"}</span>
+                </button>
+              </>
             )}
+            <button
+              type="button"
+              className={`world-sound-toggle ${soundEnabled ? "active" : ""}`}
+              onClick={toggleSound}
+              title={soundEnabled ? "Mute audio chimes" : "Enable audio chimes"}
+              aria-label={soundEnabled ? "Mute audio chimes" : "Enable audio chimes"}
+              aria-pressed={soundEnabled}
+            >
+              {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
+              <span>{soundEnabled ? "Sound on" : "Muted"}</span>
+            </button>
             <div
               className="world-view-switch"
               role="group"
@@ -304,9 +363,28 @@ export function LearningWorld({ direction }: { direction: Direction }) {
               Bringing your campus to life…
             </div>
           )}
-          <div className="world-location">
-            <span>UPLIFT CAMPUS</span>
-            <strong>A little further, every day.</strong>
+          <div className="campus-compass" title="Campus North" aria-hidden="true">
+            <Compass size={18} />
+          </div>
+          <div className="campus-journey-badge" aria-label="Campus progress">
+            <span className="journey-badge-label">CAMPUS PROGRESS</span>
+            <strong>
+              {Math.round(
+                (lessons.filter((l) => completedLessons.includes(l.id)).length /
+                  Math.max(1, lessons.length)) *
+                  100,
+              )}
+              %
+            </strong>
+            <div className="journey-badge-dots" aria-hidden="true">
+              {lessons.map((l) => (
+                <i
+                  key={l.id}
+                  className={completedLessons.includes(l.id) ? "done" : ""}
+                  title={l.title}
+                />
+              ))}
+            </div>
           </div>
           <StorkSpeechBubble
             message={message}

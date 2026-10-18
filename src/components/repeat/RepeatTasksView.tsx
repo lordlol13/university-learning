@@ -12,7 +12,9 @@ import {
   ArrowRight,
   Check,
   CircleCheck,
+  Flame,
   HelpCircle,
+  History,
   Lightbulb,
   RotateCcw,
   Shuffle,
@@ -23,6 +25,7 @@ import {
 } from "lucide-react";
 import {
   getAllRepeatTasks,
+  getPracticeSessions,
   getRepeatThemes,
   savePracticeSession,
   validateRepeatAnswer,
@@ -42,6 +45,7 @@ export function RepeatTasksView({
   onClose?: () => void;
 }) {
   const completedLessons = useProgress((s) => s.completedLessons);
+  const streak = useProgress((s) => s.streak);
   const addXP = useProgress((s) => s.addXP);
   const unlockAchievement = useProgress((s) => s.unlockAchievement);
   const [filterMode, setFilterMode] = useState<"completed" | "all">(
@@ -109,6 +113,35 @@ export function RepeatTasksView({
   const [sessionXpEarned, setSessionXpEarned] = useState(0);
   const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [currentSessionSummary, setCurrentSessionSummary] = useState<PracticeSession | null>(null);
+  const [pastSessions, setPastSessions] = useState<PracticeSession[]>([]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (mounted) {
+      timer = setTimeout(() => {
+        setPastSessions(getPracticeSessions());
+      }, 0);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [mounted, isSessionComplete]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (safeCompletedLessons.length === 0) {
+      timer = setTimeout(() => {
+        setLocallySolved(new Set());
+        setSessionAnswers({});
+        if (mounted) {
+          setPastSessions(getPracticeSessions());
+        }
+      }, 0);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [safeCompletedLessons, mounted]);
 
   const solvedTasks = useMemo(() => {
     if (!mounted) return locallySolved;
@@ -180,9 +213,10 @@ export function RepeatTasksView({
     if (!currentTask || isChecked) return;
     setIsChecked(true);
 
+    const sanitizedNumeric = numericInput.trim().replace(",", ".");
     const isCorrect = validateRepeatAnswer(
       currentTask,
-      currentTask.kind === "quiz" ? selectedOption : numericInput,
+      currentTask.kind === "quiz" ? selectedOption : sanitizedNumeric,
     );
 
     setSessionAnswers((prev) => ({ ...prev, [currentTask.id]: isCorrect }));
@@ -233,10 +267,9 @@ export function RepeatTasksView({
   }, [currentTask]);
 
   const handleCompleteSession = useCallback(() => {
-    const totalQuestions = activeTasks.length;
-    const correctCount = activeTasks.filter(
-      (t) => sessionAnswers[t.id] === true,
-    ).length;
+    const attemptedCount = Object.keys(sessionAnswers).length;
+    const totalQuestions = attemptedCount > 0 ? attemptedCount : 1;
+    const correctCount = Object.values(sessionAnswers).filter(Boolean).length;
     const scorePercent =
       totalQuestions > 0
         ? Math.round((correctCount / totalQuestions) * 100)
@@ -263,13 +296,13 @@ export function RepeatTasksView({
     };
 
     savePracticeSession(session);
+    setPastSessions(getPracticeSessions());
     if (unlockAchievement) {
       unlockAchievement("practice-champion");
     }
     setCurrentSessionSummary(session);
     setIsSessionComplete(true);
   }, [
-    activeTasks,
     sessionAnswers,
     sessionXpEarned,
     selectedThemeId,
@@ -374,9 +407,10 @@ export function RepeatTasksView({
 
   const isCurrentCorrect = useMemo(() => {
     if (!isChecked || !currentTask) return false;
+    const sanitizedNumeric = numericInput.trim().replace(",", ".");
     return validateRepeatAnswer(
       currentTask,
-      currentTask.kind === "quiz" ? selectedOption : numericInput,
+      currentTask.kind === "quiz" ? selectedOption : sanitizedNumeric,
     );
   }, [isChecked, currentTask, selectedOption, numericInput]);
 
@@ -412,6 +446,34 @@ export function RepeatTasksView({
               <X size={20} />
             </button>
           )}
+        </div>
+      </div>
+
+      {/* Practice Streak & Stats Summary Bar */}
+      <div className="repeat-summary-bar">
+        <div className="repeat-summary-pill">
+          <Flame size={15} />
+          <span>
+            <strong>{streak}d</strong> Streak
+          </span>
+        </div>
+        <div className="repeat-summary-pill">
+          <Check size={15} />
+          <span>
+            <strong>{solvedTasks.size}</strong> Mastered
+          </span>
+        </div>
+        <div className="repeat-summary-pill">
+          <History size={15} />
+          <span>
+            <strong>{pastSessions.length}</strong> Sessions
+          </span>
+        </div>
+        <div className="repeat-summary-pill">
+          <Star size={15} />
+          <span>
+            <strong>+{earnedXp}</strong> Review XP
+          </span>
         </div>
       </div>
 
@@ -778,6 +840,59 @@ export function RepeatTasksView({
             Browse All Themes
           </button>
         </div>
+      )}
+
+      {/* Practice Session History */}
+      {pastSessions.length > 0 && (
+        <section
+          className="repeat-history-card panel-card"
+          aria-label="Practice session history"
+        >
+          <div className="repeat-history-header">
+            <div className="repeat-history-title">
+              <History size={18} />
+              <h3>Practice Session History</h3>
+            </div>
+            <span className="tiny-pill">
+              {pastSessions.length}{" "}
+              {pastSessions.length === 1 ? "Session" : "Sessions"} Logged
+            </span>
+          </div>
+          <div className="repeat-history-list">
+            {pastSessions.slice(0, 5).map((session) => (
+              <div key={session.id} className="repeat-history-item">
+                <div className="repeat-history-item-left">
+                  <strong>{session.themeTitle}</strong>
+                  <small>
+                    {new Date(session.completedAt).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </small>
+                </div>
+                <div className="repeat-history-item-right">
+                  <span
+                    className={`repeat-accuracy-badge ${
+                      session.scorePercent >= 80
+                        ? "high"
+                        : session.scorePercent >= 50
+                          ? "mid"
+                          : "low"
+                    }`}
+                  >
+                    {session.scorePercent}% Accuracy
+                  </span>
+                  <span className="repeat-count-badge">
+                    {session.correctCount} / {session.totalQuestions}
+                  </span>
+                  <span className="xp-pill">+{session.xpEarned} XP</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

@@ -194,7 +194,7 @@ export function ChatPracticeProblem({
     e.preventDefault();
     if (!answer.trim()) return;
 
-    const value = Number(answer.trim());
+    const value = Number(answer.trim().replace(",", "."));
     const correct =
       Number.isFinite(value) &&
       Math.abs(value - problem.answer) <= problem.tolerance;

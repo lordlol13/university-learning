@@ -1210,7 +1210,13 @@ export function InteractivePlot({
 
   const rafId = useRef<number | null>(null);
   const pendingVp = useRef<PlotViewport | null>(null);
+  const hoverRafId = useRef<number | null>(null);
+  const pendingHover = useRef<{ x: number; y: number } | null>(null);
   const settleTimer = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    currentViewportRef.current = viewport;
+  }, [viewport]);
 
   const queueDomainSettle = useCallback((xMin: number, xMax: number) => {
     if (settleTimer.current) clearTimeout(settleTimer.current);
@@ -1233,9 +1239,23 @@ export function InteractivePlot({
     }
   }, []);
 
+  const scheduleHoverUpdate = useCallback(
+    (nextHover: { x: number; y: number } | null) => {
+      pendingHover.current = nextHover;
+      if (hoverRafId.current === null) {
+        hoverRafId.current = requestAnimationFrame(() => {
+          setHover(pendingHover.current);
+          hoverRafId.current = null;
+        });
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     return () => {
       if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+      if (hoverRafId.current !== null) cancelAnimationFrame(hoverRafId.current);
       if (settleTimer.current) clearTimeout(settleTimer.current);
     };
   }, []);
@@ -1250,42 +1270,41 @@ export function InteractivePlot({
   // Zoom centered at arbitrary point (for wheel zoom)
   const zoomAt = useCallback(
     (factor: number, centerX?: number, centerY?: number) => {
-      setViewport((v) => {
-        const cx = centerX ?? (v.xMin + v.xMax) / 2;
-        const cy = centerY ?? (v.yMin + v.yMax) / 2;
+      const v = currentViewportRef.current;
+      const cx = centerX ?? (v.xMin + v.xMax) / 2;
+      const cy = centerY ?? (v.yMin + v.yMax) / 2;
 
-        const leftSpan = (cx - v.xMin) * factor;
-        const rightSpan = (v.xMax - cx) * factor;
-        const bottomSpan = (cy - v.yMin) * factor;
-        const topSpan = (v.yMax - cy) * factor;
+      const leftSpan = (cx - v.xMin) * factor;
+      const rightSpan = (v.xMax - cx) * factor;
+      const bottomSpan = (cy - v.yMin) * factor;
+      const topSpan = (v.yMax - cy) * factor;
 
-        const next: PlotViewport = {
-          xMin: cx - Math.min(250, Math.max(0.1, leftSpan)),
-          xMax: cx + Math.min(250, Math.max(0.1, rightSpan)),
-          yMin: cy - Math.min(20000, Math.max(0.1, bottomSpan)),
-          yMax: cy + Math.min(20000, Math.max(0.1, topSpan)),
-        };
-        currentViewportRef.current = next;
-        queueDomainSettle(next.xMin, next.xMax);
-        return next;
-      });
+      const next: PlotViewport = {
+        xMin: cx - Math.min(250, Math.max(0.1, leftSpan)),
+        xMax: cx + Math.min(250, Math.max(0.1, rightSpan)),
+        yMin: cy - Math.min(20000, Math.max(0.1, bottomSpan)),
+        yMax: cy + Math.min(20000, Math.max(0.1, topSpan)),
+      };
+      scheduleViewportUpdate(next);
+      queueDomainSettle(next.xMin, next.xMax);
     },
-    [queueDomainSettle],
+    [scheduleViewportUpdate, queueDomainSettle],
   );
 
-  const pan = useCallback((dx: number, dy: number) => {
-    setViewport((v) => {
+  const pan = useCallback(
+    (dx: number, dy: number) => {
+      const v = currentViewportRef.current;
       const next: PlotViewport = {
         xMin: v.xMin + dx * (v.xMax - v.xMin),
         xMax: v.xMax + dx * (v.xMax - v.xMin),
         yMin: v.yMin + dy * (v.yMax - v.yMin),
         yMax: v.yMax + dy * (v.yMax - v.yMin),
       };
-      currentViewportRef.current = next;
+      scheduleViewportUpdate(next);
       queueDomainSettle(next.xMin, next.xMax);
-      return next;
-    });
-  }, [queueDomainSettle]);
+    },
+    [scheduleViewportUpdate, queueDomainSettle],
+  );
 
   // Dedicated non-passive wheel listener:
   // When cursor is inside the graph canvas, intercepts wheel events, prevents browser page scrolling,
@@ -1337,6 +1356,7 @@ export function InteractivePlot({
       lastDoubleTriggerRef.current = { time: now, x: clientX, y: clientY };
 
       const rect = svgElement.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
       const px = ((clientX - rect.left) / rect.width) * W;
       const py = ((clientY - rect.top) / rect.height) * H;
 
@@ -1622,6 +1642,7 @@ export function InteractivePlot({
             const midX = (pts[0].x + pts[1].x) / 2;
             const midY = (pts[0].y + pts[1].y) / 2;
             const rect = e.currentTarget.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
             const px = ((midX - rect.left) / rect.width) * W;
             const py = ((midY - rect.top) / rect.height) * H;
 
@@ -1671,6 +1692,11 @@ export function InteractivePlot({
           }
         }}
         onPointerLeave={() => {
+          if (hoverRafId.current !== null) {
+            cancelAnimationFrame(hoverRafId.current);
+            hoverRafId.current = null;
+          }
+          pendingHover.current = null;
           setHover(null);
         }}
         onPointerMove={(e) => {
@@ -1698,12 +1724,14 @@ export function InteractivePlot({
             };
             scheduleViewportUpdate(nextVp);
             queueDomainSettle(nextVp.xMin, nextVp.xMax);
-            setHover(null);
+            scheduleHoverUpdate(null);
             return;
           }
 
           // Single finger or mouse pan
           const rect = e.currentTarget.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0) return;
+
           if (drag.current && activePointersRef.current.size === 1) {
             const d = drag.current;
             const dist = Math.hypot(e.clientX - d.x, e.clientY - d.y);
@@ -1728,19 +1756,19 @@ export function InteractivePlot({
             };
             scheduleViewportUpdate(nextVp);
             queueDomainSettle(nextVp.xMin, nextVp.xMax);
-            setHover(null);
+            scheduleHoverUpdate(null);
           } else if (settings.showHoverTooltip) {
             const px = ((e.clientX - rect.left) / rect.width) * W;
             if (px >= L && px <= W - R) {
               const xVal = scale.invertX(px);
               const yVal = activeFn(xVal);
               if (Number.isFinite(yVal)) {
-                setHover({ x: xVal, y: yVal });
+                scheduleHoverUpdate({ x: xVal, y: yVal });
               } else {
-                setHover(null);
+                scheduleHoverUpdate(null);
               }
             } else {
-              setHover(null);
+              scheduleHoverUpdate(null);
             }
           }
         }}

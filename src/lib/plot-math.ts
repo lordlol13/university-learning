@@ -174,8 +174,23 @@ export function numericalDefiniteIntegral(
       : 80;
   const n = safeIntervals;
   const h = (b - a) / n;
-  const fa = safeEval(fn, a);
-  const fb = safeEval(fn, b);
+  // For boundary singularities (vertical asymptotes), use an open-quadrature step (0.5 * h)
+  // to avoid numerical spikes from infinitesimal epsilon offsets (e.g. 1/sqrt(eps) >> 1000).
+  const openStep = 0.5 * h;
+  let fa = safeEval(fn, a);
+  if (!Number.isFinite(fa)) {
+    fa = safeEval(fn, a + openStep);
+    if (!Number.isFinite(fa)) {
+      fa = safeEval(fn, a + h);
+    }
+  }
+  let fb = safeEval(fn, b);
+  if (!Number.isFinite(fb)) {
+    fb = safeEval(fn, b - openStep);
+    if (!Number.isFinite(fb)) {
+      fb = safeEval(fn, b - h);
+    }
+  }
   let sum = (Number.isFinite(fa) ? fa : 0) + (Number.isFinite(fb) ? fb : 0);
 
   for (let i = 1; i < n; i++) {
@@ -1007,8 +1022,8 @@ export function compileCustomExpression(expr: string): ((x: number) => number) |
     return null;
   }
 
-  // Normalize scientific notation (e.g. 1e-5 -> (1*10^(-5)), 2.5e4 -> (2.5*10^(4)))
-  clean = clean.replace(/(\d+(?:\.\d+)?)[eE]([+-]?\d+)/g, "($1*10^($2))");
+  // Normalize scientific notation (e.g. 1e-5 -> (1*10^(-5)), 2.5e4 -> (2.5*10^(4)), .5e2 -> (.5*10^(2)), 1.e2 -> (1.*10^(2)))
+  clean = clean.replace(/((?:\d+(?:\.\d*)?|\.\d+))[eE]([+-]?\d+)/g, "($1*10^($2))");
 
   // Extract all identifier words and ensure every single one is an allowed math function/constant/variable
   const tokens = clean.match(/[a-zA-Z_$][a-zA-Z0-9_$]*/g) || [];
@@ -1146,7 +1161,9 @@ export function evaluateCalculatorExpression(
     return { success: false, error: "Empty expression" };
   }
   const clean = expr.trim();
-  const hasX = /\b[xX]\b/.test(clean);
+  // Normalize implicit multiplication before checking for variable presence (e.g. "2X + 1" -> "2*X + 1")
+  const normalized = clean.replace(/(\d)\s*([a-zA-Z(])/g, "$1*$2");
+  const hasX = /\b[xX]\b/.test(normalized);
 
   const compiled = compileCustomExpression(clean);
   if (!compiled) {

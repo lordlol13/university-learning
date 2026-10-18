@@ -22,6 +22,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const previousFocus = useRef<HTMLElement | null>(null);
+
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMenuOpen(false);
+  }
+
   useEffect(() => {
     if (!menuOpen) return;
     previousFocus.current = document.activeElement as HTMLElement;
@@ -53,10 +60,14 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => {
       document.body.style.overflow = before;
       document.removeEventListener("keydown", onKeyDown);
-      previousFocus.current?.focus();
+      if (previousFocus.current && document.contains(previousFocus.current)) {
+        previousFocus.current.focus();
+      }
     };
   }, [menuOpen, closeMenu]);
   if (pathname === "/mascot-playground") return <>{children}</>;
+  const isIslandRoute = pathname.startsWith("/path/");
+  const isFullWidthRoute = pathname.startsWith("/lesson/") || isIslandRoute;
   return (
     <MotionConfig reducedMotion="user">
       <div className="app-shell">
@@ -64,22 +75,31 @@ export function AppShell({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <Sidebar open={menuOpen} onClose={closeMenu} />
-        <div className="app-body" inert={menuOpen ? true : undefined}>
-          <TopBar onMenuClick={() => setMenuOpen(true)} menuOpen={menuOpen} />
-          <div className={`content-grid ${pathname.startsWith("/lesson/") || pathname.startsWith("/path/") ? "lesson-content-grid" : ""}`}>
+        <div
+          className={`app-body ${isIslandRoute ? "island-route-body" : ""}`}
+        >
+          {!isIslandRoute && (
+            <TopBar onMenuClick={() => setMenuOpen((p) => !p)} menuOpen={menuOpen} />
+          )}
+          <div
+            className={`content-grid ${isFullWidthRoute ? "lesson-content-grid" : ""} ${isIslandRoute ? "island-content-grid" : ""}`}
+            inert={menuOpen ? true : undefined}
+          >
             <main id="main-content" tabIndex={-1}>
               {children}
             </main>
-            {!pathname.startsWith("/lesson/") && !pathname.startsWith("/path/") && <ProgressPanel />}
+            {!isFullWidthRoute && <ProgressPanel />}
           </div>
-          <footer className="app-footer">
-            <span>© {new Date().getFullYear()} Uplift</span>
-            <span>Your potential. Your pace.</span>
-            <span>
-              Learn <span className="footer-dot">·</span> Grow{" "}
-              <span className="footer-dot">·</span> Belong
-            </span>
-          </footer>
+          {!isIslandRoute && (
+            <footer className="app-footer" inert={menuOpen ? true : undefined}>
+              <span>© {new Date().getFullYear()} Uplift</span>
+              <span>Your potential. Your pace.</span>
+              <span>
+                Learn <span className="footer-dot">·</span> Grow{" "}
+                <span className="footer-dot">·</span> Belong
+              </span>
+            </footer>
+          )}
           {worldConfig.mascot.enabled && <StorkAssistant mobile={small} />}
         </div>
       </div>

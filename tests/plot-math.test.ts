@@ -11,6 +11,11 @@ import {
   evaluateCalculatorExpression,
   EQUATION_PRESETS,
 } from "../src/lib/plot-math";
+import {
+  resetSolvedTasks,
+  getSolvedRepeatTaskIds,
+  markRepeatTaskSolved,
+} from "../src/lib/repeat-tasks";
 
 test("niceStep produces standard decimal multiples (1, 2, 5 * 10^k)", () => {
   assert.equal(niceStep(10, 10), 1);
@@ -318,7 +323,14 @@ test("numericalDefiniteIntegral gracefully handles non-finite boundary endpoints
   const fBothInf = (x: number) => (x === 0 || x === 2 ? Infinity : 3 * x * x);
   const resBoth = numericalDefiniteIntegral(fBothInf, 0, 2, 60);
   assert.ok(Number.isFinite(resBoth), "Integral must remain finite");
-  assert.ok(Math.abs(resBoth - 8) < 0.5, "Simpson's rule should remain approximately correct");
+  assert.ok(Math.abs(resBoth - 8) < 0.05, "Simpson's rule should remain highly accurate with boundary offset");
+
+  // Singularity offset on 1/sqrt(x) over [0, 1] - analytical value is 2.0
+  const fInvSqrt = (x: number) => (x <= 0 ? Infinity : 1 / Math.sqrt(x));
+  const resInvSqrt = numericalDefiniteIntegral(fInvSqrt, 0, 1, 100);
+  assert.ok(Number.isFinite(resInvSqrt), "Integral of 1/sqrt(x) with singular left boundary must be finite");
+  assert.ok(!Number.isNaN(resInvSqrt), "Integral must not be NaN");
+  assert.ok(Math.abs(resInvSqrt - 2.0) < 0.1, "Integral of 1/sqrt(x) over [0, 1] must approximate analytical 2.0 within 5% error");
 });
 
 test("double-tap gesture tolerates pointer micro-jitter within threshold and triggers on first attempt", () => {
@@ -489,6 +501,17 @@ test("evaluateCalculatorExpression correctly evaluates arithmetic, functions, an
   // Evaluated at default testPoint x=1: 1^2 - 4 = -3
   assert.equal(resFn.result, -3);
 
+  // Implicit multiplication with variable x / X
+  const resImplicitUpper = evaluateCalculatorExpression("2X + 1", 3);
+  assert.equal(resImplicitUpper.success, true);
+  assert.equal(resImplicitUpper.isFunction, true);
+  assert.equal(resImplicitUpper.result, 7);
+
+  const resImplicitLower = evaluateCalculatorExpression("3x - 5", 2);
+  assert.equal(resImplicitLower.success, true);
+  assert.equal(resImplicitLower.isFunction, true);
+  assert.equal(resImplicitLower.result, 1);
+
   // Extended math functions: log10, log2, cot, sec, csc
   const resLog10 = evaluateCalculatorExpression("log10(100)");
   assert.equal(resLog10.success, true);
@@ -549,6 +572,24 @@ test("compileCustomExpression and evaluateCalculatorExpression handle scientific
   assert.equal(calcNeg.success, true);
   assert.equal(calcNeg.isFunction, false);
   assert.equal(calcNeg.result, 0.00001);
+
+  // Decimal without leading zero (.5e2 -> 50)
+  const fNoLeadingZero = compileCustomExpression(".5e2");
+  assert.ok(fNoLeadingZero, ".5e2 should compile to a valid function");
+  assert.equal(fNoLeadingZero(0), 50);
+
+  const calcNoLeadingZero = evaluateCalculatorExpression(".5e2");
+  assert.equal(calcNoLeadingZero.success, true);
+  assert.equal(calcNoLeadingZero.result, 50);
+
+  // Trailing dot before exponent (1.e2 -> 100)
+  const fTrailingDot = compileCustomExpression("1.e2");
+  assert.ok(fTrailingDot, "1.e2 should compile to a valid function");
+  assert.equal(fTrailingDot(0), 100);
+
+  const calcTrailingDot = evaluateCalculatorExpression("1.e2");
+  assert.equal(calcTrailingDot.success, true);
+  assert.equal(calcTrailingDot.result, 100);
 
   // Scientific notation with positive exponent
   const fPosExp = compileCustomExpression("1e5");
@@ -619,5 +660,87 @@ test("calculus utilities gracefully survive throwing user functions", () => {
     assert.ok(Array.isArray(pts));
   });
 });
+
+test("Milestone 3 — Scientific Notation, Boundary Singularity Integration & Task State Management", () => {
+  // 1. Scientific notation variations
+  // .5e2 -> 50
+  const f1 = compileCustomExpression(".5e2");
+  assert.ok(f1, ".5e2 must compile");
+  assert.equal(f1(0), 50);
+  const calc1 = evaluateCalculatorExpression(".5e2");
+  assert.equal(calc1.success, true);
+  assert.equal(calc1.result, 50);
+
+  // 1.e2 -> 100
+  const f2 = compileCustomExpression("1.e2");
+  assert.ok(f2, "1.e2 must compile");
+  assert.equal(f2(0), 100);
+  const calc2 = evaluateCalculatorExpression("1.e2");
+  assert.equal(calc2.success, true);
+  assert.equal(calc2.result, 100);
+
+  // 1e-5 -> 0.00001
+  const f3 = compileCustomExpression("1e-5");
+  assert.ok(f3, "1e-5 must compile");
+  assert.equal(f3(0), 0.00001);
+  const calc3 = evaluateCalculatorExpression("1e-5");
+  assert.equal(calc3.success, true);
+  assert.equal(calc3.result, 0.00001);
+
+  // .5e-2 -> 0.005
+  const f4 = compileCustomExpression(".5e-2");
+  assert.ok(f4, ".5e-2 must compile");
+  assert.ok(Math.abs(f4(0) - 0.005) < 1e-9);
+  const calc4 = evaluateCalculatorExpression(".5e-2");
+  assert.equal(calc4.success, true);
+  assert.equal(calc4.result, 0.005);
+
+  // 1.e-3 -> 0.001
+  const f5 = compileCustomExpression("1.e-3");
+  assert.ok(f5, "1.e-3 must compile");
+  assert.ok(Math.abs(f5(0) - 0.001) < 1e-9);
+
+  // Mixed expressions with x
+  const f6 = compileCustomExpression(".5e2 * x");
+  assert.ok(f6);
+  assert.equal(f6(3), 150);
+
+  const f7 = compileCustomExpression("x + 1.e2");
+  assert.ok(f7);
+  assert.equal(f7(5), 105);
+
+  // 2. Numerical integration boundary singularities
+  // Left endpoint singularity: ln(x) from 0 to 1
+  const fLog = (x: number) => (x <= 0 ? -Infinity : Math.log(x));
+  const resLog = numericalDefiniteIntegral(fLog, 0, 1, 80);
+  assert.ok(Number.isFinite(resLog));
+  assert.ok(!Number.isNaN(resLog));
+  assert.ok(Math.abs(resLog - -1) < 0.1, "ln(x) integral from 0 to 1 should approximate -1");
+
+  // Right endpoint singularity: 1/sqrt(4 - x) from 0 to 4 (analytical: 4)
+  const fRightSingular = (x: number) => (x >= 4 ? Infinity : 1 / Math.sqrt(4 - x));
+  const resRight = numericalDefiniteIntegral(fRightSingular, 0, 4, 100);
+  assert.ok(Number.isFinite(resRight));
+  assert.ok(!Number.isNaN(resRight));
+  assert.ok(Math.abs(resRight - 4) < 0.25, "1/sqrt(4 - x) on [0, 4] should approximate analytical 4 within 5% error");
+
+  // Both endpoints singular: 1/sqrt(1 - x^2) from -1 to 1 (analytical: pi = 3.14159)
+  const fBothSingular = (x: number) => (Math.abs(x) >= 1 ? Infinity : 1 / Math.sqrt(1 - x * x));
+  const resBoth = numericalDefiniteIntegral(fBothSingular, -1, 1, 100);
+  assert.ok(Number.isFinite(resBoth));
+  assert.ok(!Number.isNaN(resBoth));
+  assert.ok(Math.abs(resBoth - Math.PI) < 0.2, "1/sqrt(1 - x^2) on [-1, 1] should approximate analytical pi");
+
+  // 3. Repeat Tasks state reset and persistence
+  markRepeatTaskSolved("test-task-1");
+  markRepeatTaskSolved("test-task-2");
+  assert.ok(getSolvedRepeatTaskIds().includes("test-task-1"));
+  assert.ok(getSolvedRepeatTaskIds().includes("test-task-2"));
+
+  resetSolvedTasks();
+  assert.equal(getSolvedRepeatTaskIds().includes("test-task-1"), false);
+  assert.equal(getSolvedRepeatTaskIds().includes("test-task-2"), false);
+});
+
 
 

@@ -14,13 +14,20 @@ import {
 import {
   Atom,
   Brain,
+  Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Clock,
+  Compass,
   Crosshair,
   Flame,
+  FlaskConical,
   Globe2,
   Landmark,
+  Layers,
+  Leaf,
   List,
   Lock,
   MapPin,
@@ -56,7 +63,28 @@ import {
   subscribeSoundPreference,
 } from "@/lib/island-audio";
 import { TRACK_THEMES } from "./WorldCanvas";
+import { IslandMiniLab } from "./IslandMiniLab";
 import type { Direction } from "@/types/curriculum";
+
+function useCountUp(target: number) {
+  const [val, setVal] = useState(target);
+  const prev = useRef(target);
+  useEffect(() => {
+    const from = prev.current;
+    prev.current = target;
+    if (from === target) return;
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - t0) / 550);
+      setVal(Math.round(from + (target - from) * (1 - (1 - k) ** 3)));
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+  return val;
+}
 
 const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
   ssr: false,
@@ -195,6 +223,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   const completedLessons = useProgress((s) => s.completedLessons);
   const unlockedLessons = useProgress((s) => s.unlockedLessons);
   const xp = useProgress((s) => s.xp);
+  const animatedXp = useCountUp(xp);
   const streak = useProgress((s) => s.streak);
   const startLesson = useProgress((s) => s.startLesson);
   const lessonState = useMemo(
@@ -203,6 +232,9 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   );
   const events = useLearningEvents();
   const [listOpen, setListOpen] = useState(false);
+  const [labOpen, setLabOpen] = useState(false);
+  const [asideCollapsed, setAsideCollapsed] = useState(false);
+  const [overviewMode, setOverviewMode] = useState(false);
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -235,6 +267,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
         if (event.type === "LESSON_COMPLETED") {
           playChime(soundEnabled, true);
           setOpenLesson(null);
+          setOverviewMode(false);
           setSelectedId(event.nextLessonId ?? event.lessonId);
           setFlyNonce((n) => n + 1);
           setMessage(
@@ -265,11 +298,24 @@ export function LearningWorld({ direction }: { direction: Direction }) {
   const theme = TRACK_THEMES[direction.id] ?? TRACK_THEMES["ai-ml"];
   const ActiveTrackIcon = TRACK_ICONS[direction.id] ?? Brain;
 
+  const earnedTrackXp = useMemo(
+    () =>
+      lessons
+        .filter((l) => completedLessons.includes(l.id))
+        .reduce((acc, l) => acc + l.xp, 0),
+    [lessons, completedLessons],
+  );
+  const totalTrackXp = useMemo(
+    () => lessons.reduce((acc, l) => acc + l.xp, 0),
+    [lessons],
+  );
+
   const selectByIndex = useCallback(
     (index: number) => {
       const clamped = Math.max(0, Math.min(lessons.length - 1, index));
       const targetLesson = lessons[clamped];
       if (targetLesson) {
+        setOverviewMode(false);
         setSelectedId(targetLesson.id);
         setFlyNonce((n) => n + 1);
         playChime(soundEnabled, false);
@@ -278,15 +324,43 @@ export function LearningWorld({ direction }: { direction: Direction }) {
     [lessons, soundEnabled, setSelectedId, setFlyNonce],
   );
 
+  const openSelected = useCallback(() => {
+    if (selected && status !== "locked" && startLesson(selected.id)) {
+      playChime(soundEnabled, false);
+      setOpenLesson(selected.id);
+    }
+  }, [selected, status, startLesson, soundEnabled]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (openLesson || openRepeat) return;
       if (e.key === "ArrowRight") selectByIndex(selectedIndex + 1);
       if (e.key === "ArrowLeft") selectByIndex(selectedIndex - 1);
+      if (e.key === "Enter" && document.activeElement === document.body) {
+        openSelected();
+      }
+      if (e.key === "Escape") {
+        if (listOpen) {
+          setListOpen(false);
+        } else if (labOpen) {
+          setLabOpen(false);
+        } else {
+          setOverviewMode((prev) => !prev);
+          setFlyNonce((n) => n + 1);
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openLesson, openRepeat, selectByIndex, selectedIndex]);
+  }, [
+    openLesson,
+    openRepeat,
+    listOpen,
+    labOpen,
+    selectByIndex,
+    selectedIndex,
+    openSelected,
+  ]);
 
   const handleCenterNext = useCallback(() => {
     const nextLesson =
@@ -294,15 +368,23 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       lessons.find((l) => getLessonStatus(l, lessonState) !== "locked") ??
       lessons[0];
     if (nextLesson) {
+      setOverviewMode(false);
       setSelectedId(nextLesson.id);
       setFlyNonce((n) => n + 1);
       playChime(soundEnabled, false);
     }
   }, [lessons, lessonState, soundEnabled, setSelectedId, setFlyNonce]);
 
+  const handleToggleOverview = useCallback(() => {
+    setOverviewMode((prev) => !prev);
+    setFlyNonce((n) => n + 1);
+    playChime(soundEnabled, false);
+  }, [soundEnabled]);
+
   const selectLesson = useCallback(
     (id: string) => {
       playChime(soundEnabled, false);
+      setOverviewMode(false);
       if (id === selected?.id) {
         const lesson = getLesson(id);
         if (
@@ -327,13 +409,6 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       soundEnabled,
     ],
   );
-
-  const openSelected = () => {
-    if (selected && status !== "locked" && startLesson(selected.id)) {
-      playChime(soundEnabled, false);
-      setOpenLesson(selected.id);
-    }
-  };
 
   const vars = {
     "--track": theme.color,
@@ -360,6 +435,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
             paused={openLesson !== null || openRepeat}
             showAllLabels={showAllLabels}
             flyNonce={flyNonce}
+            overviewMode={overviewMode}
           />
         ) : (
           <div className="world-loading">
@@ -371,9 +447,13 @@ export function LearningWorld({ direction }: { direction: Direction }) {
 
       {/* Top Glassmorphic Track Switcher & Stats Bar */}
       <header className="uplift-glass uplift-hud-topbar">
-        <div className="uplift-brand">
+        <Link
+          href="/"
+          className="uplift-brand"
+          title="Back to Campus Dashboard"
+        >
           Uplift<span className="uplift-brand-dot">.</span>
-        </div>
+        </Link>
 
         <nav className="uplift-track-nav" aria-label="Campus learning islands">
           {directions.map((d) => {
@@ -439,7 +519,10 @@ export function LearningWorld({ direction }: { direction: Direction }) {
           </span>
           <span className="uplift-hud-btn uplift-stat-badge">
             <Star size={14} className="uplift-icon-gold" />{" "}
-            <strong className="uplift-xp-num">{xp.toLocaleString()}</strong> XP
+            <strong className="uplift-xp-num">
+              {animatedXp.toLocaleString()}
+            </strong>{" "}
+            XP
           </span>
           <button
             type="button"
@@ -454,65 +537,140 @@ export function LearningWorld({ direction }: { direction: Direction }) {
       </header>
 
       {/* Left Floating Track Overview Card */}
-      <aside className="uplift-glass uplift-hud-aside">
-        <span className="uplift-biome-badge">
-          <Globe2 size={12} /> {theme.biome}
-        </span>
-        <div className="uplift-aside-main">
-          <div className="uplift-aside-copy">
-            <h1>{direction.title}</h1>
-            <p>{direction.description}</p>
-          </div>
-          <div className="uplift-progress-ring" aria-label={`${progress.percent}% complete`}>
-            <svg viewBox="0 0 36 36">
-              <circle
-                cx="18"
-                cy="18"
-                r="15"
-                fill="none"
-                stroke="rgba(15, 23, 42, 0.08)"
-                strokeWidth="4"
-              />
-              <circle
-                cx="18"
-                cy="18"
-                r="15"
-                fill="none"
-                stroke="var(--track)"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeDasharray={`${(progress.percent / 100) * 94.2} 94.2`}
-              />
-            </svg>
-            <span>{progress.percent}%</span>
-          </div>
+      <aside
+        className={`uplift-glass uplift-hud-aside ${asideCollapsed ? "is-collapsed" : ""}`}
+      >
+        <div className="uplift-aside-toprow">
+          <span className="uplift-biome-badge">
+            <Globe2 size={12} /> {theme.biome}
+          </span>
+          <button
+            type="button"
+            className="uplift-aside-toggle"
+            onClick={() => setAsideCollapsed((prev) => !prev)}
+            aria-label={
+              asideCollapsed ? "Expand track overview" : "Collapse track overview"
+            }
+            title={asideCollapsed ? "Expand card" : "Minimize card"}
+          >
+            {asideCollapsed ? <ChevronDown size={15} /> : <ChevronUp size={15} />}
+          </button>
         </div>
+
+        {!asideCollapsed && (
+          <>
+            <div className="uplift-aside-main">
+              <div className="uplift-aside-copy">
+                <h1>{direction.title}</h1>
+                <p>{direction.description}</p>
+              </div>
+              <div
+                className="uplift-progress-ring"
+                aria-label={`${progress.percent}% complete`}
+              >
+                <svg viewBox="0 0 36 36">
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15"
+                    fill="none"
+                    stroke="rgba(15, 23, 42, 0.08)"
+                    strokeWidth="4"
+                  />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15"
+                    fill="none"
+                    stroke="var(--track)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(progress.percent / 100) * 94.2} 94.2`}
+                  />
+                </svg>
+                <span>{progress.percent}%</span>
+              </div>
+            </div>
+
+            <div className="uplift-aside-summary">
+              <span>
+                <strong>{progress.completed}</strong>/{progress.total} milestones
+              </span>
+              <span className="uplift-summary-dot">·</span>
+              <span>
+                <strong>{earnedTrackXp}</strong>/{totalTrackXp} XP earned
+              </span>
+            </div>
+          </>
+        )}
+
         <div className="uplift-aside-actions">
           <button
             type="button"
             className="uplift-hud-btn"
             onClick={handleCenterNext}
+            title="Focus up-next milestone"
           >
             <Crosshair size={14} /> Next
           </button>
           <button
             type="button"
             className="uplift-hud-btn"
+            data-on={overviewMode}
+            onClick={handleToggleOverview}
+            title="Toggle panoramic island camera"
+          >
+            <Compass size={14} /> Overview
+          </button>
+          <button
+            type="button"
+            className="uplift-hud-btn"
             data-on={showAllLabels}
-            onClick={() => setShowAllLabels((prev) => !prev)}
+            onClick={() => {
+              setShowAllLabels((prev) => !prev);
+              playChime(soundEnabled, false);
+            }}
+            title="Expand or collapse all 3D milestone pins"
           >
             <MapPin size={14} /> Pins
           </button>
           <button
             type="button"
             className="uplift-hud-btn"
+            data-on={labOpen}
+            onClick={() => {
+              setLabOpen((prev) => !prev);
+              setListOpen(false);
+              playChime(soundEnabled, false);
+            }}
+            title="Open interactive island mini-lab sandbox"
+          >
+            <FlaskConical size={14} /> Lab
+          </button>
+          <button
+            type="button"
+            className="uplift-hud-btn"
             data-on={listOpen}
-            onClick={() => setListOpen((prev) => !prev)}
+            onClick={() => {
+              setListOpen((prev) => !prev);
+              setLabOpen(false);
+              playChime(soundEnabled, false);
+            }}
+            title="Open path milestone list"
           >
             <List size={14} /> {listOpen ? "World" : "List"}
           </button>
         </div>
       </aside>
+
+      {/* Interactive Island Mini-Lab Sandbox Drawer */}
+      {labOpen && (
+        <IslandMiniLab
+          key={direction.id}
+          directionId={direction.id}
+          onClose={() => setLabOpen(false)}
+        />
+      )}
 
       {/* Centered Glassmorphic Path List Modal */}
       {listOpen && (
@@ -547,7 +705,13 @@ export function LearningWorld({ direction }: { direction: Direction }) {
                   className={`uplift-list-row ${isSelected ? "selected" : ""}`}
                 >
                   <span className={`uplift-list-num ${s}`}>
-                    {s === "locked" ? <Lock size={14} /> : i + 1}
+                    {s === "locked" ? (
+                      <Lock size={14} />
+                    ) : s === "completed" ? (
+                      <Check size={14} />
+                    ) : (
+                      i + 1
+                    )}
                   </span>
                   <span className="uplift-list-row-title">{lesson.title}</span>
                   <span className="uplift-list-row-status">
@@ -559,6 +723,32 @@ export function LearningWorld({ direction }: { direction: Direction }) {
           </div>
         </div>
       )}
+
+      {/* Ambient Bottom-Left Scene Caption & Bottom-Right Interactive Compass Rose */}
+      <div className="uplift-scene-caption" aria-hidden="true">
+        <span className="uplift-live-dot" />
+        <span>A small island. An expansive mind.</span>
+        <Leaf size={13} />
+      </div>
+
+      <button
+        type="button"
+        className={`uplift-compass-rose ${overviewMode ? "is-overview" : ""}`}
+        onClick={handleToggleOverview}
+        aria-label={
+          overviewMode
+            ? "Return camera to selected milestone"
+            : "Zoom camera to full island overview"
+        }
+        title={
+          overviewMode
+            ? "Focus selected milestone (Esc)"
+            : "Panoramic island overview (Esc)"
+        }
+      >
+        <span className="uplift-compass-n">N</span>
+        <Compass size={20} strokeWidth={1.75} />
+      </button>
 
       {/* Bottom Floating Milestone Inspector Dock */}
       {selected && (
@@ -573,6 +763,39 @@ export function LearningWorld({ direction }: { direction: Direction }) {
             <span className={`uplift-dock-badge ${status}`}>
               {STATE_LABEL[status]}
             </span>
+
+            {/* Interactive 1-Click Milestone Scrubber */}
+            <div
+              className="uplift-dock-stepper"
+              role="tablist"
+              aria-label="Milestone steps"
+            >
+              {lessons.map((lesson, i) => {
+                const s = getLessonStatus(lesson, lessonState);
+                const isSel = i === selectedIndex;
+                return (
+                  <button
+                    key={lesson.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSel}
+                    aria-label={`Milestone ${i + 1}: ${lesson.title} (${STATE_LABEL[s]})`}
+                    title={`${i + 1}. ${lesson.title} (${STATE_LABEL[s]})`}
+                    onClick={() => selectByIndex(i)}
+                    className={`uplift-step-node ${s} ${isSel ? "is-selected" : ""}`}
+                  >
+                    {s === "completed" ? (
+                      <Check size={11} strokeWidth={3} />
+                    ) : s === "locked" ? (
+                      <Lock size={10} />
+                    ) : (
+                      i + 1
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="uplift-dock-arrows">
               <button
                 type="button"
@@ -580,6 +803,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
                 onClick={() => selectByIndex(selectedIndex - 1)}
                 disabled={selectedIndex <= 0}
                 aria-label="Previous milestone"
+                title="Previous milestone (←)"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -589,6 +813,7 @@ export function LearningWorld({ direction }: { direction: Direction }) {
                 onClick={() => selectByIndex(selectedIndex + 1)}
                 disabled={selectedIndex >= lessons.length - 1}
                 aria-label="Next milestone"
+                title="Next milestone (→)"
               >
                 <ChevronRight size={16} />
               </button>
@@ -615,6 +840,21 @@ export function LearningWorld({ direction }: { direction: Direction }) {
                 </span>
                 <span className="uplift-dock-xp">
                   <Sparkles size={12} /> +{selected.xp} XP
+                </span>
+                <button
+                  type="button"
+                  className="uplift-dock-lab uplift-dock-lab-btn"
+                  onClick={() => {
+                    setLabOpen((prev) => !prev);
+                    setListOpen(false);
+                    playChime(soundEnabled, false);
+                  }}
+                  title="Open quick interactive Mini-Lab sandbox"
+                >
+                  <Layers size={12} /> Interactive Lab & Quiz
+                </button>
+                <span className="uplift-kbd-hint" aria-hidden="true">
+                  ← → Navigate · Enter Start
                 </span>
               </div>
             </div>
@@ -662,3 +902,4 @@ export function LearningWorld({ direction }: { direction: Direction }) {
     </section>
   );
 }
+

@@ -2261,6 +2261,14 @@
   border-color: #78b76b;
   background: #eff8e9;
 }
+.lesson-options .incorrect {
+  border-color: #e07163;
+  background: #fff1ed;
+  color: #9c3f31;
+}
+.lesson-options .incorrect input {
+  accent-color: #e07163;
+}
 .summary-block {
   text-align: center;
   padding: 5px 0 16px;

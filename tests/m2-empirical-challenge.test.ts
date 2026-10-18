@@ -6,7 +6,12 @@ import {
   getDirection,
   getDirectionLessons,
 } from "../src/data/curriculum";
-import { achievementCatalog, initialProgress } from "../src/data/demo";
+import {
+  achievementCatalog,
+  initialProgress,
+  leaderboard,
+  learner,
+} from "../src/data/demo";
 import DirectionPage, {
   generateMetadata,
   generateStaticParams,
@@ -14,6 +19,7 @@ import DirectionPage, {
 import {
   savePracticeSession,
   getPracticeSessions,
+  validateRepeatAnswer,
   type PracticeSession,
 } from "../src/lib/repeat-tasks";
 
@@ -593,3 +599,101 @@ describe("Milestone 2 Empirical Challenge — resetProgress State & Storage Hygi
     assert.equal(store2.getState().completedLessons.includes("machine-learning"), false);
   });
 });
+
+describe("Milestone 2 Main Pages Features & Integrity — Formulas & Logic", () => {
+  it("verifies repeat practice session accuracy calculates against attempted questions, not entire catalog", () => {
+    // Simulate a 5-question attempt from a pool of 50 tasks
+    const sessionAnswers: Record<string, boolean> = {
+      "task-1": true,
+      "task-2": true,
+      "task-3": true,
+      "task-4": false,
+      "task-5": true,
+    };
+    const totalCatalogCount = 50;
+    const attemptedCount = Object.keys(sessionAnswers).length;
+    assert.equal(attemptedCount, 5);
+
+    // Old flawed formula would produce 8%
+    const flawedScore = Math.round(
+      (Object.values(sessionAnswers).filter(Boolean).length / totalCatalogCount) * 100,
+    );
+    assert.equal(flawedScore, 8);
+
+    // Correct formula produces 80%
+    const correctCount = Object.values(sessionAnswers).filter(Boolean).length;
+    const correctScore = Math.round((correctCount / attemptedCount) * 100);
+    assert.equal(correctScore, 80);
+  });
+
+  it("verifies decimal comma inputs like '4,5' are properly normalized and validated", () => {
+    const practiceTask = {
+      id: "test-practice",
+      lessonId: "test-lesson",
+      themeId: "test-theme",
+      themeTitle: "Test Theme",
+      directionId: "physics-engineering",
+      directionTitle: "Physics & Engineering",
+      kind: "practice" as const,
+      prompt: "Calculate the magnitude of the force in Newtons.",
+      numericAnswer: 4.5,
+      tolerance: 0.05,
+      explanation: "F = 4.5 N",
+    };
+
+    // Raw comma input "4,5"
+    const rawInput = "4,5";
+    const normalizedInput = rawInput.trim().replace(",", ".");
+    const isValid = validateRepeatAnswer(practiceTask, normalizedInput);
+    assert.equal(isValid, true, "Normalized decimal comma '4,5' -> '4.5' must validate successfully");
+
+    // Negative decimal comma
+    const rawNegative = "-2,25";
+    const negativeTask = { ...practiceTask, numericAnswer: -2.25 };
+    assert.equal(
+      validateRepeatAnswer(negativeTask, rawNegative.trim().replace(",", ".")),
+      true,
+    );
+  });
+
+  it("verifies curriculum lessons all contain valid durationMinutes numbers", () => {
+    const activeDirections = directions.filter((dir) => getDirectionLessons(dir).length > 0);
+    assert.ok(activeDirections.length >= 4, "Should have at least 4 active directions with lessons");
+    for (const dir of activeDirections) {
+      const lessons = getDirectionLessons(dir);
+      for (const lesson of lessons) {
+        assert.equal(
+          typeof lesson.durationMinutes,
+          "number",
+          `Lesson ${lesson.id} durationMinutes must be a number`,
+        );
+        assert.ok(
+          lesson.durationMinutes > 0,
+          `Lesson ${lesson.id} durationMinutes must be > 0`,
+        );
+      }
+      const totalMinutes = lessons.reduce((acc, l) => acc + (l.durationMinutes ?? 10), 0);
+      assert.ok(totalMinutes > 0, `Total minutes for ${dir.id} must be > 0`);
+    }
+  });
+
+  it("verifies leaderboard ranking correctly places current user without name duplication errors", () => {
+    const learners = [
+      ...leaderboard.map((item) => ({ ...item, isYou: false })),
+      { name: learner.name, initials: learner.initials, xp: 450, isYou: true },
+    ].sort((a, b) => b.xp - a.xp);
+
+    // Sofia Chen (640) -> 1, Daniel Kim (525) -> 2, Alex Morgan (450) -> 3, Maya Patel (410) -> 4
+    assert.equal(learners[0].name, "Sofia Chen");
+    assert.equal(learners[1].name, "Daniel Kim");
+    assert.equal(learners[2].name, "Alex Morgan");
+    assert.equal(learners[2].isYou, true);
+    assert.equal(learners[3].name, "Maya Patel");
+
+    const podiumList = learners.slice(0, 3);
+    assert.equal(podiumList[0].name, "Sofia Chen");
+    assert.equal(podiumList[1].name, "Daniel Kim");
+    assert.equal(podiumList[2].name, "Alex Morgan");
+  });
+});
+

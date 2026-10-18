@@ -24,20 +24,24 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const events = createLearningEvents();
     return { events, store: createProgressStore(events) };
   });
-  const [hydrated, setHydrated] = useState(false);
+  const [hydrated, setHydrated] = useState(() => {
+    return Boolean(store.persist?.hasHydrated?.());
+  });
   useEffect(() => {
-    // Restore saved progress before route effects are allowed to write to storage.
     let active = true;
     const markHydrated = () => {
       if (active) setHydrated(true);
     };
+    if (store.persist?.hasHydrated?.()) {
+      markHydrated();
+    }
     const unsub = store.persist?.onFinishHydration?.(markHydrated);
     try {
       Promise.resolve(store.persist?.rehydrate()).then(markHydrated, markHydrated);
     } catch {
       markHydrated();
     }
-    const timer = setTimeout(markHydrated, 100);
+    const timer = setTimeout(markHydrated, 80);
     return () => {
       active = false;
       unsub?.();

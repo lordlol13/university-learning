@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Nunito } from "next/font/google";
+import { Bricolage_Grotesque, Manrope, Nunito } from "next/font/google";
 import { ProgressProvider } from "@/stores/progress-provider";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
@@ -15,6 +15,20 @@ const nunito = Nunito({
   variable: "--font-nunito",
 });
 
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-manrope",
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  display: "swap",
+  variable: "--font-bricolage",
+});
+
 export const metadata: Metadata = {
   title: { default: "Uplift — Your learning campus", template: "%s | Uplift" },
   description:
@@ -24,7 +38,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${nunito.className} ${nunito.variable}`}>
+    <html
+      lang="en"
+      className={`${manrope.className} ${manrope.variable} ${bricolage.variable} ${nunito.variable}`}
+    >
       <body>
         <Script
           id="sw-cache-cleaner"

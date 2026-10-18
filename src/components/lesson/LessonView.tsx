@@ -13,7 +13,7 @@ import {
   Star,
 } from "lucide-react";
 import { getLesson } from "@/data/curriculum";
-import { useProgress } from "@/stores/progress-provider";
+import { useProgress, useProgressReady } from "@/stores/progress-provider";
 import { getLessonStatus } from "@/stores/progress-store";
 import { CurriculumIcon } from "@/components/ui/CurriculumIcon";
 import type { Lesson } from "@/types/curriculum";
@@ -29,6 +29,7 @@ export function LessonView({
   directionId: string;
   onReturn?: () => void;
 }) {
+  const ready = useProgressReady();
   const completedLessons = useProgress((s) => s.completedLessons);
   const unlockedLessons = useProgress((s) => s.unlockedLessons);
   const startLesson = useProgress((s) => s.startLesson);
@@ -54,7 +55,19 @@ export function LessonView({
       setFinished(true);
     }
   };
-  if (status === "locked")
+  if (status === "locked") {
+    if (!ready) {
+      return (
+        <div className="standard-page">
+          <div
+            className="panel-card empty-state"
+            style={{ minHeight: "260px", display: "grid", placeItems: "center" }}
+          >
+            <span className="lesson-kicker">LOADING LESSON...</span>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="standard-page">
         <Link href={`/path/${directionId}`} className="back-link">
@@ -80,6 +93,7 @@ export function LessonView({
         </div>
       </div>
     );
+  }
   const interactiveContent = getLessonContent(lesson.id);
   if (interactiveContent)
     return (

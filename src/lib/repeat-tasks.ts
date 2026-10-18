@@ -213,7 +213,7 @@ export function validateRepeatAnswer(
     const val =
       typeof userAnswer === "number"
         ? userAnswer
-        : parseFloat(String(userAnswer).trim());
+        : parseFloat(String(userAnswer).trim().replace(",", "."));
     if (isNaN(val) || task.numericAnswer === undefined) return false;
     const tol = task.tolerance ?? 0.05;
     return Math.abs(val - task.numericAnswer) <= tol;
@@ -304,3 +304,59 @@ export function clearPracticeSessions(): void {
     storage.removeItem(PRACTICE_SESSIONS_STORAGE_KEY);
   } catch {}
 }
+
+export const SOLVED_REPEAT_TASKS_STORAGE_KEY = "uplift_solved_repeat_tasks";
+
+const inMemorySolvedTasks = new Set<string>();
+
+/** Returns all solved repeat task IDs from in-memory set and storage. */
+export function getSolvedRepeatTaskIds(): string[] {
+  const result = new Set<string>(inMemorySolvedTasks);
+  try {
+    const storage = getLocalStorage();
+    if (storage) {
+      const raw = storage.getItem(SOLVED_REPEAT_TASKS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          for (const id of parsed) {
+            if (typeof id === "string" && id.trim().length > 0) {
+              result.add(id);
+            }
+          }
+        }
+      }
+    }
+  } catch {}
+  return Array.from(result);
+}
+
+/** Marks a repeat task as solved in both in-memory cache and storage. */
+export function markRepeatTaskSolved(taskId: string): void {
+  inMemorySolvedTasks.add(taskId);
+  try {
+    const storage = getLocalStorage();
+    if (storage) {
+      const all = getSolvedRepeatTaskIds();
+      if (!all.includes(taskId)) all.push(taskId);
+      storage.setItem(SOLVED_REPEAT_TASKS_STORAGE_KEY, JSON.stringify(all));
+    }
+  } catch {}
+}
+
+/** Resets all solved tasks, clearing both in-memory set and storage. */
+export function resetSolvedTasks(): void {
+  inMemorySolvedTasks.clear();
+  try {
+    const storage = getLocalStorage();
+    if (storage) {
+      storage.removeItem(SOLVED_REPEAT_TASKS_STORAGE_KEY);
+    }
+  } catch {}
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    try {
+      window.dispatchEvent(new CustomEvent("uplift_repeat_tasks_reset"));
+    } catch {}
+  }
+}
+

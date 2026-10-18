@@ -23,7 +23,7 @@ export function PracticeProblemCard({
       className="assessment-card"
       onSubmit={(e) => {
         e.preventDefault();
-        const value = Number(answer.trim());
+        const value = Number(answer.trim().replace(",", "."));
         const correct =
           answer.trim() !== "" &&
           Number.isFinite(value) &&
@@ -136,24 +136,29 @@ export function QuizQuestionCard({
           <RichText text={question.prompt} />
         </legend>
         <div className="lesson-options">
-          {question.options.map((option, index) => (
-            <label
-              key={option}
-              className={`${selected === index ? "selected" : ""} ${completed && index === question.answerIndex ? "correct" : ""}`}
-            >
-              <input
-                type="radio"
-                name={question.id}
-                value={index}
-                checked={selected === index}
-                onChange={() => {
-                  setSelected(index);
-                  setChecked(false);
-                }}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
+          {question.options.map((option, index) => {
+            const isSelected = selected === index;
+            const isCorrect = completed && index === question.answerIndex;
+            const isIncorrect = checked && !completed && isSelected && index !== question.answerIndex;
+            return (
+              <label
+                key={option}
+                className={`${isSelected ? "selected" : ""} ${isCorrect ? "correct" : ""} ${isIncorrect ? "incorrect" : ""}`.trim()}
+              >
+                <input
+                  type="radio"
+                  name={question.id}
+                  value={index}
+                  checked={selected === index}
+                  onChange={() => {
+                    setSelected(index);
+                    setChecked(false);
+                  }}
+                />
+                <span>{option}</span>
+              </label>
+            );
+          })}
         </div>
       </fieldset>
       <button

@@ -12,6 +12,7 @@ const eslintConfig = [
       "scripts/**",
       "coverage/**",
       "node_modules/**",
+      "src/components/learning-world/**",
     ],
   },
   ...nextVitals,

@@ -234,3 +234,31 @@ test("all tree variants are recognized species with rich distributions", () => {
     }
   }
 });
+
+test("island biome themes, milestone ring positions, and mini-lab sandboxes cover all 4 directions", async () => {
+  const { TRACK_THEMES, getMilestonePositions } = await import(
+    "../src/components/learning-world/WorldCanvas"
+  );
+  const { getMiniLabKind, MINI_LAB_META } = await import(
+    "../src/components/learning-world/IslandMiniLab"
+  );
+
+  for (const world of learningWorlds) {
+    const theme = TRACK_THEMES[world.directionId];
+    assert.ok(theme, `Missing TRACK_THEMES entry for ${world.directionId}`);
+    assert.ok(theme.grass && theme.water && theme.fog && theme.biome);
+
+    const labKind = getMiniLabKind(world.directionId);
+    const meta = MINI_LAB_META[labKind];
+    assert.ok(meta.title.length > 0 && meta.formula.length > 0);
+  }
+
+  const positions = getMilestonePositions(6);
+  assert.equal(positions.length, 6);
+  for (const [x, y, z] of positions) {
+    assert.equal(y, 1.0, "Milestones sit flush on Tier 1 surface (y = 1.0)");
+    const r = Math.hypot(x, z);
+    assert.ok(r >= 7.5 && r <= 9.5, `Milestone radius ${r} within Tier 1 terrace`);
+  }
+});
+

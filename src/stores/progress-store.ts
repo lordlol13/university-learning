@@ -14,6 +14,7 @@ import {
   createLearningEvents,
   type LearningEvents,
 } from "../lib/learning-events";
+import { resetSolvedTasks, clearPracticeSessions } from "../lib/repeat-tasks";
 
 export interface ProgressState {
   lessonActivities?: Record<string, LessonActivity>;
@@ -262,14 +263,29 @@ export const createProgressStore = (
         },
         resetProgress: () => {
           try {
-            if (typeof globalThis !== "undefined" && globalThis.localStorage) {
-              globalThis.localStorage.removeItem("uplift_solved_repeat_tasks");
-              globalThis.localStorage.removeItem("uplift_practice_sessions");
-              globalThis.localStorage.removeItem("uplift_math_studio_settings_v3");
-            } else if (typeof localStorage !== "undefined") {
-              localStorage.removeItem("uplift_solved_repeat_tasks");
-              localStorage.removeItem("uplift_practice_sessions");
-              localStorage.removeItem("uplift_math_studio_settings_v3");
+            resetSolvedTasks();
+          } catch {}
+          try {
+            clearPracticeSessions();
+          } catch {}
+          try {
+            const keys = [
+              "uplift_solved_repeat_tasks",
+              "uplift_practice_sessions",
+              "uplift_math_studio_settings_v3",
+              "uplift_sound_enabled",
+              "uplift-progress",
+            ];
+            const storage =
+              (typeof window !== "undefined" && window.localStorage) ||
+              (typeof globalThis !== "undefined" && globalThis.localStorage) ||
+              null;
+            if (storage) {
+              for (const key of keys) {
+                try {
+                  storage.removeItem(key);
+                } catch {}
+              }
             }
           } catch {}
           set({ ...freshProgress(), lessonActivities: {} });

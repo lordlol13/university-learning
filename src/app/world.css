@@ -1599,6 +1599,12 @@
    Lovable Uplift Island Campus — Spatial 3D Viewport & Glassmorphic HUD
    ========================================================================== */
 
+.island-content-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 12px 14px !important;
+  gap: 0 !important;
+}
+
 .uplift-direction-view {
   padding: 0;
   margin: 0;
@@ -1624,7 +1630,7 @@
 
   position: relative;
   width: 100%;
-  height: calc(100dvh - 104px);
+  height: calc(100dvh - 24px);
   min-height: 680px;
   border-radius: 26px;
   overflow: hidden;
@@ -1646,18 +1652,18 @@
 }
 
 .uplift-glass {
-  background: rgba(254, 252, 246, 0.62);
-  backdrop-filter: blur(22px) saturate(170%);
-  -webkit-backdrop-filter: blur(22px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(254, 252, 246, 0.66);
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  border: 1px solid rgba(255, 255, 255, 0.68);
   box-shadow: var(--shadow-glass);
 }
 
 .uplift-glass-strong {
-  background: rgba(254, 252, 246, 0.86);
+  background: rgba(254, 252, 246, 0.88);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.78);
   box-shadow: var(--shadow-glass);
 }
 
@@ -1681,6 +1687,11 @@
   letter-spacing: -0.03em;
   color: #1e293b;
   flex-shrink: 0;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.uplift-brand:hover {
+  opacity: 0.82;
 }
 
 .uplift-brand-dot {
@@ -1772,21 +1783,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 7px 12px;
+  gap: 5px;
+  padding: 7px 11px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #1e293b;
-  background: rgba(255, 253, 249, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 253, 249, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.68);
   cursor: pointer;
+  white-space: nowrap;
   transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease;
 }
 
 .uplift-hud-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
 }
 
 .uplift-hud-btn:disabled {
@@ -1830,9 +1842,38 @@
   top: 82px;
   left: 18px;
   z-index: 15;
-  width: 316px;
-  padding: 20px;
+  width: 332px;
+  padding: 18px 20px;
   border-radius: 24px;
+  transition: padding 0.2s ease, width 0.2s ease;
+}
+
+.uplift-hud-aside.is-collapsed {
+  padding: 14px 16px;
+}
+
+.uplift-aside-toprow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.uplift-aside-toggle {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.uplift-aside-toggle:hover {
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .uplift-biome-badge {
@@ -1862,7 +1903,7 @@
 }
 
 .uplift-aside-copy h1 {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.02em;
@@ -1871,10 +1912,31 @@
 }
 
 .uplift-aside-copy p {
-  margin: 8px 0 0;
-  font-size: 13px;
+  margin: 7px 0 0;
+  font-size: 12.5px;
   line-height: 1.45;
   color: #475569;
+}
+
+.uplift-aside-summary {
+  margin-top: 12px;
+  padding: 7px 11px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+}
+.uplift-aside-summary strong {
+  color: #0f172a;
+  font-weight: 800;
+}
+.uplift-summary-dot {
+  opacity: 0.5;
 }
 
 .uplift-progress-ring {
@@ -1905,10 +1967,16 @@
 }
 
 .uplift-aside-actions {
-  margin-top: 16px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.uplift-aside-actions .uplift-hud-btn {
+  flex: 1 1 calc(33.33% - 6px);
+  padding: 6px 9px;
+  font-size: 11.5px;
 }
 
 /* Centered Glassmorphic List Modal */
@@ -2017,8 +2085,8 @@
   left: 50%;
   z-index: 15;
   transform: translateX(-50%);
-  width: min(680px, calc(100% - 24px));
-  padding: 16px 20px;
+  width: min(720px, calc(100% - 24px));
+  padding: 15px 20px;
   border-radius: 24px;
 }
 
@@ -2026,6 +2094,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .uplift-dock-step {
@@ -2056,6 +2125,57 @@
 .uplift-dock-badge.locked {
   background: rgba(15, 23, 42, 0.08);
   color: #64748b;
+}
+
+/* Interactive 1-Click Milestone Stepper Bar */
+.uplift-dock-stepper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 6px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.uplift-step-node {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.uplift-step-node:hover {
+  transform: translateY(-1px) scale(1.06);
+}
+
+.uplift-step-node.completed {
+  background: #e5b54f;
+  color: #1e293b;
+}
+
+.uplift-step-node.current {
+  background: var(--gradient-track);
+  color: #ffffff;
+}
+
+.uplift-step-node.locked {
+  background: rgba(15, 23, 42, 0.08);
+  color: #64748b;
+}
+
+.uplift-step-node.is-selected {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px var(--track);
+  transform: scale(1.1);
 }
 
 .uplift-dock-arrows {
@@ -2111,6 +2231,7 @@
   margin-top: 6px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   font-size: 12px;
   font-weight: 700;
@@ -2125,6 +2246,41 @@
 
 .uplift-dock-xp {
   color: #c88a1b;
+}
+
+.uplift-dock-lab {
+  color: #0f766e;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uplift-dock-lab-btn {
+  background: rgba(15, 118, 110, 0.09);
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.uplift-dock-lab-btn:hover {
+  background: rgba(15, 118, 110, 0.16);
+  transform: translateY(-1px);
+}
+
+.uplift-kbd-hint {
+  margin-left: auto;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748b;
+  opacity: 0.85;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .uplift-cta {
@@ -2157,24 +2313,30 @@
 
 /* 3D Projected Milestone Map Pins */
 .map-pin {
-  background: rgba(254, 252, 246, 0.72);
-  backdrop-filter: blur(18px) saturate(170%);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(254, 252, 246, 0.85);
+  backdrop-filter: blur(18px) saturate(175%);
+  -webkit-backdrop-filter: blur(18px) saturate(175%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 12px 28px -10px rgba(24, 39, 75, 0.3);
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 12px 28px -10px rgba(24, 39, 75, 0.34);
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 999px;
-  padding: 5px 12px;
+  border-radius: 18px;
+  padding: 6px 13px;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
   color: #1e293b;
   cursor: pointer;
-  animation: uplift-pin-in 0.35s ease-out;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  animation: uplift-pin-in 0.3s ease-out;
+}
+
+.map-pin:hover {
+  transform: translateY(-2px) scale(1.04);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .map-pin[data-state="locked"] {
@@ -2182,7 +2344,7 @@
 }
 
 .map-pin-selected {
-  background: rgba(254, 252, 246, 0.92);
+  background: rgba(254, 252, 246, 0.96);
   outline: 2px solid var(--track-2);
 }
 
@@ -2192,10 +2354,386 @@
   padding: 1px 8px;
   font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: #ffffff;
   text-transform: uppercase;
   margin-bottom: 2px;
+}
+
+.map-pin-tag-done {
+  background: #e5b54f;
+  color: #1e293b;
+}
+
+.map-pin-tag-locked {
+  background: rgba(15, 23, 42, 0.1);
+  color: #475569;
+}
+
+.map-pin-cta {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--track);
+}
+
+/* Compact Circular Smart Pins */
+.map-pin-compact {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  background: rgba(254, 252, 246, 0.88);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 20px -6px rgba(24, 39, 75, 0.32);
+  color: #1e293b;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  animation: uplift-pin-in 0.25s ease-out;
+}
+
+.map-pin-compact:hover {
+  transform: translateY(-2px) scale(1.12);
+  background: #ffffff;
+}
+
+.map-pin-compact[data-state="completed"] {
+  background: linear-gradient(135deg, #f6d365, #e5b54f);
+  color: #1e293b;
+  border-color: #fef3c7;
+}
+
+.map-pin-compact[data-state="locked"] {
+  font-size: 11px;
+  color: #64748b;
+  background: rgba(248, 250, 252, 0.82);
+}
+
+/* Ambient Bottom-Left Scene Caption & Bottom-Right Interactive Compass Rose */
+.uplift-scene-caption {
+  position: absolute;
+  bottom: 22px;
+  left: 20px;
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(254, 252, 246, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 24px -10px rgba(24, 39, 75, 0.22);
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  pointer-events: none;
+}
+
+.uplift-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22);
+}
+
+.uplift-compass-rose {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 14;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: rgba(254, 252, 246, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 10px 26px -8px rgba(24, 39, 75, 0.28);
+  color: #1e293b;
+  cursor: pointer;
+  transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+}
+
+.uplift-compass-rose:hover {
+  transform: translateY(-2px) rotate(12deg);
+  background: #ffffff;
+}
+
+.uplift-compass-rose.is-overview {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: #1e293b;
+}
+
+.uplift-compass-n {
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  color: var(--track);
+  margin-bottom: -1px;
+}
+
+.uplift-compass-rose.is-overview .uplift-compass-n {
+  color: #fde68a;
+}
+
+/* Interactive Island Mini-Lab Sandbox Drawer */
+.uplift-minilab-drawer {
+  position: absolute;
+  top: 82px;
+  right: 18px;
+  z-index: 22;
+  width: min(360px, calc(100% - 36px));
+  padding: 18px 20px;
+  border-radius: 24px;
+  animation: uplift-pin-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+}
+
+.uplift-minilab-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.uplift-minilab-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--track);
+}
+
+.uplift-minilab-title-wrap h2 {
+  margin: 3px 0 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+}
+
+.uplift-minilab-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.uplift-minilab-subtitle {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.uplift-minilab-formula {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.06);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.uplift-lab-body {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uplift-lab-stage {
+  width: 100%;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+
+.uplift-lab-slider {
+  display: block;
+}
+
+.uplift-lab-slider-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.uplift-lab-slider-top strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.uplift-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.12);
+  outline: none;
+}
+
+.uplift-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--gradient-track);
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.25);
+  cursor: grab;
+}
+
+.uplift-lab-grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.uplift-lab-verdict {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.uplift-lab-verdict svg {
+  color: var(--track);
+  flex-shrink: 0;
+}
+
+.uplift-pendulum-stage {
+  position: relative;
+  height: 165px;
+  display: flex;
+  justify-content: center;
+}
+
+.uplift-pendulum-mount {
+  margin-top: 10px;
+  width: 84px;
+  height: 5px;
+  border-radius: 999px;
+  background: #e0b04a;
+}
+
+.uplift-pendulum-arm {
+  position: absolute;
+  top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  animation: uplift-swing 1.2s ease-in-out infinite alternate;
+}
+
+.uplift-pendulum-rod {
+  width: 2px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.uplift-pendulum-bob {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--gradient-track);
+  box-shadow: var(--shadow-glow);
+}
+
+@keyframes uplift-swing {
+  from {
+    transform: rotate(-26deg);
+  }
+  to {
+    transform: rotate(26deg);
+  }
+}
+
+.uplift-lab-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.uplift-lab-pronouns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.uplift-conjugate-stage {
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.uplift-conjugate-pronoun {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.uplift-conjugate-word {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.uplift-conjugate-ending {
+  color: var(--track);
+  text-decoration: underline;
+  text-decoration-thickness: 2.5px;
+  text-underline-offset: 4px;
+}
+
+.uplift-conjugate-meaning {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
 }
 
 @keyframes uplift-pin-in {
@@ -2220,6 +2758,12 @@
   }
 }
 
+@media (max-width: 1180px) {
+  .uplift-scene-caption {
+    display: none;
+  }
+}
+
 @media (max-width: 960px) {
   .uplift-hud-aside {
     display: none;
@@ -2227,13 +2771,25 @@
   .uplift-stat-badge {
     display: none;
   }
+  .uplift-kbd-hint {
+    display: none;
+  }
+  .uplift-compass-rose {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
+  .island-content-grid {
+    padding: 8px !important;
+  }
   .uplift-island-viewport {
-    height: calc(100dvh - 88px);
+    height: calc(100dvh - 16px);
     min-height: 580px;
     border-radius: 18px;
+  }
+  .uplift-dock-stepper {
+    display: none;
   }
   .uplift-dock-main {
     flex-direction: column;
@@ -2243,6 +2799,8 @@
     width: 100%;
   }
 }
+
+
 
 
 
